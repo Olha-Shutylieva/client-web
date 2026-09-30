@@ -1,0 +1,2727 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<script>
+try {
+  var savedTheme = localStorage.getItem("ctw-theme");
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+} catch (error) {}
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лекція 4. CSS: основи, каскад, блокова модель</title>
+<meta name="description" content="Лекція 4 з дисципліни «Клієнтські технології вебпрограмування»: підключення CSS, селектори, каскад і шари, специфічність, успадкування, одиниці, кольори, типографіка, box model, display, згортання margin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  color-scheme: light;
+  --bg: #F4F6FA;
+  --surface: #FFFFFF;
+  --surface-2: #E9EEF6;
+  --ink: #162033;
+  --muted: #4A566D;
+  --line: #D3DAE6;
+  --link: #1F4AA8;
+  --navy: #1C2E57;
+  --navy-fill: #1C2E57;
+  --orange: #E8772E;
+  --orange-ink: #A8470F;
+  --margin-hatch: rgba(232, 119, 46, 0.22);
+  --padding-fill: #D5E2F6;
+  --content-fill: #FFFFFF;
+  --callout-bg: #E8EEF8;
+  --warn-bg: #FDF0E6;
+  --bad: #B42318;
+  --bad-bg: #FCEBE9;
+  --good: #11694A;
+  --good-bg: #E5F3EB;
+  --code-bg: #0F1A30;
+  --code-ink: #E4E9F3;
+  --code-border: #0F1A30;
+  --focus: #E8772E;
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --dur: 160ms;
+  --font-body: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Unbounded", "Onest", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0D1526;
+    --surface: #15203A;
+    --surface-2: #1B2946;
+    --ink: #E6EAF3;
+    --muted: #A7B2C8;
+    --line: #2C3A5C;
+    --link: #9EC0FF;
+    --navy: #9EC0FF;
+    --navy-fill: #3D5C9E;
+    --orange: #F29A55;
+    --orange-ink: #F7B27A;
+    --margin-hatch: rgba(242, 154, 85, 0.22);
+    --padding-fill: #22365E;
+    --content-fill: #15203A;
+    --callout-bg: #182746;
+    --warn-bg: #2E2218;
+    --bad: #FF9B90;
+    --bad-bg: #3A1D20;
+    --good: #7BD8A6;
+    --good-bg: #153326;
+    --code-bg: #0A1122;
+    --code-border: #2C3A5C;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D1526;
+  --surface: #15203A;
+  --surface-2: #1B2946;
+  --ink: #E6EAF3;
+  --muted: #A7B2C8;
+  --line: #2C3A5C;
+  --link: #9EC0FF;
+  --navy: #9EC0FF;
+  --navy-fill: #3D5C9E;
+  --orange: #F29A55;
+  --orange-ink: #F7B27A;
+  --margin-hatch: rgba(242, 154, 85, 0.22);
+  --padding-fill: #22365E;
+  --content-fill: #15203A;
+  --callout-bg: #182746;
+  --warn-bg: #2E2218;
+  --bad: #FF9B90;
+  --bad-bg: #3A1D20;
+  --good: #7BD8A6;
+  --good-bg: #153326;
+  --code-bg: #0A1122;
+  --code-border: #2C3A5C;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur: 0s; }
+}
+
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+
+img, svg { max-width: 100%; }
+
+a { color: var(--link); text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 2px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: 1rem; top: -4rem; z-index: 10;
+  background: var(--navy-fill); color: #fff; padding: 0.6rem 1rem; border-radius: var(--radius-s);
+}
+.skip-link:focus { top: calc(env(safe-area-inset-top, 0px) + 1rem); }
+
+.wrap { max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
+.prose { max-width: 46rem; }
+.prose > p, .prose > ul, .prose > ol { margin: 0 0 1em; }
+
+h1, h2 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.75rem, 4.6vw, 3rem); line-height: 1.15; margin: 0.2em 0 0.5em; }
+h2 { font-size: clamp(1.35rem, 3vw, 1.85rem); line-height: 1.25; margin: 0 0 1rem; }
+h3 { font-size: 1.25rem; line-height: 1.35; margin: 2rem 0 0.75rem; font-weight: 600; }
+h4 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; font-weight: 600; }
+
+p code, li code, dd code, dt code, td code, h3 code, h4 code, label code, legend code, .inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+
+/* Run-in labels for the problem → why → solution → when pattern */
+.lbl { font-weight: 600; color: var(--orange-ink); }
+
+/* ---------- Hero: the lecture title drawn as a box model ---------- */
+.hero { padding: 1.5rem 0 1rem; }
+.hero-margin {
+  position: relative;
+  padding: clamp(18px, 4vw, 40px);
+  border: 2px dashed var(--orange);
+  border-radius: 4px;
+  background: repeating-linear-gradient(135deg, var(--margin-hatch) 0 2px, transparent 2px 11px);
+}
+.hero-border {
+  --bw: clamp(8px, 1.6vw, 14px);
+  position: relative;
+  border: var(--bw) solid var(--navy-fill);
+}
+.hero-padding {
+  position: relative;
+  padding: clamp(18px, 4vw, 40px);
+  background: var(--padding-fill);
+}
+.hero-content {
+  position: relative;
+  background: var(--surface);
+  outline: 1px dashed var(--muted);
+  padding: clamp(28px, 4vw, 40px) clamp(16px, 3vw, 36px) clamp(18px, 3vw, 32px);
+}
+.layer-tag {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.2rem 0.35rem;
+  right: 0.5rem;
+  top: 0.35rem;
+}
+.hero-margin > .layer-tag { color: var(--orange-ink); background: var(--bg); top: 0.3rem; right: 0.6rem; }
+.hero-border > .layer-tag { color: #fff; background: var(--navy-fill); top: calc(-1 * var(--bw)); right: 1rem; padding: 0.15rem 0.35rem; }
+.hero-padding > .layer-tag { color: var(--ink); background: transparent; }
+.hero-content > .layer-tag { color: var(--muted); }
+.hero-course { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.hero-num { margin: 0.4rem 0 0; font-weight: 600; color: var(--orange-ink); }
+.hero-lead { margin: 0; max-width: 40rem; font-size: 1.1rem; color: var(--ink); }
+
+/* ---------- Intro: plan and outcomes ---------- */
+.intro-grid { display: grid; gap: 2rem; padding: 2rem 0 2.5rem; }
+@media (min-width: 52rem) { .intro-grid { grid-template-columns: 1.35fr 1fr; gap: 3rem; } }
+.intro-grid h2 { font-size: 1.2rem; }
+.plan-list { margin: 0; padding-left: 1.6rem; }
+@media (min-width: 36rem) { .plan-list { columns: 2; column-gap: 2rem; } }
+.plan-list li { break-inside: avoid; margin-bottom: 0.3rem; }
+.plan-list li::marker { color: var(--orange-ink); font-weight: 600; }
+.outcomes { margin: 0; padding-left: 1.2rem; }
+.outcomes li { margin-bottom: 0.5rem; }
+.outcomes li::marker { color: var(--orange); }
+
+/* ---------- Sections ---------- */
+.topic { padding: 3rem 0 2rem; border-top: 1px solid var(--line); }
+.part-title {
+  font-family: var(--font-display); font-weight: 500; font-size: 0.95rem;
+  color: var(--muted); margin: 0 0 0.25rem;
+}
+
+/* ---------- Code blocks ---------- */
+pre[data-lang] {
+  margin: 1.25rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border-radius: var(--radius-m);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+pre[data-lang] code { font: inherit; background: none; padding: 0; }
+.code {
+  margin: 1.25rem 0;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  max-width: 100%;
+}
+.code pre[data-lang] { margin: 0; border-radius: 0; }
+.code-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.3rem 0.45rem 0.3rem 0.9rem;
+  font-family: var(--font-mono); font-size: 0.78rem; color: #A3AFC6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.copy-btn {
+  font: 500 0.8rem var(--font-body);
+  color: #E4E9F3; background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.24); border-radius: var(--radius-s);
+  padding: 0.3rem 0.7rem; min-height: 32px; cursor: pointer;
+}
+.copy-btn:hover { background: rgba(255, 255, 255, 0.08); }
+.tok-comment { color: #8793AD; font-style: italic; }
+.tok-selector { color: #FFB077; }
+.tok-property { color: #8FB8FF; }
+.tok-value { color: #C8E6A0; }
+.tok-number { color: #F9C27A; }
+.tok-string { color: #C8E6A0; }
+.tok-atrule { color: #D3A6FF; }
+.tok-important { color: #FF8A80; font-weight: 600; }
+.tok-punct { color: #9AA6BF; }
+.tok-tag { color: #FFB077; }
+.tok-attr { color: #8FB8FF; }
+
+/* ---------- Callouts ---------- */
+.callout {
+  margin: 1.5rem 0; padding: 1rem 1.2rem;
+  border-left: 4px solid var(--navy-fill);
+  background: var(--callout-bg);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  max-width: 46rem;
+}
+.callout.warn { border-left-color: var(--orange); background: var(--warn-bg); }
+.callout > p { margin: 0 0 0.5em; }
+.callout > p:last-child { margin-bottom: 0; }
+.callout-title { font-weight: 600; }
+
+.cascade-steps { counter-reset: step; list-style: none; padding: 0; margin: 1.25rem 0; max-width: 46rem; }
+.cascade-steps li {
+  counter-increment: step; position: relative;
+  padding: 0.65rem 0.9rem 0.65rem 3.2rem; margin-bottom: 0.5rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-s);
+}
+.cascade-steps li::before {
+  content: counter(step);
+  position: absolute; left: 0.8rem; top: 0.6rem;
+  width: 1.7rem; height: 1.7rem; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--navy-fill); color: #fff; font-weight: 600; font-size: 0.9rem;
+}
+
+/* ---------- Buttons & form controls ---------- */
+.btn {
+  font: 600 0.95rem var(--font-body);
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  min-height: 44px; padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-s); border: 2px solid var(--navy-fill);
+  background: var(--navy-fill); color: #fff; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { border-color: var(--navy-fill); filter: none; }
+input[type="text"] {
+  font: 0.95rem var(--font-mono);
+  width: 100%; min-height: 44px; padding: 0.55rem 0.75rem;
+  color: var(--ink); background: var(--surface);
+  border: 2px solid var(--line); border-radius: var(--radius-s);
+}
+input[type="text"]:focus-visible { border-color: var(--orange); outline-offset: 1px; }
+input[type="range"] { width: 100%; accent-color: var(--orange); min-height: 32px; }
+input[type="radio"], input[type="checkbox"] { accent-color: var(--orange); width: 1.1rem; height: 1.1rem; }
+
+/* ---------- Demos ---------- */
+.demo {
+  margin: 1.75rem 0;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+.demo > h3:first-child, .demo > h4:first-child { margin-top: 0; }
+.demo-note { color: var(--muted); font-size: 0.95rem; max-width: 46rem; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1.25rem; }
+.preset {
+  font: 0.8rem var(--font-mono); text-align: left;
+  padding: 0.4rem 0.65rem; min-height: 36px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface-2); color: var(--ink); cursor: pointer;
+}
+.preset:hover { border-color: var(--orange); }
+
+.spec-grid { display: grid; gap: 1.25rem; }
+@media (min-width: 50rem) { .spec-grid { grid-template-columns: 1fr 1fr; } }
+.spec-side { border: 2px solid var(--line); border-radius: var(--radius-m); padding: 1rem; transition: border-color var(--dur); }
+.spec-side.is-winner { border-color: var(--orange); }
+.spec-side label { display: block; font-weight: 600; margin-bottom: 0.4rem; }
+.spec-side-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.winner-badge {
+  font-size: 0.78rem; font-weight: 600; color: var(--orange-ink);
+  border: 1px solid var(--orange); border-radius: 999px; padding: 0.1rem 0.55rem;
+}
+.spec-score { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 1rem 0 0.75rem; }
+.spec-col { text-align: center; padding: 0.55rem 0.25rem; background: var(--surface-2); border-radius: var(--radius-s); }
+.spec-num { display: block; font: 700 1.8rem/1.1 var(--font-display); }
+.spec-cap { display: block; font-size: 0.74rem; color: var(--muted); line-height: 1.3; margin-top: 0.25rem; }
+.spec-col.col-a .spec-num { color: var(--orange-ink); }
+.spec-col.col-b .spec-num { color: var(--navy); }
+.spec-parts { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  display: inline-flex; flex-direction: column; gap: 0.05rem;
+  padding: 0.3rem 0.55rem; border-radius: var(--radius-s);
+  border: 1px solid var(--line); font-size: 0.78rem; line-height: 1.35; max-width: 100%;
+}
+.chip code { font-family: var(--font-mono); font-size: 0.82rem; background: none; padding: 0; overflow-wrap: anywhere; }
+.chip .chip-note { color: var(--muted); }
+.chip-a { border-color: var(--orange); }
+.chip-b { border-color: var(--navy-fill); }
+.chip-zero { border-style: dashed; }
+.spec-error { color: var(--bad); font-weight: 500; margin: 0.75rem 0 0; }
+.spec-verdict {
+  margin-top: 1.25rem; padding: 1rem 1.2rem;
+  background: var(--callout-bg); border-left: 4px solid var(--orange);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+}
+.spec-verdict p { margin: 0 0 0.5em; }
+.spec-verdict p:last-child { margin-bottom: 0; }
+
+.bm-layout { display: grid; gap: 1.5rem; }
+@media (min-width: 58rem) { .bm-layout { grid-template-columns: 19rem 1fr; } }
+.bm-controls { display: grid; gap: 0.9rem; align-content: start; }
+.bm-sizing { border: 1px solid var(--line); border-radius: var(--radius-s); padding: 0.6rem 0.9rem 0.75rem; margin: 0; }
+.bm-sizing legend { font-family: var(--font-mono); font-size: 0.9rem; padding: 0 0.3rem; }
+.bm-sizing label { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.9rem; min-height: 32px; cursor: pointer; }
+.range-row { display: grid; grid-template-columns: 5.5rem 1fr 4rem; align-items: center; gap: 0.6rem; }
+.range-row label { font-family: var(--font-mono); font-size: 0.9rem; }
+.range-row output { font-family: var(--font-mono); font-size: 0.9rem; text-align: right; }
+.bm-stage {
+  overflow-x: auto; padding: 1rem;
+  background: var(--surface-2); border-radius: var(--radius-m);
+}
+.bm-margin {
+  width: max-content;
+  background: repeating-linear-gradient(135deg, var(--margin-hatch) 0 2px, transparent 2px 9px);
+  outline: 1px dashed var(--orange);
+}
+.bm-box { background: var(--padding-fill); border-style: solid; border-color: var(--navy-fill); }
+.bm-content {
+  height: 72px; background: var(--content-fill);
+  outline: 1px dashed var(--muted); outline-offset: -1px;
+  display: flex; align-items: center; justify-content: center;
+  font: 0.8rem var(--font-mono); color: var(--muted);
+  overflow: hidden; white-space: nowrap;
+}
+.bm-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin: 0.75rem 0 0; padding: 0; list-style: none; font-size: 0.85rem; font-family: var(--font-mono); }
+.swatch { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 3px; vertical-align: -0.12em; margin-right: 0.35rem; border: 1px solid var(--line); }
+.sw-margin { background: repeating-linear-gradient(135deg, var(--orange) 0 2px, transparent 2px 5px); }
+.sw-border { background: var(--navy-fill); }
+.sw-padding { background: var(--padding-fill); }
+.sw-content { background: var(--content-fill); border-style: dashed; border-color: var(--muted); }
+.bm-readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.6rem; margin: 1rem 0; }
+.bm-readout div { background: var(--surface-2); border-radius: var(--radius-s); padding: 0.55rem 0.75rem; }
+.bm-readout dt { font-size: 0.8rem; color: var(--muted); }
+.bm-readout dd { margin: 0; font: 700 1.25rem var(--font-display); }
+.bm-explain { max-width: 46rem; }
+
+.mc-controls { display: grid; gap: 0.75rem; max-width: 30rem; margin-bottom: 1rem; }
+.mc-controls .range-row { grid-template-columns: 8.5rem 1fr 4rem; }
+.check-row { display: flex; align-items: center; gap: 0.55rem; min-height: 36px; cursor: pointer; }
+.mc-stage {
+  padding: 16px; border-radius: var(--radius-s);
+  border: 1px solid var(--line);
+  background: repeating-linear-gradient(135deg, var(--margin-hatch) 0 2px, transparent 2px 9px);
+}
+.mc-block {
+  padding: 0.7rem 0.9rem; background: var(--padding-fill); border: 2px solid var(--navy-fill);
+  font: 0.82rem var(--font-mono); color: var(--ink);
+}
+
+/* ---------- Cheat sheet ---------- */
+.cheat-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.cheat-head h2 { margin: 0; }
+.cheat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+.cheat-card {
+  background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--navy-fill);
+  border-radius: var(--radius-s); padding: 0.85rem 1rem 0.9rem;
+  font-size: 0.9rem; line-height: 1.45;
+}
+.cheat-card h3 { margin: 0 0 0.55rem; font-size: 1rem; }
+.cheat-card dl { margin: 0; display: grid; gap: 0.35rem; }
+.cheat-card dt { margin: 0; }
+.cheat-card dt code { background: var(--surface-2); }
+.cheat-card dd { margin: 0 0 0.25rem; color: var(--muted); }
+.cheat-card p { margin: 0 0 0.4rem; }
+.cheat-card pre[data-lang] { margin: 0.4rem 0 0; font-size: 0.78rem; padding: 0.6rem 0.7rem; border-radius: var(--radius-s); }
+.cheat-card .code { margin: 0.4rem 0 0; border-radius: var(--radius-s); }
+.cheat-card .code-bar { display: none; }
+
+/* ---------- Anti-patterns and best practices ---------- */
+.ap, .bp {
+  margin: 1.5rem 0; padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-m);
+}
+.ap h3, .bp h3 { margin-top: 0; }
+.ap-part { margin: 1rem 0; }
+.ap-part > .code, .ap-part > pre { margin-top: 0.5rem; }
+.verdict-label { display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700; margin: 0; }
+.verdict-label::before {
+  display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; border-radius: 50%;
+  font-size: 0.85rem; color: #fff;
+}
+.is-bad .verdict-label { color: var(--bad); }
+.is-bad .verdict-label::before { content: "✕"; background: var(--bad); color: var(--surface); }
+.is-good .verdict-label { color: var(--good); }
+.is-good .verdict-label::before { content: "✓"; background: var(--good); color: var(--surface); }
+.is-bad .code { border-left: 5px solid var(--bad); }
+.is-good .code { border-left: 5px solid var(--good); }
+.ap-why { max-width: 46rem; margin: 0.75rem 0; }
+.bp > p { max-width: 46rem; }
+
+/* ---------- Quiz ---------- */
+.quiz {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-m);
+  padding: clamp(1rem, 3vw, 1.75rem); max-width: 50rem;
+}
+.quiz-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+.quiz-progress-text { margin: 0; font-weight: 600; }
+.quiz-bar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-bottom: 1.25rem; }
+.quiz-bar span { display: block; height: 100%; width: 0; background: var(--orange); transition: width var(--dur); }
+.quiz-topic { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.quiz h3 { margin-top: 0.3rem; }
+.quiz h3:focus { outline: none; }
+.quiz h3:focus-visible { outline: 3px solid var(--focus); }
+.quiz-options { display: grid; gap: 0.6rem; margin: 1rem 0; }
+.quiz-option {
+  font: inherit; text-align: left; color: var(--ink);
+  display: flex; gap: 0.7rem; align-items: flex-start;
+  min-height: 48px; padding: 0.7rem 0.9rem;
+  background: var(--surface); border: 2px solid var(--line); border-radius: var(--radius-s);
+  cursor: pointer; transition: border-color var(--dur), background-color var(--dur);
+}
+.quiz-option:hover:not(:disabled) { border-color: var(--navy-fill); }
+.quiz-option:disabled { cursor: default; }
+.quiz-option .opt-key {
+  flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 600; font-size: 0.85rem;
+  background: var(--surface-2);
+}
+.quiz-option code { font-family: var(--font-mono); font-size: 0.9em; }
+.quiz-option.is-correct { border-color: var(--good); background: var(--good-bg); }
+.quiz-option.is-correct .opt-key { background: var(--good); color: var(--surface); }
+.quiz-option.is-wrong { border-color: var(--bad); background: var(--bad-bg); }
+.quiz-option.is-wrong .opt-key { background: var(--bad); color: var(--surface); }
+.quiz-feedback:empty { display: none; }
+.quiz-feedback { padding: 0.9rem 1.1rem; border-radius: var(--radius-s); background: var(--callout-bg); margin-bottom: 1rem; }
+.quiz-feedback p { margin: 0 0 0.5em; }
+.quiz-feedback p:last-child { margin-bottom: 0; }
+.fb-title { font-weight: 700; }
+.fb-title.ok { color: var(--good); }
+.fb-title.fail { color: var(--bad); }
+.quiz-nav { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.quiz-score { font: 700 clamp(2rem, 6vw, 3rem)/1.1 var(--font-display); color: var(--orange-ink); margin: 0.25rem 0 0.75rem; }
+.review-list { padding-left: 1.2rem; }
+.review-list li { margin-bottom: 0.35rem; }
+
+/* ---------- Links & footer ---------- */
+.link-groups { display: grid; gap: 1.5rem; }
+@media (min-width: 52rem) { .link-groups { grid-template-columns: 1fr 1fr; gap: 2rem 3rem; } }
+.link-groups h3 { margin-top: 0; font-size: 1.05rem; }
+.link-list { margin: 0; padding-left: 1.1rem; }
+.link-list li { margin-bottom: 0.5rem; }
+.link-list span { color: var(--muted); font-size: 0.93rem; }
+.site-footer { border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: 0.9rem; }
+.to-top { display: inline-block; margin-top: 0.5rem; margin-right: 1rem; }
+.page-tools {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 1.25rem;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.page-tools a, .page-tools button {
+  font: inherit;
+  font-weight: 700;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+}
+.page-tools a { color: var(--ink); text-decoration: none; }
+.page-tools button {
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* ---------- Print ---------- */
+@page { margin: 12mm; }
+@media print {
+  :root {
+    color-scheme: light;
+    padding: 0;
+    --bg: #fff; --surface: #fff; --surface-2: #F1F3F7; --ink: #000; --muted: #333;
+    --line: #BBB; --navy-fill: #1C2E57; --orange-ink: #8A3A0B; --code-bg: #F5F6F9;
+    --code-ink: #111; --code-border: #CCC;
+  }
+  body { font-size: 10pt; line-height: 1.4; background: #fff; }
+  .skip-link, .copy-btn, .no-print, .presets { display: none; }
+  a { color: #000; }
+  .code-bar { color: #555; border-bottom-color: #DDD; }
+  [class^="tok-"] { color: inherit; font-style: normal; }
+  .tok-selector, .tok-property, .tok-atrule { font-weight: 600; }
+  .topic { break-inside: auto; }
+  pre[data-lang] { white-space: pre-wrap; }
+
+  html.print-cheatsheet body > *:not(main) { display: none; }
+  html.print-cheatsheet main > *:not(#cheatsheet) { display: none; }
+  html.print-cheatsheet #cheatsheet { border: 0; padding: 0; }
+  html.print-cheatsheet .cheat-head { margin-bottom: 6pt; }
+  html.print-cheatsheet .cheat-head h2 { font-size: 14pt; }
+  html.print-cheatsheet .cheat-grid { grid-template-columns: repeat(3, 1fr); gap: 5pt; }
+  html.print-cheatsheet .cheat-card { font-size: 7.6pt; line-height: 1.3; padding: 5pt 6pt; break-inside: avoid; border-top-width: 2pt; }
+  html.print-cheatsheet .cheat-card h3 { font-size: 9pt; margin-bottom: 3pt; }
+  html.print-cheatsheet .cheat-card pre[data-lang] { font-size: 7pt; padding: 3pt 4pt; line-height: 1.3; }
+  html.print-cheatsheet .cheat-card dl { gap: 1pt; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти до змісту</a>
+<div class="page-tools no-print">
+  <a href="../index.html">← На головну</a>
+  <button type="button" id="theme-toggle" aria-pressed="false">Темна тема</button>
+</div>
+<div id="sr-status" class="sr-only" aria-live="polite"></div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-margin">
+      <span class="layer-tag" aria-hidden="true">margin</span>
+      <div class="hero-border">
+        <span class="layer-tag" aria-hidden="true">border</span>
+        <div class="hero-padding">
+          <span class="layer-tag" aria-hidden="true">padding</span>
+          <div class="hero-content">
+            <span class="layer-tag" aria-hidden="true">content</span>
+            <p class="hero-course">Клієнтські технології вебпрограмування</p>
+            <p class="hero-num">Лекція 4</p>
+            <h1>CSS: основи, каскад, блокова модель</h1>
+            <p class="hero-lead">Як стилі потрапляють на сторінку, як браузер вирішує, яке з кількох правил переможе, і з чого складається кожен прямокутник на екрані. Наскрізний приклад лекції — каталог книжок із картками.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="intro-grid">
+      <nav aria-labelledby="plan-h">
+        <h2 id="plan-h">План лекції</h2>
+        <ol class="plan-list">
+          <li><a href="#connect">Підключення CSS</a></li>
+          <li><a href="#selectors">Селектори</a></li>
+          <li><a href="#cascade">Каскад і шари</a></li>
+          <li><a href="#specificity">Специфічність</a></li>
+          <li><a href="#inheritance">Успадкування</a></li>
+          <li><a href="#units">Одиниці вимірювання</a></li>
+          <li><a href="#colors">Кольори</a></li>
+          <li><a href="#typography">Типографіка</a></li>
+          <li><a href="#box-model">Box model і box-sizing</a></li>
+          <li><a href="#display">Властивість display</a></li>
+          <li><a href="#margin-collapse">Згортання margin</a></li>
+          <li><a href="#demos">Інтерактивні демо</a></li>
+          <li><a href="#cheatsheet">Шпаргалка</a></li>
+          <li><a href="#antipatterns">Антипатерни</a></li>
+          <li><a href="#best-practices">Бест практики</a></li>
+          <li><a href="#quiz">Квіз для самоперевірки</a></li>
+          <li><a href="#links">Корисні посилання</a></li>
+        </ol>
+      </nav>
+      <section aria-labelledby="outcomes-h">
+        <h2 id="outcomes-h">Після лекції ви зможете</h2>
+        <ul class="outcomes">
+          <li>пояснити, як браузер обирає одне значення властивості, коли на елемент претендують кілька правил: походження, шари, специфічність, порядок;</li>
+          <li>обчислити специфічність будь-якого селектора, зокрема з <code>:is()</code>, <code>:where()</code> і <code>:has()</code>, і передбачити, яке правило переможе;</li>
+          <li>писати селектори за атрибутами, станами й частинами елемента, не засмічуючи розмітку зайвими класами;</li>
+          <li>обирати одиниці під задачу й обґрунтувати, чому розмір шрифту задають у <code>rem</code>;</li>
+          <li>розрахувати розміри блока в обох режимах <code>box-sizing</code> і передбачити згортання вертикальних margin.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+<!-- ================= 1. CONNECTING CSS ================= -->
+<section class="topic" id="connect" aria-labelledby="connect-h">
+  <p class="part-title">Теорія</p>
+  <h2 id="connect-h">1. Як CSS потрапляє на сторінку</h2>
+  <div class="prose">
+    <p>HTML описує, що є на сторінці, а CSS — як воно виглядає. Правило CSS складається із селектора (кого стилізуємо) і блоку декларацій у фігурних дужках; кожна декларація — це пара «властивість: значення», завершена крапкою з комою.</p>
+  </div>
+<pre data-lang="css"><code>
+/* selector */
+.book-price {
+  color: #1c2e57;     /* declaration: property + value */
+  font-weight: 600;
+}
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Уявімо каталог зі ста картками книжок. Якщо записати колір ціни прямо в атрибут <code>style</code> кожної картки, та сама декларація повториться сто разів, а зміна кольору перетвориться на пошук і заміну по всіх HTML-файлах.</p>
+    <p><span class="lbl">Чому так.</span> Атрибут <code>style</code> прив'язаний до одного конкретного елемента: його не можна перевикористати, у ньому не можна описати стан (наведення курсора, фокус) чи умову (медіазапит), і в каскаді він стоїть вище за всі правила з таблиць стилів автора, тож потім його важко перевизначити.</p>
+    <p><span class="lbl">Рішення.</span> Браузер вміє брати стилі з трьох місць. Зовнішній файл підключають елементом <code>&lt;link rel="stylesheet"&gt;</code> у <code>&lt;head&gt;</code>: браузер завантажує його один раз і кешує, тож усі сторінки сайту беруть стилі з кешу. Внутрішня таблиця стилів у елементі <code>&lt;style&gt;</code> діє лише на одній сторінці. Inline-стиль в атрибуті <code>style</code> діє лише на один елемент.</p>
+  </div>
+<pre data-lang="html"><code>
+&lt;head&gt;
+  &lt;!-- external stylesheet: downloaded once, cached for every page --&gt;
+  &lt;link rel="stylesheet" href="styles.css"&gt;
+
+  &lt;!-- internal stylesheet: applies to this page only --&gt;
+  &lt;style&gt;
+    .catalog-intro { max-width: 60ch; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- inline style: applies to this one element only --&gt;
+  &lt;p class="promo" style="color: #a8470f;"&gt;Знижка до неділі&lt;/p&gt;
+&lt;/body&gt;
+</code></pre>
+  <div class="prose">
+    <p>Є ще четвертий спосіб — правило <code>@import</code> усередині CSS-файлу. Воно має стояти на самому початку таблиці стилів (перед ним дозволені лише <code>@charset</code> і оголошення <code>@layer</code>), інакше браузер його проігнорує. Механізм його роботи пояснює, чому ним не зловживають: браузер дізнається про імпортований файл лише після того, як завантажив і розібрав батьківський, тому файли вантажаться ланцюжком, один за одним. Елементи <code>&lt;link&gt;</code> у HTML браузер бачить одразу й може завантажувати паралельно.</p>
+  </div>
+<pre data-lang="css"><code>
+/* styles.css — @import must come first */
+@import url("reset.css") layer(reset);
+@import url("components.css") layer(components);
+
+.catalog { padding: 1rem; }
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> За замовчуванням — зовнішній файл через <code>&lt;link&gt;</code>. Елемент <code>&lt;style&gt;</code> доречний для окремої самодостатньої сторінки чи навчального прикладу. Inline-стилі в робочому коді залишайте хіба що для значень, які обчислює JavaScript під час роботи сторінки. <code>@import</code> має сенс, коли потрібно одразу розкласти імпортовані стилі по каскадних шарах (про шари — у розділі 3).</p>
+  </div>
+</section>
+
+<!-- ================= 2. SELECTORS ================= -->
+<section class="topic" id="selectors" aria-labelledby="selectors-h">
+  <h2 id="selectors-h">2. Селектори</h2>
+  <div class="prose">
+    <p>Селектор — це умова, яку браузер перевіряє для кожного елемента DOM: якщо елемент їй відповідає, декларації правила беруть участь у каскаді для цього елемента. Базові селектори вибирають за іменем тегу, класом, ідентифікатором або будь-який елемент (<code>*</code>). Комбінатори поєднують селектори й описують зв'язок між елементами: пробіл — нащадок на будь-якій глибині, <code>&gt;</code> — лише прямий дочірній елемент, <code>+</code> — наступний сусід, <code>~</code> — усі наступні сусіди з тим самим батьком.</p>
+  </div>
+<pre data-lang="css"><code>
+article { }                     /* type: every &lt;article&gt; */
+.book-card { }                  /* class */
+#catalog { }                    /* id */
+* { }                           /* universal */
+
+.catalog .book-title { }        /* descendant, any depth */
+.book-card > h3 { }             /* direct children only */
+.book-title + .book-author { }  /* the very next sibling */
+.book-title ~ p { }             /* every following sibling */
+</code></pre>
+  <div class="callout">
+    <p class="callout-title">Механізм: браузер читає селектор справа наліво</p>
+    <p>Для <code>.catalog .book-title</code> браузер спочатку знаходить елементи з класом <code>book-title</code> (найправіша частина, так званий ключовий селектор), а потім для кожного піднімається вгору по предках і шукає <code>.catalog</code>. Тому довгі ланцюжки на кшталт <code>body main ul li a</code> змушують браузер робити більше перевірок: кожне посилання на сторінці проходить увесь ланцюжок предків.</p>
+  </div>
+
+  <h3>Атрибутні селектори</h3>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Стан картки вже записаний у розмітці — наприклад, <code>data-status="sold-out"</code>, — але щоб візуально приглушити розпродану книжку, розробник додає ще й клас <code>sold-out</code>. Тепер ту саму інформацію треба синхронізувати у двох місцях.</p>
+    <p><span class="lbl">Чому так.</span> Здається, що CSS уміє чіплятися лише за класи. Насправді селектор у квадратних дужках порівнює рядкове значення будь-якого атрибута.</p>
+    <p><span class="lbl">Рішення.</span> <code>[attr]</code> перевіряє, що атрибут є; <code>[attr="v"]</code> — точний збіг; <code>[attr~="v"]</code> — одне зі слів у списку через пробіл; <code>[attr|="v"]</code> — значення дорівнює <code>v</code> або починається з <code>v-</code> (зручно для <code>lang="uk-UA"</code>); <code>[attr^="v"]</code> — починається з; <code>[attr$="v"]</code> — закінчується на; <code>[attr*="v"]</code> — містить підрядок. Прапорець <code>i</code> перед закривальною дужкою робить порівняння нечутливим до регістру.</p>
+  </div>
+<pre data-lang="css"><code>
+/* state that is already in the markup */
+.book-card[data-status="sold-out"] { opacity: 0.6; }
+
+/* links to other sites and to PDF files (any letter case) */
+a[href^="https://"] { text-decoration-thickness: 2px; }
+a[href$=".pdf" i]::after { content: " (PDF)"; }
+
+/* one word in a space-separated list: data-tags="new classic" */
+.book-card[data-tags~="new"] { border-color: #e8772e; }
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Коли стилізуєте стан чи тип, що вже закодований атрибутом: <code>disabled</code>, <code>type</code>, <code>aria-expanded</code>, <code>data-*</code>, <code>href</code>. Специфічність атрибутного селектора така сама, як у класу.</p>
+  </div>
+
+  <h3>Псевдокласи</h3>
+  <div class="prose">
+    <p>Псевдоклас описує стан або положення елемента, яких немає в розмітці як атрибутів: курсор над елементом, фокус з клавіатури, позначений прапорець, порядковий номер серед сусідів. Браузер відстежує ці стани сам і перераховує стилі, щойно стан змінюється, — саме тому <code>:hover</code> працює без жодного JavaScript.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-card:hover { border-color: #1c2e57; }
+.buy-button:focus-visible { outline: 3px solid #e8772e; outline-offset: 2px; }
+.buy-button:disabled { cursor: not-allowed; }
+.book-list > li:nth-child(odd) { background: #f4f6fa; }
+.book-list > li:not(:last-child) { border-bottom: 1px solid #d3dae6; }
+.filter input:checked + label { font-weight: 600; }
+</code></pre>
+  <div class="prose">
+    <p>Зверніть увагу на різницю між <code>:focus</code> і <code>:focus-visible</code>. Перший спрацьовує за будь-якого фокусу, зокрема після кліку мишею. Другий — лише тоді, коли браузер вважає, що індикатор фокусу потрібен користувачеві, передусім під час навігації клавіатурою. Тому помітну рамку фокусу зручно вішати саме на <code>:focus-visible</code>: користувачі клавіатури бачать, де вони, а клік мишею не залишає зайвої обводки.</p>
+  </div>
+
+  <h3>Псевдоелементи</h3>
+  <div class="prose">
+    <p>Псевдоелемент вибирає не весь елемент, а його частину (<code>::first-line</code>, <code>::marker</code> у пункті списку, <code>::placeholder</code> у полі введення, <code>::selection</code> — виділений текст) або створює згенерований вміст (<code>::before</code>, <code>::after</code>). Пишуться з двома двокрапками; для чотирьох найстаріших (<code>before</code>, <code>after</code>, <code>first-line</code>, <code>first-letter</code>) браузери досі приймають і одну — це сумісність зі старим CSS 2.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-price::after { content: " грн"; }   /* no content — no pseudo-element */
+.book-description::first-line { font-weight: 600; }
+.book-list li::marker { color: #e8772e; }
+.search-input::placeholder { color: #4a566d; }
+::selection { background: #1c2e57; color: #ffffff; }
+</code></pre>
+  <div class="callout warn">
+    <p class="callout-title">Обережно зі згенерованим вмістом</p>
+    <p><code>::before</code> і <code>::after</code> з'являються лише тоді, коли задано властивість <code>content</code>. Їхній текст не потрапляє в DOM, його не можна виділити й скопіювати, а програми зчитування екрана озвучують його по-різному. Тому псевдоелементи — для оформлення (іконки, розділювачі, одиниці), а не для змісту, без якого сторінка незрозуміла.</p>
+  </div>
+
+  <h3>Групування: <code>:is()</code> і <code>:where()</code></h3>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Заголовки другого й третього рівня в каталозі та в бічній панелі мають однаковий міжрядковий інтервал, і селектор розростається до чотирьох повторів: <code>.catalog h2, .catalog h3, .sidebar h2, .sidebar h3</code>. Кожна нова комбінація множить кількість рядків.</p>
+    <p><span class="lbl">Чому так.</span> Звичайний список селекторів через кому — це просто кілька незалежних селекторів, і спільні частини в ньому доводиться повторювати.</p>
+    <p><span class="lbl">Рішення.</span> Функціональні псевдокласи <code>:is()</code> і <code>:where()</code> приймають список селекторів і збігаються з елементом, якщо збігся хоча б один із них. Різниця між ними — лише у специфічності: <code>:is()</code> отримує вагу свого найспецифічнішого аргументу, а <code>:where()</code> завжди має нульову вагу. Ще одна відмінність від звичайного списку: обидва мають «поблажливий» список аргументів. Якщо у звичайному списку через кому хоча б один селектор недійсний, браузер відкидає все правило; всередині <code>:is()</code> і <code>:where()</code> недійсний аргумент просто ігнорується.</p>
+  </div>
+<pre data-lang="css"><code>
+/* before: every combination is spelled out */
+.catalog h2, .catalog h3, .sidebar h2, .sidebar h3 { line-height: 1.2; }
+
+/* after: specificity (0, 1, 1) */
+:is(.catalog, .sidebar) :is(h2, h3) { line-height: 1.2; }
+
+/* zero specificity: any later rule overrides it easily */
+:where(.catalog, .sidebar) :where(h2, h3) { margin-top: 0; }
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> <code>:is()</code> — щоб скоротити повторювані селектори, коли вага має бути звичайною. Пам'ятайте пастку: <code>:is(#catalog, .shelf) .book-card</code> має вагу ID навіть для елемента, що збігся через <code>.shelf</code>. <code>:where()</code> — для базових стилів і скидань, які будь-який компонентний клас має легко перевизначити.</p>
+  </div>
+
+  <h3>Селектор «батька»: <code>:has()</code></h3>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Картку, всередині якої є бейдж «Новинка», треба обвести помаранчевою рамкою. CSS завжди вибирав елементи «вниз» по дереву, тож стилізувати картку залежно від її вмісту доводилося через додатковий клас, який ставив JavaScript або шаблонізатор.</p>
+    <p><span class="lbl">Чому так.</span> Звичайний селектор описує сам елемент і його предків, але не його нащадків чи наступних сусідів.</p>
+    <p><span class="lbl">Рішення.</span> <code>:has()</code> приймає відносний селектор і збігається з елементом, якщо відносно нього знайшовся хоча б один відповідник. Без комбінатора аргумент шукається серед нащадків на будь-якій глибині; з <code>&gt;</code> — лише серед прямих дочірніх; з <code>+</code> чи <code>~</code> — серед наступних сусідів. Стилізується при цьому той елемент, що стоїть перед <code>:has()</code>. Специфічність — як у <code>:is()</code>: вага найспецифічнішого аргументу. Усі сучасні браузери підтримують <code>:has()</code> з кінця 2023 року.</p>
+  </div>
+<pre data-lang="css"><code>
+/* a card that contains a badge anywhere inside */
+.book-card:has(.badge) { border-color: #e8772e; }
+
+/* a card whose cover image is a direct child */
+.book-card:has(> img) { padding-top: 0; }
+
+/* the hint of a field that contains an invalid input */
+.form-field:has(input:invalid) .field-hint { color: #b42318; }
+
+/* a title that is immediately followed by the author line */
+.book-title:has(+ .book-author) { margin-bottom: 0.25rem; }
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Коли вигляд контейнера залежить від того, що в ньому лежить або що йде за ним: картка з обкладинкою і без, поле форми з помилкою, пункт меню з підменю. Якщо стан — це логіка застосунку (наприклад, «вибрано в кошик»), зрозуміліше відобразити його атрибутом чи класом на самому елементі.</p>
+  </div>
+</section>
+
+<!-- ================= 3. CASCADE & LAYERS ================= -->
+<section class="topic" id="cascade" aria-labelledby="cascade-h">
+  <h2 id="cascade-h">3. Каскад і шари</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> На заголовок картки претендують відразу кілька правил: стилі браузера за замовчуванням, базові стилі сайту, стилі компонента, утилітарний клас. Кожне задає свій <code>color</code>. Елемент може мати лише одне значення кожної властивості — яке саме?</p>
+    <p><span class="lbl">Чому так.</span> Стилі на сторінку надходять з різних джерел, і автори не домовляються між собою. Потрібен детермінований алгоритм, який за будь-якого набору правил дає той самий результат. Цей алгоритм і називається каскадом — від нього й літера C у назві CSS.</p>
+    <p><span class="lbl">Рішення.</span> Браузер збирає для елемента всі декларації однієї властивості й сортує їх за критеріями. Наступний критерій перевіряється лише тоді, коли попередній дав нічию:</p>
+  </div>
+  <ol class="cascade-steps">
+    <li><strong>Походження й важливість.</strong> Стилі браузера (user-agent) → стилі користувача → стилі автора сайту. Для декларацій з <code>!important</code> порядок перевертається: важливе від браузера сильніше за важливе від автора.</li>
+    <li><strong>Прив'язка до елемента.</strong> Декларації з атрибута <code>style</code> перемагають декларації з правил із селекторами.</li>
+    <li><strong>Каскадні шари.</strong> Порядок шарів <code>@layer</code>; стилі поза шарами — окремий, найсильніший шар.</li>
+    <li><strong>Специфічність</strong> селектора (розділ 4).</li>
+    <li><strong>Порядок появи.</strong> Коли все інше рівне, перемагає декларація, що стоїть пізніше в коді.</li>
+  </ol>
+  <div class="prose">
+    <p>Походження пояснює, звідки береться «стиль за замовчуванням». Коли ви не написали жодного рядка CSS, заголовок <code>&lt;h1&gt;</code> усе одно великий і жирний, а в <code>&lt;body&gt;</code> є зовнішній відступ 8px — це таблиця стилів браузера. Будь-яке ваше правило, навіть з найслабшим селектором, стоїть у каскаді вище й перевизначає її. Перевертання порядку для <code>!important</code> має людську причину: якщо користувач із поганим зором примусово задав собі великий шрифт і контрастні кольори, автор сайту не повинен мати змоги це скасувати.</p>
+    <p>Специфічність і порядок появи працюють лише всередині одного походження й одного шару. Саме тому <code>!important</code> «перемагає все»: він переносить декларацію на інший рівень першого критерію, і специфічність звичайних правил уже не має значення.</p>
+  </div>
+
+  <h3>Каскадні шари <code>@layer</code></h3>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> У проєкті є скидання стилів, базова типографіка, компоненти й утилітарні класи. Базове правило <code>#catalog a</code> (з ID) перемагає утиліту <code>.text-accent</code>, хоча за задумом утиліта має бути найсильнішою. Розробник або підвищує специфічність утиліти, або дописує <code>!important</code> — і починається «війна специфічностей».</p>
+    <p><span class="lbl">Чому так.</span> Без шарів порядок пріоритету між групами стилів визначають лише специфічність і порядок файлів, а обидва крихкі: випадковий ID чи перестановка <code>&lt;link&gt;</code> змінюють результат.</p>
+    <p><span class="lbl">Рішення.</span> Шари дають явний рівень пріоритету, що перевіряється раніше за специфічність. Порядок оголошується один раз на початку: шар, оголошений пізніше, перемагає ранішій незалежно від специфічності селекторів. Стилі, що не потрапили в жоден шар, вважаються сильнішими за всі шари. Для <code>!important</code> порядок перевертається, як і для походжень: важлива декларація з ранішого шару перемагає важливу з пізнішого, тож шар скидань може «захистити» критично важливе правило.</p>
+  </div>
+<pre data-lang="css"><code>
+/* declare the order once, at the very top of the main stylesheet */
+@layer reset, base, components, utilities;
+
+@layer reset {
+  [hidden] { display: none !important; }   /* protected: earliest layer wins for !important */
+}
+
+@layer base {
+  #catalog a { color: #1c2e57; }            /* (1, 0, 1) */
+}
+
+@layer utilities {
+  .text-accent { color: #a8470f; }          /* (0, 1, 0), but the later layer wins */
+}
+
+/* not in any layer: beats every layer */
+.promo-banner a { color: inherit; }
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Щойно в проєкті більше одного джерела стилів: скидання, сторонні бібліотеки, ваші компоненти. Сторонній CSS можна одразу покласти в ранній шар через <code>@import url("vendor.css") layer(vendor);</code> — тоді будь-який ваш стиль у пізнішому шарі його перевизначить без жодного <code>!important</code>.</p>
+  </div>
+</section>
+
+<!-- ================= 4. SPECIFICITY ================= -->
+<section class="topic" id="specificity" aria-labelledby="specificity-h">
+  <h2 id="specificity-h">4. Специфічність</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Два правила в одному шарі задають колір заголовку картки: <code>.catalog .book-title</code> і <code>#catalog h3</code>. Друге стоїть раніше у файлі, але все одно перемагає. Чому порядок не спрацював?</p>
+    <p><span class="lbl">Чому так.</span> Каскад вважає, що точніший селектор виражає свідоміший намір автора, тож перевіряє специфічність раніше за порядок.</p>
+    <p><span class="lbl">Рішення.</span> Специфічність — це три лічильники, які записують як (A, B, C). У колонку A йдуть ідентифікатори. У колонку B — класи, атрибутні селектори й псевдокласи. У колонку C — селектори типів і псевдоелементи. Універсальний селектор <code>*</code>, комбінатори й <code>:where()</code> ваги не додають. <code>:is()</code>, <code>:not()</code> і <code>:has()</code> самі нічого не додають, але передають вагу свого найспецифічнішого аргументу.</p>
+    <p>Порівнюють колонки зліва направо, як слова в словнику: спершу A, і лише за рівності A — B, потім C. Колонки не «переповнюються»: (0, 11, 0) слабше за (1, 0, 0), бо перша ж колонка вирішує результат. Порядок появи в коді вступає в гру тільки тоді, коли всі три числа рівні.</p>
+  </div>
+<pre data-lang="css"><code>
+h3                               /* (0, 0, 1) */
+.book-title                      /* (0, 1, 0) */
+.book-card h3                    /* (0, 1, 1) */
+.book-card:hover .book-title     /* (0, 3, 0) */
+a[href^="https://"]::after       /* (0, 1, 2) */
+#catalog .book-card              /* (1, 1, 0) */
+:where(#catalog) .book-card      /* (0, 1, 0) */
+:is(#catalog, .shelf) .book-card /* (1, 1, 0) */
+.book-card:has(> img.cover)      /* (0, 2, 1) */
+</code></pre>
+  <div class="prose">
+    <p>Inline-стиль в атрибуті <code>style</code> часто описують як «специфічність (1, 0, 0, 0)». Зручніше тримати в голові, що він просто перемагає на ранішому кроці каскаду — прив'язці до елемента, — тому жоден селектор його не переб'є.</p>
+    <p><span class="lbl">Коли застосовувати.</span> Специфічність — не інструмент, яким треба «вигравати», а те, що варто тримати низькою й рівною. Якщо більшість правил мають вагу одного класу (0, 1, 0), то результат визначають шари й порядок, і стилі поводяться передбачувано. Перевірте власні селектори в <a href="#demo-specificity">калькуляторі специфічності</a>.</p>
+  </div>
+</section>
+
+<!-- ================= 5. INHERITANCE ================= -->
+<section class="topic" id="inheritance" aria-labelledby="inheritance-h">
+  <h2 id="inheritance-h">5. Успадкування</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Без успадкування шрифт і колір тексту довелося б задавати кожному абзацу, заголовку, посиланню й пункту списку окремо.</p>
+    <p><span class="lbl">Чому так.</span> Частина властивостей за природою стосується тексту всередині блока, а не самого блока. Специфікація для кожної властивості вказує, чи вона успадковувана.</p>
+    <p><span class="lbl">Рішення.</span> Якщо для елемента жодне правило не задає успадковувану властивість, він бере обчислене значення цієї властивості від батька. Успадковуються переважно текстові властивості: <code>color</code>, усі <code>font-*</code>, <code>line-height</code>, <code>letter-spacing</code>, <code>text-align</code>, а також <code>visibility</code>, <code>cursor</code>, <code>list-style</code>. Не успадковуються властивості блока: <code>margin</code>, <code>padding</code>, <code>border</code>, <code>background</code>, <code>width</code>, <code>height</code>, <code>display</code>. Причина очевидна, якщо уявити протилежне: рамка картки, скопійована на кожен абзац і кожне посилання всередині неї.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-card {
+  color: #1c2e57;               /* inherited by all text inside */
+  font-family: "Onest", sans-serif;
+  border: 1px solid #d3dae6;    /* not inherited */
+  padding: 1rem;                /* not inherited */
+}
+
+/* form controls do not inherit the font by default: fix it explicitly */
+button, input, select, textarea { font: inherit; }
+</code></pre>
+  <div class="callout">
+    <p class="callout-title">Механізм: успадковане значення слабше за будь-яку декларацію</p>
+    <p>Успадкування працює лише тоді, коли для елемента немає жодної декларації цієї властивості. Навіть правило з нульовою специфічністю, наприклад <code>* { color: #162033; }</code>, — це декларація, яка прямо збігається з абзацом усередині картки. Тому вона перемагає колір, який абзац успадкував би від <code>.book-card</code>, хоча в <code>.book-card</code> специфічність вища. Специфічність порівнює правила, що збігаються з одним елементом; успадковане значення в цьому змаганні не бере участі.</p>
+  </div>
+  <div class="prose">
+    <p>Керувати успадкуванням можна ключовими словами, які підходять для будь-якої властивості. <code>inherit</code> примусово бере значення батька, навіть для неуспадковуваної властивості. <code>initial</code> ставить початкове значення зі специфікації (пастка: <code>display: initial</code> дає <code>inline</code>, а не <code>block</code> для <code>div</code>, бо «блоковість» задає таблиця стилів браузера, а не специфікація). <code>unset</code> поводиться як <code>inherit</code> для успадковуваних властивостей і як <code>initial</code> — для решти. <code>revert</code> відкочує до значення з попереднього походження, зазвичай до стилю браузера, а <code>revert-layer</code> — до значення з попереднього каскадного шару.</p>
+    <p>Успадковується саме обчислене значення, і це дає класичну пастку з <code>line-height</code>. Якщо задати його в <code>em</code>, браузер одразу перетворить його на пікселі на рівні батька й передасть нащадкам уже готове число. Множник без одиниць передається як множник, і кожен нащадок перераховує висоту рядка від свого шрифту.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-card { font-size: 1rem; line-height: 1.5em; }  /* computed 24px, inherited as 24px */
+.book-card h3 { font-size: 2rem; }                    /* 32px text in 24px lines: lines overlap */
+
+.book-card { line-height: 1.5; }                      /* the factor is inherited: h3 gets 48px */
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Типографіку задавайте якомога вище в дереві (на <code>body</code> чи на корені компонента) і дайте їй успадковуватися, а <code>line-height</code> пишіть без одиниць.</p>
+  </div>
+</section>
+
+<!-- ================= 6. UNITS ================= -->
+<section class="topic" id="units" aria-labelledby="units-h">
+  <h2 id="units-h">6. Одиниці вимірювання</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Та сама сторінка відкривається на телефоні шириною 360 пікселів і на моніторі на 2560, а частина користувачів збільшує типовий розмір шрифту в налаштуваннях браузера, бо так їм зручніше читати. Жорстко задані розміри поводяться погано в обох випадках.</p>
+    <p><span class="lbl">Чому так.</span> Абсолютна одиниця не знає нічого ні про екран, ні про вподобання користувача. Відносна одиниця прив'язана до чогось, що змінюється разом із контекстом.</p>
+    <p><span class="lbl">Рішення.</span> Кожна одиниця має свою точку відліку, і вибір одиниці — це вибір того, до чого прив'язати розмір.</p>
+    <p><code>px</code> — «CSS-піксель», еталонна одиниця, а не фізична точка екрана: на дисплеях з високою щільністю один CSS-піксель займає кілька фізичних. Він не реагує на налаштування типового розміру шрифту, тож підходить для товщини рамок і тонких ліній.</p>
+    <p><code>rem</code> — розмір шрифту кореневого елемента <code>&lt;html&gt;</code>. За замовчуванням у браузерах це 16px, але користувач може змінити його в налаштуваннях, і тоді весь інтерфейс у <code>rem</code> масштабується разом із ним. Значення не залежить від вкладеності: <code>1.25rem</code> скрізь однакове.</p>
+    <p><code>em</code> — розмір шрифту поточного елемента. Для самої властивості <code>font-size</code> це розмір шрифту батька, бо власного ще немає. Звідси ефект накопичення: список із <code>font-size: 1.25em</code>, вкладений у такий самий список, отримає 16 × 1,25 × 1,25 = 25px. Зате <code>em</code> ідеальна для відступів, які мають рости разом із текстом компонента: кнопка з <code>padding: 0.5em 1em</code> пропорційна за будь-якого розміру шрифту.</p>
+    <p><code>%</code> — відсоток від чогось, що визначає сама властивість. Для <code>width</code> — від ширини блока-контейнера. Для <code>padding</code> і <code>margin</code>, навіть вертикальних, — теж від ширини контейнера, а не від висоти. Для <code>font-size</code> — від шрифту батька. Відсоткова <code>height</code> працює, лише якщо висота батька задана явно.</p>
+    <p><code>vw</code> і <code>vh</code> — 1% ширини й висоти вікна перегляду. На мобільних браузерах панель адреси з'являється й ховається, тож «висота вікна» змінюється. <code>100vh</code> там дорівнює найбільшому варіанту, і нижня частина блока опиняється під панеллю. Для цього існують одиниці <code>svh</code> (мінімальна висота), <code>lvh</code> (максимальна) і <code>dvh</code> (поточна, змінюється динамічно).</p>
+  </div>
+<pre data-lang="css"><code>
+.book-card {
+  width: 50%;                   /* of the containing block's width */
+  padding: 1.5em;               /* grows with this card's own font size */
+  border: 1px solid #d3dae6;    /* a hairline: px is fine */
+}
+.book-title { font-size: 1.25rem; }   /* 20px when the root is 16px */
+
+.catalog-hero {
+  min-height: 100vh;    /* fallback for older browsers */
+  min-height: 100dvh;   /* the visible viewport height on mobile */
+}
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> <code>rem</code> — для розмірів шрифтів і загальної шкали відступів. <code>em</code> — для відступів, що мають масштабуватися разом із текстом конкретного компонента. <code>%</code> — для гнучкої ширини відносно контейнера. <code>vw</code>/<code>dvh</code> — для елементів, прив'язаних до екрана. <code>px</code> — для рамок, тіней і дрібних деталей, які не повинні рости разом зі шрифтом.</p>
+  </div>
+</section>
+
+<!-- ================= 7. COLORS ================= -->
+<section class="topic" id="colors" aria-labelledby="colors-h">
+  <h2 id="colors-h">7. Кольори</h2>
+  <div class="prose">
+    <p>Той самий колір у CSS можна записати кількома способами, і кожен зручний для свого. Іменовані кольори (<code>navy</code>, <code>white</code>) годяться для швидких експериментів. Шістнадцятковий запис <code>#rrggbb</code> (скорочено <code>#rgb</code>, з прозорістю — <code>#rrggbbaa</code>) звичний, бо його віддають графічні редактори. Функція <code>rgb()</code> приймає три канали від 0 до 255; у сучасному синтаксисі значення розділяють пробілами, а прозорість пишуть через скісну риску. Старий запис через коми, як-от <code>rgba(0, 0, 0, 0.5)</code>, досі дійсний, але новий уніфікований для всіх колірних функцій.</p>
+    <p><code>hsl()</code> описує колір відтінком (кут на колірному колі), насиченістю й світлістю, тож світліший варіант того самого кольору отримують зміною одного числа. Недолік — світлість у HSL не відповідає сприйняттю: жовтий і синій з однаковими 50% виглядають зовсім різними за яскравістю. <code>oklch()</code> будується на перцептивно рівномірному просторі: однакова світлість L виглядає однаково яскравою для будь-якого відтінку, тому палітри в ній передбачуваніші. Сучасні браузери підтримують <code>oklch()</code> з 2023 року.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-price {
+  color: #1c2e57;                 /* hex */
+  color: rgb(28 46 87);           /* the same colour, modern space-separated syntax */
+  color: rgb(28 46 87 / 0.8);     /* 80% opacity */
+  color: hsl(222 51% 23%);        /* hue, saturation, lightness */
+  color: oklch(31% 0.078 264);    /* perceptual lightness, chroma, hue */
+}
+
+.badge {
+  color: #a8470f;
+  border: 2px solid currentColor; /* the border follows the text colour */
+}
+</code></pre>
+  <div class="prose">
+    <p>Ключове слово <code>currentColor</code> підставляє поточне значення <code>color</code> елемента. Рамка, іконка чи підкреслення, задані через нього, автоматично змінюють колір разом із текстом, наприклад у стані <code>:hover</code>. <code>transparent</code> — повністю прозорий колір.</p>
+    <p>Колір тексту має бути достатньо контрастним до фону. Критерій WCAG 2 рівня AA вимагає співвідношення контрасту щонайменше 4,5:1 для звичайного тексту й 3:1 для великого. Інструменти розробника в браузері показують контраст прямо в підказці до кольору в панелі стилів.</p>
+  </div>
+</section>
+
+<!-- ================= 8. TYPOGRAPHY ================= -->
+<section class="topic" id="typography" aria-labelledby="typography-h">
+  <h2 id="typography-h">8. Типографіка</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> Дизайнер обрав гарний шрифт, але в когось він не встановлений, у когось веб-шрифт ще не завантажився, а в когось у шрифті немає українських літер <em>ї</em>, <em>є</em>, <em>ґ</em>, і вони малюються іншим шрифтом посеред слова.</p>
+    <p><span class="lbl">Чому так.</span> <code>font-family</code> — це не один шрифт, а список кандидатів. Браузер іде по списку й для кожного символу бере перший доступний шрифт, у якому цей символ є.</p>
+    <p><span class="lbl">Рішення.</span> Задавайте стек шрифтів: бажаний шрифт, кілька системних з подібними пропорціями й наприкінці обов'язково загальне сімейство (<code>sans-serif</code>, <code>serif</code>, <code>monospace</code>), яке існує завжди. Веб-шрифт перевіряйте на підтримку кирилиці. Під час підключення з Google Fonts параметр <code>display=swap</code> відповідає дескриптору <code>font-display: swap</code>: текст одразу показується резервним шрифтом і підміняється, щойно веб-шрифт завантажиться, замість того щоб лишатися невидимим.</p>
+  </div>
+<pre data-lang="html"><code>
+&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
+&lt;link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;700&amp;display=swap"&gt;
+</code></pre>
+<pre data-lang="css"><code>
+body {
+  font-family: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;             /* unitless factor */
+}
+.book-title {
+  font-size: 1.5rem;
+  font-weight: 700;             /* 100–900; 400 = normal, 700 = bold */
+  line-height: 1.2;             /* headings need tighter lines */
+  letter-spacing: -0.01em;
+}
+.book-description { max-width: 65ch; }   /* comfortable line length */
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Для основного тексту — <code>line-height</code> близько 1,5–1,7, для заголовків — менше. Довжину рядка обмежуйте одиницею <code>ch</code> (ширина символу «0» поточного шрифту): рядки довжиною 45–75 символів читати найлегше. Будьте обережні зі скороченою властивістю <code>font</code>: вона скидає до початкових значень усі підвластивості, які ви не вказали, зокрема <code>line-height</code>.</p>
+  </div>
+</section>
+
+<!-- ================= 9. BOX MODEL ================= -->
+<section class="topic" id="box-model" aria-labelledby="box-model-h">
+  <h2 id="box-model-h">9. Box model і box-sizing</h2>
+  <div class="prose">
+    <p>Кожен елемент на сторінці браузер малює як прямокутник, що складається з чотирьох вкладених областей: контент, внутрішній відступ <code>padding</code>, рамка <code>border</code> і зовнішній відступ <code>margin</code>. Фон за замовчуванням заповнює контент, padding і область під рамкою; margin завжди прозорий і лише відштовхує сусідів. Скорочені записи читаються за годинниковою стрілкою від верху: <code>padding: 8px 16px</code> — вертикальні 8px і горизонтальні 16px; <code>padding: 8px 16px 12px 4px</code> — верх, право, низ, ліво.</p>
+    <p><span class="lbl">Проблема.</span> Картці задали <code>width: 300px</code>, <code>padding: 20px</code> і рамку 2px. На екрані вона займає 344 пікселі. Поле пошуку з <code>width: 100%</code> і внутрішніми відступами вилазить за край форми.</p>
+    <p><span class="lbl">Чому так.</span> Типове значення <code>box-sizing: content-box</code> означає, що <code>width</code> і <code>height</code> задають розмір лише області контенту, а padding і рамка додаються зовні: 300 + 2 × 20 + 2 × 2 = 344.</p>
+    <p><span class="lbl">Рішення.</span> З <code>box-sizing: border-box</code> ширина й висота задають розмір разом із padding і рамкою, а контент стискається під те, що лишилося: 300 − 40 − 4 = 256 пікселів контенту при 300 на екрані. Margin в обох режимах додається зовні.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-card {
+  width: 300px;
+  padding: 20px;
+  border: 2px solid #1c2e57;
+  margin: 16px;
+}
+/* content-box (default): on screen 300 + 2*20 + 2*2 = 344px */
+
+.book-card { box-sizing: border-box; }
+/* border-box: on screen 300px, content 300 - 40 - 4 = 256px */
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> <code>border-box</code> вмикають глобально для всіх елементів і псевдоелементів на самому початку таблиці стилів (див. бест практики): так ширина, яку ви пишете, дорівнює ширині, яку бачите. Окремо варто запам'ятати <code>outline</code>: на відміну від рамки, він не входить у блокову модель і не займає місця, тому його зміна не зсуває сусідні елементи. Саме тому ним малюють індикатор фокусу. Покрутіть розміри в <a href="#demo-box">інтерактивній box model</a>.</p>
+  </div>
+</section>
+
+<!-- ================= 10. DISPLAY ================= -->
+<section class="topic" id="display" aria-labelledby="display-h">
+  <h2 id="display-h">10. Властивість display</h2>
+  <div class="prose">
+    <p>Властивість <code>display</code> визначає, як блок елемента поводиться серед сусідів. Типові значення задає таблиця стилів браузера: <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;article&gt;</code> — блокові, <code>&lt;span&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code> — рядкові. Змінюючи <code>display</code>, ви змінюєте лише відображення, семантика елемента лишається тією ж.</p>
+    <p>Блоковий елемент (<code>block</code>) починається з нового рядка й за замовчуванням розтягується на всю доступну ширину; до нього застосовуються <code>width</code>, <code>height</code> і відступи з усіх боків. Рядковий (<code>inline</code>) тече всередині тексту, як слово: <code>width</code> і <code>height</code> він ігнорує, вертикальні <code>padding</code> і рамка малюються, але не відсувають сусідні рядки, а вертикальні <code>margin</code> на розташування не впливають. <code>inline-block</code> поєднує обидва: стоїть у рядку поруч із текстом, але поважає розміри й усі відступи — типовий вибір для бейджа чи мітки в тексті.</p>
+    <p><code>display: none</code> повністю прибирає елемент з макета й з дерева доступності: він не займає місця, і програма зчитування екрана його не озвучить. <code>visibility: hidden</code> робить елемент невидимим, але місце під нього лишається.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-meta { display: inline-block; padding: 0.25rem 0.5rem; }  /* in the text line, but boxes work */
+.book-card[data-status="archived"] { display: none; }        /* gone from layout and accessibility tree */
+.book-card.is-placeholder { visibility: hidden; }            /* invisible, keeps its space */
+</code></pre>
+  <div class="prose">
+    <p>Сучасна специфікація описує <code>display</code> двома словами: зовнішнє відображення (як блок поводиться серед сусідів — <code>block</code> чи <code>inline</code>) і внутрішнє (як розкладаються його діти). Звичні однослівні значення — скорочення: <code>block</code> означає <code>block flow</code>, <code>inline-block</code> — <code>inline flow-root</code>. Внутрішні способи розкладки <code>flex</code> і <code>grid</code> розглянемо в наступних лекціях.</p>
+  </div>
+</section>
+
+<!-- ================= 11. MARGIN COLLAPSE ================= -->
+<section class="topic" id="margin-collapse" aria-labelledby="margin-collapse-h">
+  <h2 id="margin-collapse-h">11. Згортання margin</h2>
+  <div class="prose">
+    <p><span class="lbl">Проблема.</span> В описі книжки <code>margin-bottom: 24px</code>, у блоці ціни під ним — <code>margin-top: 16px</code>. Очікуєте проміжок 40px, а бачите 24. А заголовок із <code>margin-top</code> усередині картки без внутрішнього відступу раптом відсуває вниз усю картку, ніби margin «витік» назовні.</p>
+    <p><span class="lbl">Чому так.</span> У звичайному потоці вертикальні зовнішні відступи блокових елементів, які дотикаються, згортаються в один. Правило створене для тексту: абзаци з однаковими відступами зверху й знизу мають стояти на тій самій відстані один від одного, а не на подвійній. Результат — найбільший із відступів. Якщо один від'ємний, результат — сума найбільшого додатного й найменшого від'ємного; якщо обидва від'ємні — найменший із них.</p>
+    <p>Згортання трапляється у трьох ситуаціях. Перша — сусідні блоки: нижній margin одного й верхній наступного. Друга — батько й перший чи останній нащадок, якщо між їхніми відступами нічого немає: ні рамки, ні padding, ні рядкового вмісту, і батько не створює новий блоковий контекст форматування. Тоді margin нащадка опиняється зовні батька. Третя — порожній блок без висоти, padding і рамки: його верхній і нижній margin згортаються між собою.</p>
+    <p><span class="lbl">Рішення.</span> Згортання не відбувається для горизонтальних відступів, для елементів з <code>float</code> чи абсолютним позиціюванням і для дочірніх елементів flex- і grid-контейнерів. Щоб «замкнути» відступи дітей усередині батька, дайте батькові <code>padding</code> чи рамку або створіть новий блоковий контекст форматування через <code>display: flow-root</code>.</p>
+  </div>
+<pre data-lang="css"><code>
+.book-description { margin-bottom: 24px; }
+.book-price { margin-top: 16px; }
+/* the gap between them: 24px, not 40px */
+
+.book-card { padding: 1rem; }        /* padding separates parent and child margins */
+.book-card { display: flow-root; }   /* a new block formatting context keeps child margins inside */
+</code></pre>
+  <div class="prose">
+    <p><span class="lbl">Коли застосовувати.</span> Не боріться зі згортанням — обійдіть його домовленістю: задавайте вертикальні відступи лише в один бік (наприклад, тільки <code>margin-bottom</code>), тоді згортатися нічому. У flex- і grid-розкладці замість margin між елементами використовують властивість <code>gap</code>. Перевірте правило на живому прикладі.</p>
+  </div>
+
+  <div class="demo" id="collapse-demo">
+    <h3>Спробуйте: згортання margin між сусідами</h3>
+    <div class="mc-controls">
+      <div class="range-row">
+        <label for="mc-bottom">margin-bottom</label>
+        <input type="range" id="mc-bottom" min="-20" max="60" step="2" value="30">
+        <output for="mc-bottom" id="mc-bottom-out">30px</output>
+      </div>
+      <div class="range-row">
+        <label for="mc-top">margin-top</label>
+        <input type="range" id="mc-top" min="-20" max="60" step="2" value="20">
+        <output for="mc-top" id="mc-top-out">20px</output>
+      </div>
+      <label class="check-row" for="mc-flex"><input type="checkbox" id="mc-flex"> батько — <code>display: flex; flex-direction: column</code></label>
+    </div>
+    <div class="mc-stage" id="mc-stage">
+      <div class="mc-block" id="mc-first">.book-description</div>
+      <div class="mc-block" id="mc-second">.book-price</div>
+    </div>
+    <p id="mc-result" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- ================= DEMOS ================= -->
+<section class="topic" id="demos" aria-labelledby="demos-h">
+  <p class="part-title">Практика</p>
+  <h2 id="demos-h">Інтерактивні демо</h2>
+
+  <div class="demo" id="demo-specificity">
+    <h3>Калькулятор специфічності</h3>
+    <p class="demo-note">Введіть два селектори, які збігаються з тим самим елементом. Калькулятор розкладе кожен на частини, порахує вагу (A, B, C) і пояснить, яке правило переможе. Селектор A вважається записаним у коді раніше, B — пізніше; обидва — в одному шарі й без <code>!important</code>.</p>
+    <div class="presets" role="group" aria-label="Готові пари селекторів">
+      <button type="button" class="preset" data-a="#catalog .book-title" data-b=".catalog .book-card .book-title.featured">ID проти чотирьох класів</button>
+      <button type="button" class="preset" data-a=":where(#catalog) .book-title" data-b=".book-card .book-title">:where() обнуляє ID</button>
+      <button type="button" class="preset" data-a=":is(#catalog, .shelf) .book-card" data-b=".shelf .book-card.featured">:is() бере найсильніший аргумент</button>
+      <button type="button" class="preset" data-a=".book-card:has(> img.cover)" data-b=".book-card.featured">:has()</button>
+      <button type="button" class="preset" data-a="a[href^=&quot;https://&quot;]::after" data-b="a.external::after">атрибут проти класу</button>
+      <button type="button" class="preset" data-a=".catalog .book-price" data-b=".book-card .book-price">нічия — вирішує порядок</button>
+      <button type="button" class="preset" data-a="body main ul li .book-card h3 a" data-b=".book-title-link">довгий ланцюжок</button>
+    </div>
+    <div class="spec-grid">
+      <div class="spec-side" id="spec-side-a">
+        <div class="spec-side-head"><label for="spec-a">Селектор A (раніше в коді)</label><span class="winner-badge" hidden>перемагає</span></div>
+        <input type="text" id="spec-a" value="#catalog .book-title" spellcheck="false" autocomplete="off" autocapitalize="off">
+        <div class="spec-result" id="spec-a-result"></div>
+      </div>
+      <div class="spec-side" id="spec-side-b">
+        <div class="spec-side-head"><label for="spec-b">Селектор B (пізніше в коді)</label><span class="winner-badge" hidden>перемагає</span></div>
+        <input type="text" id="spec-b" value=".catalog .book-card .book-title.featured" spellcheck="false" autocomplete="off" autocapitalize="off">
+        <div class="spec-result" id="spec-b-result"></div>
+      </div>
+    </div>
+    <div class="spec-verdict" id="spec-verdict" aria-live="polite"></div>
+  </div>
+
+  <div class="demo" id="demo-box">
+    <h3>Інтерактивна box model</h3>
+    <p class="demo-note">Змінюйте розміри й перемикайте <code>box-sizing</code>. Під схемою — розрахунок за формулою і ширина, яку насправді виміряв браузер.</p>
+    <div class="bm-layout">
+      <div class="bm-controls">
+        <fieldset class="bm-sizing">
+          <legend>box-sizing</legend>
+          <label><input type="radio" name="bm-sizing" value="content-box" checked> content-box</label>
+          <label><input type="radio" name="bm-sizing" value="border-box"> border-box</label>
+        </fieldset>
+        <div class="range-row">
+          <label for="bm-width">width</label>
+          <input type="range" id="bm-width" min="60" max="320" step="4" value="200">
+          <output for="bm-width" id="bm-width-out">200px</output>
+        </div>
+        <div class="range-row">
+          <label for="bm-padding">padding</label>
+          <input type="range" id="bm-padding" min="0" max="60" step="2" value="20">
+          <output for="bm-padding" id="bm-padding-out">20px</output>
+        </div>
+        <div class="range-row">
+          <label for="bm-border">border</label>
+          <input type="range" id="bm-border" min="0" max="30" step="1" value="6">
+          <output for="bm-border" id="bm-border-out">6px</output>
+        </div>
+        <div class="range-row">
+          <label for="bm-margin">margin</label>
+          <input type="range" id="bm-margin" min="0" max="60" step="2" value="16">
+          <output for="bm-margin" id="bm-margin-out">16px</output>
+        </div>
+        <ul class="bm-legend" aria-label="Легенда схеми">
+          <li><span class="swatch sw-margin"></span>margin</li>
+          <li><span class="swatch sw-border"></span>border</li>
+          <li><span class="swatch sw-padding"></span>padding</li>
+          <li><span class="swatch sw-content"></span>content</li>
+        </ul>
+      </div>
+      <div>
+        <div class="bm-stage">
+          <div class="bm-margin" id="bm-margin-box">
+            <div class="bm-box" id="bm-box" role="img" aria-describedby="bm-explain">
+              <div class="bm-content" id="bm-content">content</div>
+            </div>
+          </div>
+        </div>
+        <dl class="bm-readout">
+          <div><dt>Ширина контенту</dt><dd id="bm-out-content">—</dd></div>
+          <div><dt>Блок з рамкою (border box)</dt><dd id="bm-out-border">—</dd></div>
+          <div><dt>Разом із margin</dt><dd id="bm-out-margin">—</dd></div>
+          <div><dt>Браузер виміряв (offsetWidth)</dt><dd id="bm-out-measured">—</dd></div>
+        </dl>
+        <p class="bm-explain" id="bm-explain" aria-live="polite"></p>
+        <pre data-lang="css" id="bm-css"><code></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHEAT SHEET ================= -->
+<section class="topic" id="cheatsheet" aria-labelledby="cheatsheet-h">
+  <div class="cheat-head">
+    <h2 id="cheatsheet-h">Шпаргалка: CSS — основи, каскад, box model</h2>
+    <button type="button" class="btn no-print" id="print-cheatsheet">Друкувати шпаргалку</button>
+  </div>
+  <div class="cheat-grid">
+    <article class="cheat-card">
+      <h3>Підключення</h3>
+      <dl>
+        <dt><code>&lt;link rel="stylesheet" href="…"&gt;</code></dt><dd>основний спосіб, кешується, вантажиться паралельно</dd>
+        <dt><code>&lt;style&gt;…&lt;/style&gt;</code></dt><dd>стилі однієї сторінки</dd>
+        <dt><code>style="…"</code></dt><dd>один елемент; сильніше за всі селектори</dd>
+        <dt><code>@import url(…) layer(x);</code></dt><dd>лише на початку файлу; ланцюжкове завантаження</dd>
+      </dl>
+    </article>
+    <article class="cheat-card">
+      <h3>Селектори й комбінатори</h3>
+      <dl>
+        <dt><code>.a .b</code> / <code>.a &gt; .b</code></dt><dd>нащадок на будь-якій глибині / прямий дочірній</dd>
+        <dt><code>.a + .b</code> / <code>.a ~ .b</code></dt><dd>наступний сусід / усі наступні сусіди</dd>
+        <dt><code>[x]</code> <code>[x="v"]</code> <code>[x~="v"]</code></dt><dd>є атрибут / точний збіг / слово зі списку</dd>
+        <dt><code>[x^="v"]</code> <code>[x$="v"]</code> <code>[x*="v"]</code></dt><dd>починається / закінчується / містить; <code>i</code> — без регістру</dd>
+        <dt><code>:hover :focus-visible :checked :disabled</code></dt><dd>стани</dd>
+        <dt><code>:nth-child(odd) :not(.x) :last-child</code></dt><dd>положення й заперечення</dd>
+        <dt><code>::before ::after</code></dt><dd>згенерований вміст, потрібен <code>content</code></dd>
+        <dt><code>::first-line ::marker ::placeholder</code></dt><dd>частини елемента</dd>
+      </dl>
+    </article>
+    <article class="cheat-card">
+      <h3><code>:is()</code> <code>:where()</code> <code>:has()</code></h3>
+      <dl>
+        <dt><code>:is(.a, #b) h2</code></dt><dd>будь-який із; вага найсильнішого аргументу</dd>
+        <dt><code>:where(.a, .b) h2</code></dt><dd>те саме, але вага завжди 0</dd>
+        <dt><code>.card:has(.badge)</code></dt><dd>картка, у якій є <code>.badge</code> на будь-якій глибині</dd>
+        <dt><code>.card:has(&gt; img)</code> <code>h2:has(+ p)</code></dt><dd>прямий дочірній / наступний сусід</dd>
+      </dl>
+    </article>
+    <article class="cheat-card">
+      <h3>Специфічність (A, B, C)</h3>
+      <dl>
+        <dt>A</dt><dd><code>#id</code></dd>
+        <dt>B</dt><dd><code>.class</code>, <code>[attr]</code>, <code>:pseudo-class</code></dd>
+        <dt>C</dt><dd><code>type</code>, <code>::pseudo-element</code></dd>
+        <dt>0</dt><dd><code>*</code>, комбінатори, <code>:where()</code></dd>
+      </dl>
+      <p>Порівняння зліва направо, без «переповнення»: (0,11,0) &lt; (1,0,0). За рівності — перемагає пізніший.</p>
+    </article>
+    <article class="cheat-card">
+      <h3>Каскад: хто перемагає</h3>
+      <p>1. Походження й <code>!important</code> → 2. <code>style=""</code> → 3. шари → 4. специфічність → 5. порядок у коді.</p>
+<pre data-lang="css"><code>
+@layer reset, base, components, utilities;
+@layer components { .card { … } }
+</code></pre>
+      <p>Пізніший шар сильніший; поза шарами — найсильніше. Для <code>!important</code> — навпаки.</p>
+    </article>
+    <article class="cheat-card">
+      <h3>Успадкування</h3>
+      <dl>
+        <dt>Успадковуються</dt><dd><code>color</code>, <code>font-*</code>, <code>line-height</code>, <code>text-align</code>, <code>visibility</code>, <code>cursor</code></dd>
+        <dt>Не успадковуються</dt><dd><code>margin</code>, <code>padding</code>, <code>border</code>, <code>background</code>, <code>width</code>, <code>display</code></dd>
+        <dt><code>inherit initial unset revert revert-layer</code></dt><dd>керування для будь-якої властивості</dd>
+      </dl>
+      <p>Будь-яка декларація, навіть <code>*</code>, сильніша за успадковане значення.</p>
+    </article>
+    <article class="cheat-card">
+      <h3>Одиниці</h3>
+      <dl>
+        <dt><code>rem</code></dt><dd>шрифт <code>&lt;html&gt;</code> (типово 16px) — шрифти, шкала відступів</dd>
+        <dt><code>em</code></dt><dd>шрифт елемента (для <code>font-size</code> — батька); накопичується</dd>
+        <dt><code>%</code></dt><dd><code>width</code>, <code>padding</code>, <code>margin</code> — від ширини контейнера</dd>
+        <dt><code>vw vh dvh svh</code></dt><dd>1% вікна; на мобільних — <code>dvh</code></dd>
+        <dt><code>px</code></dt><dd>рамки, тіні, тонкі лінії</dd>
+      </dl>
+    </article>
+    <article class="cheat-card">
+      <h3>Кольори й типографіка</h3>
+      <dl>
+        <dt><code>#1c2e57</code> <code>rgb(28 46 87 / .8)</code></dt><dd>hex; rgb з прозорістю</dd>
+        <dt><code>hsl(222 51% 23%)</code> <code>oklch(31% .078 264)</code></dt><dd>відтінок-насиченість-світлість; перцептивний простір</dd>
+        <dt><code>currentColor</code></dt><dd>поточний <code>color</code> елемента</dd>
+        <dt><code>font-family: "X", system-ui, sans-serif</code></dt><dd>стек із загальним сімейством у кінці</dd>
+        <dt><code>line-height: 1.6</code> <code>max-width: 65ch</code></dt><dd>множник без одиниць; довжина рядка</dd>
+      </dl>
+      <p>Контраст AA: 4,5:1 (великий текст 3:1).</p>
+    </article>
+    <article class="cheat-card">
+      <h3>Box model</h3>
+<pre data-lang="css"><code>
+*, *::before, *::after { box-sizing: border-box; }
+</code></pre>
+      <dl>
+        <dt><code>content-box</code></dt><dd>на екрані = width + 2·padding + 2·border</dd>
+        <dt><code>border-box</code></dt><dd>на екрані = width; контент = width − 2·padding − 2·border</dd>
+        <dt><code>padding: 8px 16px</code></dt><dd>верх/низ, ліво/право; 4 значення — за годинниковою від верху</dd>
+        <dt><code>outline</code></dt><dd>не займає місця — для фокусу</dd>
+      </dl>
+    </article>
+    <article class="cheat-card">
+      <h3>display і згортання margin</h3>
+      <dl>
+        <dt><code>block</code></dt><dd>з нового рядка, вся ширина, розміри працюють</dd>
+        <dt><code>inline</code></dt><dd>у тексті; width/height ігноруються</dd>
+        <dt><code>inline-block</code></dt><dd>у тексті, але розміри й відступи працюють</dd>
+        <dt><code>none</code> / <code>visibility: hidden</code></dt><dd>немає в макеті / невидимий, місце лишається</dd>
+        <dt>margin 24 + 16</dt><dd>сусіди по вертикалі → 24 (найбільший)</dd>
+        <dt>Не згортаються</dt><dd>горизонтальні, у flex/grid, float, absolute; батько з padding/border/<code>flow-root</code></dd>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<!-- ================= ANTI-PATTERNS ================= -->
+<section class="topic" id="antipatterns" aria-labelledby="antipatterns-h">
+  <h2 id="antipatterns-h">Антипатерни</h2>
+  <div class="prose">
+    <p>Кожен із цих прийомів «працює» в моменті, тому й поширений. Проблеми з'являються пізніше — коли стилі треба змінити, перевизначити або коли сторінкою користується хтось, кого автор не врахував.</p>
+  </div>
+
+  <article class="ap" id="ap-important">
+    <h3><code>!important</code> для «лагодження» стилів</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+.book-price { color: #1c2e57; }
+
+/* added later, "because it did not work" */
+.sale .book-price { color: #b42318 !important; }
+.book-card.featured .book-price { color: #11694a !important; }
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> <code>!important</code> переносить декларацію на інший рівень каскаду, де звичайні правила вже не конкурують. Перебити її можна лише іншим <code>!important</code> — з вищою специфічністю або в ранішому шарі. Так починається ескалація: кожне наступне виправлення потребує ще одного <code>!important</code>, а справжня причина — конфлікт специфічності чи порядку — лишається непоміченою. Станові стилі (<code>:hover</code>, <code>.is-active</code>) без <code>!important</code> на такий елемент більше не діють.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+/* find the winning rule in DevTools, then fix the order instead of forcing it */
+@layer base, components, utilities;
+
+@layer components {
+  .book-price { color: #1c2e57; }
+  .book-price.is-sale { color: #b42318; }   /* same layer, higher specificity */
+}
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-id">
+    <h3>ID-селектори для стилізації</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+#featured-book { border: 2px solid #e8772e; padding: 24px; }
+
+/* now a sold-out state cannot win without another id or !important */
+.book-card[data-status="sold-out"] { border-color: #d3dae6; }
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> ID дає вагу (1, 0, 0), яку не переважить жодна кількість класів, тож будь-який варіант чи стан доведеться писати теж через ID або <code>!important</code>. До того ж ідентифікатор має бути унікальним на сторінці, отже стиль неможливо застосувати до другої такої картки: його доведеться дублювати.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+.book-card.is-featured { border: 2px solid #e8772e; padding: 24px; }
+.book-card[data-status="sold-out"] { border-color: #d3dae6; }  /* (0, 2, 0) — wins by order */
+
+/* keep ids for anchors (href="#catalog"), label for="…" and ARIA references */
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-inline">
+    <h3>Inline-стилі</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="html"><code>
+&lt;article class="book-card" style="padding: 24px; border: 1px solid #ccc; color: #555;"&gt;
+  &lt;h3 style="font-size: 20px; margin: 0;"&gt;Кобзар&lt;/h3&gt;
+&lt;/article&gt;
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> Inline-декларації перемагають усі правила з таблиць стилів автора, тому змінити вигляд картки з CSS-файлу неможливо без <code>!important</code>. В атрибуті <code>style</code> не можна описати <code>:hover</code>, <code>:focus-visible</code> чи медіазапит, тож картка не може реагувати на стан і розмір екрана. Кожна картка несе власну копію стилів, і зміна дизайну — це редагування кожного HTML-файлу. Крім того, сувора політика безпеки вмісту (CSP) може взагалі заборонити inline-стилі.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="html"><code>
+&lt;article class="book-card"&gt;
+  &lt;h3 class="book-title"&gt;Кобзар&lt;/h3&gt;
+&lt;/article&gt;
+</code></pre>
+<pre data-lang="css"><code>
+.book-card { padding: 1.5rem; border: 1px solid #d3dae6; color: #4a566d; }
+.book-title { font-size: 1.25rem; margin: 0; }
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-chains">
+    <h3>Довгі ланцюжки вкладених селекторів</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+body main .catalog ul li .book-card div h3 a { color: #1c2e57; }   /* (0, 2, 7) */
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> Селектор повторює структуру HTML, тож будь-яка зміна розмітки — обгортка замість <code>div</code>, <code>h2</code> замість <code>h3</code>, картка поза списком — мовчки вимикає стиль. Висока специфічність змушує кожне перевизначення бути ще довшим. Оскільки браузер перевіряє селектор справа наліво, для кожного посилання на сторінці він проходить увесь ланцюжок предків — зайва робота під час кожного перерахунку стилів.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+.book-title-link { color: #1c2e57; }   /* (0, 1, 0): independent of the markup around it */
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-px-font">
+    <h3>Фіксовані <code>px</code> для розміру шрифту</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+html { font-size: 14px; }
+.book-title { font-size: 20px; }
+.book-description { font-size: 13px; }
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> Користувачі, яким важко читати дрібний текст, збільшують типовий розмір шрифту в налаштуваннях браузера. Розміри в пікселях цю настройку ігнорують: текст лишається 13px, і людині доводиться масштабувати всю сторінку разом із макетом. Значення <code>14px</code> на <code>html</code> ламає це для всього сайту одразу, включно з усіма розмірами в <code>rem</code>.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+/* leave the root font size to the user */
+.book-title { font-size: 1.25rem; }         /* 20px at the default 16px */
+.book-description { font-size: 0.875rem; }  /* 14px at the default, grows with the setting */
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-content-box">
+    <h3>Ширина <code>100%</code> без <code>border-box</code></h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #d3dae6;
+}
+/* on screen: 100% + 2*12px + 2*2px — 28px wider than the form */
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> У режимі <code>content-box</code> padding і рамка додаються до 100%, тож поле виходить за межі форми й на вузькому екрані з'являється горизонтальна прокрутка. Розробник починає підбирати «магічні» значення на кшталт <code>width: 93%</code>, які ламаються за будь-якої зміни відступу чи ширини вікна.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+*, *::before, *::after { box-sizing: border-box; }
+
+.search-input { width: 100%; padding: 12px; border: 2px solid #d3dae6; }
+/* exactly as wide as the form, padding and border included */
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-outline">
+    <h3><code>outline: none</code> без заміни</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+.buy-button:focus { outline: none; }   /* "the blue ring looks ugly" */
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> Людина, яка працює з клавіатури, орієнтується на сторінці лише за індикатором фокусу. Без нього вона не бачить, на якій кнопці стоїть, і може натиснути «Купити» не там. Критерій WCAG 2.4.7 «Видимий фокус» вимагає, щоб індикатор був помітним.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+.buy-button:focus-visible {
+  outline: 3px solid #e8772e;   /* outline takes no space: nothing shifts */
+  outline-offset: 2px;
+}
+</code></pre>
+    </div>
+  </article>
+
+  <article class="ap" id="ap-vh">
+    <h3><code>height: 100vh</code> на мобільних</h3>
+    <div class="ap-part is-bad">
+      <p class="verdict-label">Погано</p>
+<pre data-lang="css"><code>
+.catalog-hero { height: 100vh; }
+</code></pre>
+    </div>
+    <p class="ap-why"><strong>Чому це погано.</strong> У мобільних браузерах <code>100vh</code> дорівнює висоті вікна при схованій панелі адреси. Коли панель видно, нижня частина блока — часто разом із кнопкою дії — опиняється під нею. А жорстка <code>height</code> обрізає вміст, якщо користувач збільшить шрифт.</p>
+    <div class="ap-part is-good">
+      <p class="verdict-label">Добре</p>
+<pre data-lang="css"><code>
+.catalog-hero {
+  min-height: 100vh;    /* fallback */
+  min-height: 100dvh;   /* follows the visible viewport; min- lets content grow */
+}
+</code></pre>
+    </div>
+  </article>
+</section>
+
+<!-- ================= BEST PRACTICES ================= -->
+<section class="topic" id="best-practices" aria-labelledby="best-practices-h">
+  <h2 id="best-practices-h">Бест практики</h2>
+
+  <article class="bp">
+    <h3><code>box-sizing: border-box</code> глобально</h3>
+    <p>Ширина, яку ви пишете, дорівнює ширині, яку бачите: padding і рамка вже всередині. Розрахунки сіток і відсоткових колонок перестають вимагати арифметики. Селектор <code>*</code> не охоплює псевдоелементи, тому їх перелічують окремо. Правило ставлять на початок таблиці стилів — у шар скидань.</p>
+<pre data-lang="css"><code>
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+}
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3><code>rem</code> для типографіки</h3>
+    <p><code>rem</code> поважає налаштування розміру шрифту користувача й не накопичується у вкладених елементах, тому розмір у коді завжди означає одне й те саме. Для відступів, що мають рости разом із текстом конкретного компонента, доречна <code>em</code>.</p>
+<pre data-lang="css"><code>
+.book-title { font-size: 1.5rem; }
+.book-author { font-size: 1rem; }
+.buy-button { font-size: 1rem; padding: 0.5em 1em; }   /* padding follows the button text */
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3>Класи замість тегових селекторів</h3>
+    <p>Тег описує зміст, а не вигляд. Правило <code>h3 { … }</code> зачепить кожен заголовок третього рівня на сайті, включно з тими, що в модальному вікні чи підвалі. А якщо заради структури документа заголовок картки стане <code>h2</code>, стиль зникне. Клас відв'язує вигляд від семантики: тегові селектори лишайте для базових стилів у ранньому шарі.</p>
+<pre data-lang="css"><code>
+@layer base {
+  h1, h2, h3 { line-height: 1.2; }           /* sensible defaults only */
+}
+@layer components {
+  .book-title { font-size: 1.25rem; font-weight: 700; }   /* works on h2 and h3 alike */
+}
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3>Змістовні назви класів</h3>
+    <p>Називайте клас за роллю елемента, а не за тим, як він зараз виглядає. Коли дизайн змінить червону ціну на помаранчеву, клас <code>.red-bold</code> почне брехати, і його доведеться перейменовувати в усій розмітці. Назва <code>.book-price</code> лишається правдивою за будь-якого дизайну, а стан можна виразити окремим класом з префіксом на кшталт <code>is-</code>.</p>
+<pre data-lang="html"><code>
+&lt;!-- describes the look: breaks on the next redesign --&gt;
+&lt;span class="red-bold big"&gt;249 грн&lt;/span&gt;
+
+&lt;!-- describes the role and the state --&gt;
+&lt;span class="book-price is-sale"&gt;249 грн&lt;/span&gt;
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3>Порядок шарів оголошено одним рядком</h3>
+    <p>Коли порядок шарів записаний явно на початку головного файлу, пріоритет груп стилів видно з першого рядка й він не залежить від порядку підключення файлів чи специфічності окремих селекторів. Сторонні стилі кладіть у ранній шар, щоб ваші правила перемагали без <code>!important</code>.</p>
+<pre data-lang="css"><code>
+@layer reset, vendor, base, components, utilities;
+@import url("vendor/slider.css") layer(vendor);
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3><code>:where()</code> для базових стилів</h3>
+    <p>Базові стилі й скидання мають поступатися будь-якому компонентному класу. Обгорнуті в <code>:where()</code>, вони отримують нульову специфічність, тож їх перевизначає навіть один клас, де б він не стояв у файлі.</p>
+<pre data-lang="css"><code>
+:where(h1, h2, h3, p) { margin-top: 0; }            /* (0, 0, 0) */
+:where(.catalog) a { color: inherit; }              /* (0, 0, 1) */
+
+.book-title { margin-top: 0.5rem; }                 /* wins with a single class */
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3><code>line-height</code> без одиниць</h3>
+    <p>Множник без одиниць успадковується як множник, і кожен нащадок перераховує висоту рядка від власного шрифту. Значення в <code>em</code> чи <code>px</code> успадковується вже обчисленим, і великий заголовок усередині отримує тісні рядки, що налазять один на одний.</p>
+<pre data-lang="css"><code>
+body { line-height: 1.6; }
+.book-title { line-height: 1.2; }
+</code></pre>
+  </article>
+
+  <article class="bp">
+    <h3>Помітний фокус через <code>:focus-visible</code></h3>
+    <p>Індикатор фокусу потрібен тим, хто працює з клавіатури, і не заважає тим, хто клікає мишею. Малюйте його <code>outline</code> — він не займає місця й не зсуває макет. Колір індикатора має мати контраст щонайменше 3:1 до фону.</p>
+<pre data-lang="css"><code>
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #e8772e;
+  outline-offset: 2px;
+}
+</code></pre>
+  </article>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="topic" id="quiz" aria-labelledby="quiz-h">
+  <h2 id="quiz-h">Квіз для самоперевірки</h2>
+  <div class="prose">
+    <p>Дванадцять запитань на розуміння: частина з них показує код і питає, що відобразиться. Після кожної відповіді побачите пояснення, а в кінці — теми, до яких варто повернутися. Прогрес зберігається в цьому браузері.</p>
+  </div>
+  <div class="quiz" id="quiz-root">
+    <noscript><p>Квіз працює, коли в браузері увімкнено JavaScript.</p></noscript>
+  </div>
+</section>
+
+<!-- ================= LINKS ================= -->
+<section class="topic" id="links" aria-labelledby="links-h">
+  <h2 id="links-h">Корисні посилання</h2>
+  <div class="link-groups">
+    <div>
+      <h3>Селектори</h3>
+      <ul class="link-list">
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors">MDN: CSS selectors</a> <span>— огляд усіх видів селекторів і комбінаторів</span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors">MDN: Attribute selectors</a> <span>— усі оператори й прапорець <code>i</code></span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes">MDN: Pseudo-classes</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements">Pseudo-elements</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:is">MDN: :is()</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:where">:where()</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:has">:has()</a></li>
+        <li><a href="https://www.w3.org/TR/selectors-4/">W3C: Selectors Level 4</a> <span>— специфікація, розділ про специфічність</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Каскад, специфічність, успадкування</h3>
+      <ul class="link-list">
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade">MDN: Introduction to the CSS cascade</a> <span>— походження, важливість, порядок</span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity">MDN: Specificity</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@layer">MDN: @layer</a> <span>— синтаксис і порядок шарів</span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Inheritance">MDN: Inheritance</a></li>
+        <li><a href="https://www.w3.org/TR/css-cascade-5/">W3C: CSS Cascading and Inheritance Level 5</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Одиниці, кольори, типографіка</h3>
+      <ul class="link-list">
+        <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Values_and_units">MDN: CSS values and units</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/length">MDN: &lt;length&gt;</a> <span>— зокрема <code>dvh</code>, <code>svh</code>, <code>lvh</code></span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">MDN: &lt;color&gt;</a> <span>— hex, <code>rgb()</code>, <code>hsl()</code>, <code>oklch()</code></span></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-family">MDN: font-family</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display">font-display</a></li>
+        <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">W3C WAI: Contrast (Minimum)</a> <span>— критерій 1.4.3</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Box model, display, інструменти</h3>
+      <ul class="link-list">
+        <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics/Box_model">MDN: The box model</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing">MDN: box-sizing</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/display">display</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_box_model/Mastering_margin_collapsing">MDN: Mastering margin collapsing</a></li>
+        <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html">W3C WAI: Focus Visible</a> <span>— критерій 2.4.7</span></li>
+        <li><a href="https://developer.chrome.com/docs/devtools/css">Chrome DevTools: View and change CSS</a> <span>— як знайти правило, що перемогло</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Клієнтські технології вебпрограмування. Лекція 4: CSS — основи, каскад, блокова модель. Матеріал спирається на MDN Web Docs і специфікації W3C.</p>
+    <a class="to-top" href="../index.html">На головну</a>
+    <a class="to-top" href="#top">Повернутися на початок</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =====================================================================
+     Utilities
+     ===================================================================== */
+  function escapeHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) {
+      Object.keys(attrs).forEach(function (key) {
+        if (key === 'text') node.textContent = attrs[key];
+        else if (key === 'className') node.className = attrs[key];
+        else if (key === 'hidden') node.hidden = Boolean(attrs[key]);
+        else node.setAttribute(key, attrs[key]);
+      });
+    }
+    (children || []).forEach(function (child) {
+      if (child === null || child === undefined) return;
+      node.append(child);
+    });
+    return node;
+  }
+
+  function announce(message) {
+    const region = document.getElementById('sr-status');
+    if (!region) return;
+    region.textContent = '';
+    window.setTimeout(function () { region.textContent = message; }, 30);
+  }
+
+  /* =====================================================================
+     Syntax highlighting (CSS and HTML) — tiny, dependency-free
+     ===================================================================== */
+  const CSS_TOKEN = new RegExp([
+    '(\\/\\*[\\s\\S]*?\\*\\/)',                              // 1 comment
+    '("(?:[^"\\\\\\n]|\\\\.)*"|\'(?:[^\'\\\\\\n]|\\\\.)*\')', // 2 string
+    '(@[\\w-]+)',                                           // 3 at-rule
+    '(!important)',                                         // 4 important
+    '(#[0-9a-fA-F]{3,8}(?![\\w-]))',                        // 5 hex colour or short id
+    '(--?[a-zA-Z][\\w-]*|[a-zA-Z][\\w-]*)(?=\\s*:(?!:)[^;{}]*[;}])', // 6 property
+    '(::?[a-zA-Z][\\w-]*)',                                 // 7 pseudo
+    '(\\.[a-zA-Z_][\\w-]*|#[a-zA-Z_][\\w-]*)',              // 8 class or id
+    '(-?(?:\\d+\\.?\\d*|\\.\\d+)(?:[a-zA-Z%]+)?)',          // 9 number with unit
+    '([a-zA-Z_][\\w-]*)',                                   // 10 identifier
+    '([{}()\\[\\];,>+~*=|^$])'                              // 11 punctuation
+  ].join('|'), 'g');
+
+  function isInSelectorContext(code, index) {
+    return /^[^;{}]*\{/.test(code.slice(index));
+  }
+
+  function highlightCss(code) {
+    let out = '';
+    let last = 0;
+    let match;
+    CSS_TOKEN.lastIndex = 0;
+    while ((match = CSS_TOKEN.exec(code)) !== null) {
+      out += escapeHtml(code.slice(last, match.index));
+      const text = match[0];
+      let cls = 'punct';
+      if (match[1]) cls = 'comment';
+      else if (match[2]) cls = 'string';
+      else if (match[3]) cls = 'atrule';
+      else if (match[4]) cls = 'important';
+      else if (match[5]) cls = isInSelectorContext(code, match.index) ? 'selector' : 'number';
+      else if (match[6]) cls = 'property';
+      else if (match[7]) cls = 'selector';
+      else if (match[8]) cls = 'selector';
+      else if (match[9]) cls = 'number';
+      else if (match[10]) cls = isInSelectorContext(code, match.index) ? 'selector' : 'value';
+      out += '<span class="tok-' + cls + '">' + escapeHtml(text) + '</span>';
+      last = match.index + text.length;
+    }
+    out += escapeHtml(code.slice(last));
+    return out;
+  }
+
+  const HTML_TOKEN = /(<!--[\s\S]*?-->)|(<\/?)([a-zA-Z][\w-]*)|([a-zA-Z_:@][\w:.-]*)(=)("[^"]*"|'[^']*')|(\/?>)/g;
+
+  function highlightHtml(code) {
+    let out = '';
+    let last = 0;
+    let match;
+    HTML_TOKEN.lastIndex = 0;
+    while ((match = HTML_TOKEN.exec(code)) !== null) {
+      out += escapeHtml(code.slice(last, match.index));
+      if (match[1]) {
+        out += '<span class="tok-comment">' + escapeHtml(match[1]) + '</span>';
+      } else if (match[3]) {
+        out += '<span class="tok-punct">' + escapeHtml(match[2]) + '</span><span class="tok-tag">' + escapeHtml(match[3]) + '</span>';
+      } else if (match[4]) {
+        out += '<span class="tok-attr">' + escapeHtml(match[4]) + '</span><span class="tok-punct">=</span><span class="tok-string">' + escapeHtml(match[6]) + '</span>';
+      } else {
+        out += '<span class="tok-punct">' + escapeHtml(match[7]) + '</span>';
+      }
+      last = match.index + match[0].length;
+    }
+    out += escapeHtml(code.slice(last));
+    return out;
+  }
+
+  function highlight(code, lang) {
+    return lang === 'html' ? highlightHtml(code) : highlightCss(code);
+  }
+
+  /* =====================================================================
+     Code blocks: highlighting + copy button
+     ===================================================================== */
+  function copyWithFallback(text) {
+    return new Promise(function (resolve, reject) {
+      try {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        const ok = document.execCommand('copy');
+        area.remove();
+        if (ok) resolve(); else reject(new Error('copy failed'));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () { return copyWithFallback(text); });
+    }
+    return copyWithFallback(text);
+  }
+
+  function showButtonFeedback(button, message) {
+    const original = button.dataset.label || button.textContent;
+    button.dataset.label = original;
+    button.textContent = message;
+    announce(message);
+    window.setTimeout(function () { button.textContent = original; }, 1600);
+  }
+
+  function setCodeContent(pre, rawCode) {
+    const lang = pre.dataset.lang || 'css';
+    const codeEl = pre.querySelector('code') || pre;
+    pre.dataset.raw = rawCode;
+    codeEl.innerHTML = highlight(rawCode, lang);
+  }
+
+  function enhanceCodeBlock(pre) {
+    if (pre.dataset.enhanced === 'true') return;
+    pre.dataset.enhanced = 'true';
+    const lang = pre.dataset.lang || 'css';
+    const codeEl = pre.querySelector('code') || pre;
+    const raw = codeEl.textContent.replace(/^\n+/, '').replace(/\s+$/, '');
+    setCodeContent(pre, raw);
+
+    const wrapper = el('div', { className: 'code' });
+    const button = el('button', { type: 'button', className: 'copy-btn', text: 'Копіювати' });
+    button.addEventListener('click', function () {
+      copyText(pre.dataset.raw || '')
+        .then(function () { showButtonFeedback(button, 'Скопійовано'); })
+        .catch(function () { showButtonFeedback(button, 'Не вдалося скопіювати'); });
+    });
+    const bar = el('div', { className: 'code-bar' }, [el('span', { text: lang }), button]);
+    pre.parentNode.insertBefore(wrapper, pre);
+    wrapper.append(bar, pre);
+  }
+
+  function enhanceAllCodeBlocks(root) {
+    (root || document).querySelectorAll('pre[data-lang]').forEach(enhanceCodeBlock);
+  }
+
+  /* =====================================================================
+     Specificity calculator — pure logic
+     ===================================================================== */
+  const ZERO = { a: 0, b: 0, c: 0 };
+  const LEGACY_PSEUDO_ELEMENTS = ['before', 'after', 'first-line', 'first-letter'];
+  const COLUMNS = [
+    { key: 'a', label: 'ID' },
+    { key: 'b', label: 'класи, атрибути, псевдокласи' },
+    { key: 'c', label: 'типи й псевдоелементи' }
+  ];
+
+  function addSpecificity(x, y) {
+    return { a: x.a + y.a, b: x.b + y.b, c: x.c + y.c };
+  }
+
+  function compareSpecificity(x, y) {
+    for (const col of COLUMNS) {
+      if (x[col.key] !== y[col.key]) return x[col.key] > y[col.key] ? 1 : -1;
+    }
+    return 0;
+  }
+
+  function formatSpecificity(s) {
+    return '(' + s.a + ', ' + s.b + ', ' + s.c + ')';
+  }
+
+  function isIdentChar(ch) {
+    return /[-\w]/.test(ch) || ch.charCodeAt(0) >= 0x80;
+  }
+
+  function readIdent(src, start) {
+    let i = start;
+    while (i < src.length) {
+      if (src[i] === '\\') { i += 2; continue; }
+      if (isIdentChar(src[i])) i += 1; else break;
+    }
+    return Math.min(i, src.length);
+  }
+
+  function findClosing(src, openIndex, openCh, closeCh) {
+    let depth = 0;
+    let quote = null;
+    for (let i = openIndex; i < src.length; i += 1) {
+      const ch = src[i];
+      if (quote) {
+        if (ch === '\\') { i += 1; continue; }
+        if (ch === quote) quote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'") { quote = ch; continue; }
+      if (ch === openCh) depth += 1;
+      else if (ch === closeCh) {
+        depth -= 1;
+        if (depth === 0) return i;
+      }
+    }
+    return -1;
+  }
+
+  function splitTopLevel(src) {
+    const parts = [];
+    let depth = 0;
+    let quote = null;
+    let start = 0;
+    for (let i = 0; i < src.length; i += 1) {
+      const ch = src[i];
+      if (quote) {
+        if (ch === '\\') { i += 1; continue; }
+        if (ch === quote) quote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'") quote = ch;
+      else if (ch === '(' || ch === '[') depth += 1;
+      else if (ch === ')' || ch === ']') depth -= 1;
+      else if (ch === ',' && depth === 0) {
+        parts.push(src.slice(start, i));
+        start = i + 1;
+      }
+    }
+    parts.push(src.slice(start));
+    return parts.map(function (part) { return part.trim(); });
+  }
+
+  function maxSpecificityOfList(listSource) {
+    const items = splitTopLevel(listSource);
+    if (items.some(function (item) { return item === ''; })) {
+      throw new Error('У списку аргументів є порожній селектор.');
+    }
+    let best = null;
+    items.forEach(function (item) {
+      const parsed = parseSelector(item);
+      if (!best || compareSpecificity(parsed.total, best.total) > 0) best = parsed;
+    });
+    return best;
+  }
+
+  function parseSelector(source) {
+    const src = source.trim();
+    const parts = [];
+    let total = ZERO;
+    let i = 0;
+
+    function push(text, add, kind, note) {
+      parts.push({ text: text, add: add, kind: kind, note: note });
+      total = addSpecificity(total, add);
+    }
+
+    while (i < src.length) {
+      const ch = src[i];
+
+      if (/\s/.test(ch) || ch === '>' || ch === '+' || ch === '~') { i += 1; continue; }
+
+      if (ch === '*') {
+        push('*', ZERO, 'zero', 'універсальний селектор, ваги не додає');
+        i += 1;
+        continue;
+      }
+
+      if (ch === '#' || ch === '.') {
+        const end = readIdent(src, i + 1);
+        if (end === i + 1) {
+          throw new Error('Після «' + ch + '» очікується ім\'я (позиція ' + (i + 1) + ').');
+        }
+        if (ch === '#') push(src.slice(i, end), { a: 1, b: 0, c: 0 }, 'a', 'ідентифікатор');
+        else push(src.slice(i, end), { a: 0, b: 1, c: 0 }, 'b', 'клас');
+        i = end;
+        continue;
+      }
+
+      if (ch === '[') {
+        const close = findClosing(src, i, '[', ']');
+        if (close === -1) throw new Error('Не закрита квадратна дужка (позиція ' + (i + 1) + ').');
+        if (!src.slice(i + 1, close).trim()) throw new Error('Порожній атрибутний селектор «[]».');
+        push(src.slice(i, close + 1), { a: 0, b: 1, c: 0 }, 'b', 'атрибутний селектор');
+        i = close + 1;
+        continue;
+      }
+
+      if (ch === ':') {
+        const isElement = src[i + 1] === ':';
+        const nameStart = i + (isElement ? 2 : 1);
+        const nameEnd = readIdent(src, nameStart);
+        if (nameEnd === nameStart) {
+          throw new Error('Після «' + (isElement ? '::' : ':') + '» очікується назва (позиція ' + (i + 1) + ').');
+        }
+        const name = src.slice(nameStart, nameEnd).toLowerCase();
+        let end = nameEnd;
+        let arg = null;
+        if (src[nameEnd] === '(') {
+          const close = findClosing(src, nameEnd, '(', ')');
+          if (close === -1) throw new Error('Не закрита дужка після «' + src.slice(i, nameEnd) + '».');
+          arg = src.slice(nameEnd + 1, close);
+          end = close + 1;
+        }
+        const text = src.slice(i, end);
+
+        if (isElement || LEGACY_PSEUDO_ELEMENTS.indexOf(name) !== -1) {
+          push(text, { a: 0, b: 0, c: 1 }, 'c', isElement ? 'псевдоелемент' : 'псевдоелемент у старому записі з однією двокрапкою');
+        } else if (name === 'where') {
+          if (arg === null || !arg.trim()) throw new Error(':where() потребує аргументу.');
+          maxSpecificityOfList(arg);
+          push(text, ZERO, 'zero', ':where() завжди має нульову вагу');
+        } else if (name === 'is' || name === 'not' || name === 'has') {
+          if (arg === null || !arg.trim()) throw new Error(':' + name + '() потребує аргументу.');
+          const best = maxSpecificityOfList(arg);
+          push(text, best.total, 'fn', 'вага найспецифічнішого аргументу «' + best.source + '»');
+        } else if ((name === 'nth-child' || name === 'nth-last-child') && arg && /\sof\s/i.test(arg)) {
+          const listSource = arg.slice(arg.search(/\sof\s/i)).replace(/^\s*of\s+/i, '');
+          const best = maxSpecificityOfList(listSource);
+          push(text, addSpecificity({ a: 0, b: 1, c: 0 }, best.total), 'fn', 'псевдоклас + найспецифічніший селектор після «of»');
+        } else {
+          push(text, { a: 0, b: 1, c: 0 }, 'b', 'псевдоклас');
+        }
+        i = end;
+        continue;
+      }
+
+      if (isIdentChar(ch) || ch === '\\') {
+        const end = readIdent(src, i);
+        push(src.slice(i, end), { a: 0, b: 0, c: 1 }, 'c', 'селектор типу (тег)');
+        i = end;
+        continue;
+      }
+
+      throw new Error('Незрозумілий символ «' + ch + '» на позиції ' + (i + 1) + '.');
+    }
+
+    if (!parts.length) throw new Error('Селектор не містить жодної простої частини.');
+    return { source: src, total: total, parts: parts };
+  }
+
+  function calculateSpecificity(input) {
+    const src = (input || '').trim();
+    if (!src) return { ok: false, error: 'Введіть селектор.' };
+    if (splitTopLevel(src).length > 1) {
+      return { ok: false, error: 'Введіть один селектор без коми: у списку через кому кожен селектор має власну вагу і змагається окремо.' };
+    }
+    try {
+      const parsed = parseSelector(src);
+      return { ok: true, source: parsed.source, total: parsed.total, parts: parsed.parts };
+    } catch (error) {
+      return { ok: false, error: error.message };
+    }
+  }
+
+  function explainComparison(first, second) {
+    const cmp = compareSpecificity(first.total, second.total);
+    if (cmp === 0) {
+      return {
+        winner: 'B',
+        paragraphs: [
+          'Обидва селектори мають вагу ' + formatSpecificity(first.total) + ' — нічия за специфічністю.',
+          'Тоді каскад переходить до останнього критерію, порядку появи: перемагає B, бо він записаний у коді пізніше. Поміняйте правила місцями — і переможе A.'
+        ]
+      };
+    }
+    const winner = cmp > 0 ? 'A' : 'B';
+    const loser = winner === 'A' ? 'B' : 'A';
+    const w = winner === 'A' ? first.total : second.total;
+    const l = winner === 'A' ? second.total : first.total;
+    const decidingIndex = COLUMNS.findIndex(function (col) { return w[col.key] !== l[col.key]; });
+    const deciding = COLUMNS[decidingIndex];
+    const paragraphs = [
+      'Вага A — ' + formatSpecificity(first.total) + ', вага B — ' + formatSpecificity(second.total) + '.',
+      'Колонки порівнюються зліва направо. ' +
+        (decidingIndex > 0 ? 'У попередніх колонках нічия. ' : '') +
+        'Вирішує колонка «' + deciding.label + '»: ' + w[deciding.key] + ' проти ' + l[deciding.key] +
+        ', тож перемагає ' + winner + '. Наступні колонки вже не рахуються.'
+    ];
+    const laterColumns = COLUMNS.slice(decidingIndex + 1).filter(function (col) { return l[col.key] > w[col.key]; });
+    if (laterColumns.length) {
+      paragraphs.push('Зверніть увагу: у ' + loser + ' більше в колонці «' + laterColumns[0].label + '» (' +
+        l[laterColumns[0].key] + ' проти ' + w[laterColumns[0].key] + '), але колонки не «переповнюються» — жодна кількість частин нижчого рівня не переважить одну частину вищого.');
+    }
+    if (winner === 'A') {
+      paragraphs.push('Порядок у коді (B пізніше) тут не допоміг: він враховується лише за рівної специфічності.');
+    }
+    return { winner: winner, paragraphs: paragraphs };
+  }
+
+  /* ---------- Specificity calculator — UI ---------- */
+  function renderSpecificityResult(container, result) {
+    container.replaceChildren();
+    if (!result.ok) {
+      container.append(el('p', { className: 'spec-error', text: result.error }));
+      return;
+    }
+    const score = el('div', {
+      className: 'spec-score',
+      'aria-label': 'Специфічність ' + formatSpecificity(result.total)
+    }, COLUMNS.map(function (col) {
+      return el('div', { className: 'spec-col col-' + col.key }, [
+        el('span', { className: 'spec-num', text: String(result.total[col.key]) }),
+        el('span', { className: 'spec-cap', text: col.label })
+      ]);
+    }));
+    const list = el('ul', { className: 'spec-parts', 'aria-label': 'Частини селектора' }, result.parts.map(function (part) {
+      const kindClass = part.kind === 'a' ? 'chip-a' : part.kind === 'b' ? 'chip-b' : part.kind === 'zero' ? 'chip-zero' : '';
+      return el('li', { className: 'chip ' + kindClass }, [
+        el('code', { text: part.text }),
+        el('span', { className: 'chip-note', text: part.note + ', +' + formatSpecificity(part.add) })
+      ]);
+    }));
+    container.append(score, list);
+  }
+
+  function initSpecificityCalculator() {
+    const inputA = document.getElementById('spec-a');
+    const inputB = document.getElementById('spec-b');
+    if (!inputA || !inputB) return;
+    const sideA = document.getElementById('spec-side-a');
+    const sideB = document.getElementById('spec-side-b');
+    const verdict = document.getElementById('spec-verdict');
+
+    function update() {
+      const resultA = calculateSpecificity(inputA.value);
+      const resultB = calculateSpecificity(inputB.value);
+      renderSpecificityResult(document.getElementById('spec-a-result'), resultA);
+      renderSpecificityResult(document.getElementById('spec-b-result'), resultB);
+
+      verdict.replaceChildren();
+      let winner = null;
+      if (resultA.ok && resultB.ok) {
+        const explanation = explainComparison(resultA, resultB);
+        winner = explanation.winner;
+        explanation.paragraphs.forEach(function (text) { verdict.append(el('p', { text: text })); });
+        verdict.append(el('p', { text: 'Пам\'ятайте: специфічність — четвертий крок каскаду. Інший шар, !important чи inline-стиль вирішили б результат раніше.' }));
+      } else {
+        verdict.append(el('p', { text: 'Виправте селектор із помилкою, щоб порівняти вагу.' }));
+      }
+      [[sideA, 'A'], [sideB, 'B']].forEach(function (pair) {
+        const isWinner = pair[1] === winner;
+        pair[0].classList.toggle('is-winner', isWinner);
+        pair[0].querySelector('.winner-badge').hidden = !isWinner;
+      });
+    }
+
+    inputA.addEventListener('input', update);
+    inputB.addEventListener('input', update);
+    document.querySelectorAll('#demo-specificity .preset').forEach(function (button) {
+      button.addEventListener('click', function () {
+        inputA.value = button.dataset.a;
+        inputB.value = button.dataset.b;
+        update();
+      });
+    });
+    update();
+  }
+
+  /* =====================================================================
+     Box model demo
+     ===================================================================== */
+  function computeBoxMetrics(values) {
+    const extra = 2 * values.padding + 2 * values.border;
+    let contentWidth;
+    let borderBoxWidth;
+    if (values.boxSizing === 'border-box') {
+      contentWidth = Math.max(0, values.width - extra);
+      borderBoxWidth = Math.max(values.width, extra);
+    } else {
+      contentWidth = values.width;
+      borderBoxWidth = values.width + extra;
+    }
+    return {
+      contentWidth: contentWidth,
+      borderBoxWidth: borderBoxWidth,
+      marginBoxWidth: borderBoxWidth + 2 * values.margin,
+      overflow: values.boxSizing === 'border-box' && extra > values.width
+    };
+  }
+
+  function describeBoxMetrics(values, metrics) {
+    const p = values.padding;
+    const b = values.border;
+    if (values.boxSizing === 'content-box') {
+      return 'content-box: width задає лише контент (' + values.width + 'px). Padding і рамка додаються зовні: ' +
+        values.width + ' + 2 × ' + p + ' + 2 × ' + b + ' = ' + metrics.borderBoxWidth + 'px на екрані. Margin ще ' +
+        '2 × ' + values.margin + 'px зовні, разом ' + metrics.marginBoxWidth + 'px.';
+    }
+    if (metrics.overflow) {
+      return 'border-box: padding і рамка разом (' + (2 * p + 2 * b) + 'px) більші за width (' + values.width +
+        'px). Контент не може мати від\'ємну ширину, тому він стискається до 0, а блок росте до ' + metrics.borderBoxWidth + 'px.';
+    }
+    return 'border-box: width задає блок разом із padding і рамкою — ' + values.width + 'px на екрані. Контенту лишається ' +
+      values.width + ' − 2 × ' + p + ' − 2 × ' + b + ' = ' + metrics.contentWidth + 'px. Margin додається зовні: разом ' +
+      metrics.marginBoxWidth + 'px.';
+  }
+
+  function buildBoxCss(values) {
+    return '.book-card {\n' +
+      '  box-sizing: ' + values.boxSizing + ';\n' +
+      '  width: ' + values.width + 'px;\n' +
+      '  padding: ' + values.padding + 'px;\n' +
+      '  border: ' + values.border + 'px solid #1c2e57;\n' +
+      '  margin: ' + values.margin + 'px;\n' +
+      '}';
+  }
+
+  function readBoxValues() {
+    const checked = document.querySelector('input[name="bm-sizing"]:checked');
+    return {
+      boxSizing: checked ? checked.value : 'content-box',
+      width: Number(document.getElementById('bm-width').value),
+      padding: Number(document.getElementById('bm-padding').value),
+      border: Number(document.getElementById('bm-border').value),
+      margin: Number(document.getElementById('bm-margin').value)
+    };
+  }
+
+  function initBoxModelDemo() {
+    const box = document.getElementById('bm-box');
+    if (!box) return;
+    const marginBox = document.getElementById('bm-margin-box');
+    const content = document.getElementById('bm-content');
+    const cssBlock = document.getElementById('bm-css');
+
+    function update() {
+      const values = readBoxValues();
+      const metrics = computeBoxMetrics(values);
+
+      box.style.boxSizing = values.boxSizing;
+      box.style.width = values.width + 'px';
+      box.style.padding = values.padding + 'px';
+      box.style.borderWidth = values.border + 'px';
+      marginBox.style.padding = values.margin + 'px';
+      content.textContent = metrics.contentWidth >= 70 ? 'content ' + metrics.contentWidth + 'px' : String(metrics.contentWidth);
+
+      ['width', 'padding', 'border', 'margin'].forEach(function (key) {
+        document.getElementById('bm-' + key + '-out').textContent = values[key] + 'px';
+      });
+      document.getElementById('bm-out-content').textContent = metrics.contentWidth + 'px';
+      document.getElementById('bm-out-border').textContent = metrics.borderBoxWidth + 'px';
+      document.getElementById('bm-out-margin').textContent = metrics.marginBoxWidth + 'px';
+      document.getElementById('bm-out-measured').textContent = box.offsetWidth + 'px';
+      document.getElementById('bm-explain').textContent = describeBoxMetrics(values, metrics);
+      box.setAttribute('aria-label', 'Схема блока: контент ' + metrics.contentWidth + 'px, на екрані ' + metrics.borderBoxWidth + 'px');
+      setCodeContent(cssBlock, buildBoxCss(values));
+    }
+
+    document.querySelectorAll('#demo-box input').forEach(function (input) {
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+    });
+    update();
+  }
+
+  /* =====================================================================
+     Margin collapse demo
+     ===================================================================== */
+  function computeSiblingGap(bottom, top, isFlexColumn) {
+    if (isFlexColumn) return bottom + top;
+    if (bottom >= 0 && top >= 0) return Math.max(bottom, top);
+    if (bottom < 0 && top < 0) return Math.min(bottom, top);
+    return Math.max(bottom, top) + Math.min(bottom, top);
+  }
+
+  function describeGap(bottom, top, isFlexColumn, gap) {
+    if (isFlexColumn) {
+      return 'У flex-контейнері відступи не згортаються: ' + bottom + ' + ' + top + ' = ' + gap + 'px.';
+    }
+    if (bottom >= 0 && top >= 0) {
+      return 'Звичайний потік: відступи згорнулися, лишився найбільший — max(' + bottom + ', ' + top + ') = ' + gap + 'px, а не ' + (bottom + top) + 'px.';
+    }
+    if (bottom < 0 && top < 0) {
+      return 'Обидва відступи від\'ємні: результат — найменший із них, ' + gap + 'px.';
+    }
+    return 'Один відступ від\'ємний: найбільший додатний плюс найменший від\'ємний = ' + gap + 'px.';
+  }
+
+  function initMarginCollapseDemo() {
+    const first = document.getElementById('mc-first');
+    if (!first) return;
+    const second = document.getElementById('mc-second');
+    const stage = document.getElementById('mc-stage');
+    const bottomInput = document.getElementById('mc-bottom');
+    const topInput = document.getElementById('mc-top');
+    const flexInput = document.getElementById('mc-flex');
+
+    function update() {
+      const bottom = Number(bottomInput.value);
+      const top = Number(topInput.value);
+      const isFlex = flexInput.checked;
+      first.style.marginBottom = bottom + 'px';
+      second.style.marginTop = top + 'px';
+      stage.style.display = isFlex ? 'flex' : 'block';
+      stage.style.flexDirection = isFlex ? 'column' : '';
+      first.textContent = '.book-description { margin-bottom: ' + bottom + 'px }';
+      second.textContent = '.book-price { margin-top: ' + top + 'px }';
+      document.getElementById('mc-bottom-out').textContent = bottom + 'px';
+      document.getElementById('mc-top-out').textContent = top + 'px';
+
+      const expected = computeSiblingGap(bottom, top, isFlex);
+      const measured = Math.round(second.getBoundingClientRect().top - first.getBoundingClientRect().bottom);
+      document.getElementById('mc-result').textContent = describeGap(bottom, top, isFlex, expected) +
+        ' Браузер виміряв проміжок: ' + measured + 'px.';
+    }
+
+    [bottomInput, topInput, flexInput].forEach(function (input) {
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+    });
+    update();
+  }
+
+  /* =====================================================================
+     Print only the cheat sheet
+     ===================================================================== */
+  function initCheatsheetPrint() {
+    const button = document.getElementById('print-cheatsheet');
+    if (!button) return;
+    const root = document.documentElement;
+    button.addEventListener('click', function () {
+      root.classList.add('print-cheatsheet');
+      window.print();
+    });
+    window.addEventListener('afterprint', function () {
+      root.classList.remove('print-cheatsheet');
+    });
+  }
+
+  /* =====================================================================
+     Quiz — data
+     ===================================================================== */
+  const TOPICS = {
+    selectors: { title: 'Селектори', href: '#selectors' },
+    cascade: { title: 'Каскад і шари', href: '#cascade' },
+    specificity: { title: 'Специфічність', href: '#specificity' },
+    inheritance: { title: 'Успадкування', href: '#inheritance' },
+    units: { title: 'Одиниці вимірювання', href: '#units' },
+    boxModel: { title: 'Box model і box-sizing', href: '#box-model' },
+    marginCollapse: { title: 'Згортання margin', href: '#margin-collapse' }
+  };
+
+  const QUESTIONS = [
+    {
+      id: 'q-id-vs-classes',
+      topic: 'specificity',
+      prompt: 'Заголовок збігається з обома правилами. Якого кольору він буде?',
+      code: '#catalog .book-title { color: navy; }\n.catalog .book-card .book-title.featured { color: orange; }',
+      lang: 'css',
+      options: ['navy', 'orange: чотири класи важать більше за один ID і один клас', 'orange: друге правило стоїть пізніше', 'залежить від браузера'],
+      correct: 0,
+      explanation: 'Вага першого — (1, 1, 0), другого — (0, 4, 0). Колонки порівнюють зліва направо, і перша ж колонка (ID) вирішує результат: 1 проти 0. Колонки не «переповнюються», тож кількість класів не допоможе, а порядок у коді враховується лише за повної рівності ваги.'
+    },
+    {
+      id: 'q-class-vs-type-order',
+      topic: 'specificity',
+      prompt: 'Якого кольору буде текст елемента <p class="note">?',
+      code: 'p { color: green; }\n.note { color: blue; }\np { color: red; }',
+      lang: 'css',
+      options: ['red — останнє правило завжди перемагає', 'blue', 'green — перше правило задає колір', 'змішаний колір'],
+      correct: 1,
+      explanation: 'Клас (0, 1, 0) важчий за тип (0, 0, 1), тож .note перемагає обидва правила для p. Пастка — думати, що «пізніше завжди сильніше»: порядок появи — останній критерій каскаду і вирішує лише за рівної специфічності.'
+    },
+    {
+      id: 'q-layers-vs-specificity',
+      topic: 'cascade',
+      prompt: 'Яким буде фон кнопки <button id="buy" class="buy-button">?',
+      code: '@layer base, components;\n\n@layer components {\n  .buy-button { background: blue; }\n}\n\n@layer base {\n  #buy.buy-button { background: red; }\n}',
+      lang: 'css',
+      options: ['red — ID важчий за клас', 'red — блок base стоїть у файлі пізніше', 'blue', 'правило з ID ігнорується, фон буде типовим'],
+      correct: 2,
+      explanation: 'Шари перевіряються раніше за специфічність. Порядок шарів задає перший рядок: components оголошено після base, тож він сильніший, хоч його блок і стоїть у файлі раніше. Специфічність (1, 1, 0) порівнювалася б лише всередині одного шару.'
+    },
+    {
+      id: 'q-unlayered',
+      topic: 'cascade',
+      prompt: 'Якого кольору буде текст кнопки <button class="buy-button primary"> усередині .catalog?',
+      code: '@layer components {\n  .catalog .buy-button.primary { color: blue; }\n}\n\nbutton { color: green; }',
+      lang: 'css',
+      options: ['blue — специфічність (0, 3, 0) проти (0, 0, 1)', 'green', 'blue — шари завжди сильніші за звичайні стилі', 'чорний — стиль браузера'],
+      correct: 1,
+      explanation: 'Стилі поза будь-яким шаром утворюють окремий, найсильніший шар для звичайних декларацій. Тому button перемагає, хоч і має мінімальну специфічність. Для декларацій з !important порядок був би протилежним.'
+    },
+    {
+      id: 'q-where',
+      topic: 'specificity',
+      prompt: 'Який колір матиме .book-title усередині <section id="catalog"><article class="book-card">?',
+      code: ':where(#catalog) .book-title { color: navy; }\n.book-card .book-title { color: orange; }',
+      lang: 'css',
+      options: ['navy — у першому правилі є ID', 'orange', 'navy — :where() бере вагу найсильнішого аргументу', 'жодне правило не застосується'],
+      correct: 1,
+      explanation: ':where() завжди має нульову вагу, тож перше правило важить (0, 1, 0), а друге — (0, 2, 0). Вагу найсильнішого аргументу бере :is(), а не :where(): з :is(#catalog) переміг би navy.'
+    },
+    {
+      id: 'q-em-compounding',
+      topic: 'units',
+      prompt: 'Типовий розмір шрифту в браузері — 16px. Якого розміру буде текст «Кіберпанк»?',
+      code: '<ul class="tag-list">\n  <li>Фантастика\n    <ul class="tag-list">\n      <li>Кіберпанк</li>\n    </ul>\n  </li>\n</ul>\n\n.tag-list { font-size: 1.25em; }',
+      lang: 'html',
+      options: ['20px — em рахується від кореня', '25px', '16px — em впливає лише на відступи', '40px'],
+      correct: 1,
+      explanation: 'Для font-size одиниця em рахується від шрифту батька. Зовнішній список: 16 × 1,25 = 20px. Вкладений: 20 × 1,25 = 25px, і li його успадковує. 20px було б із rem — вона рахується від кореня й не накопичується.'
+    },
+    {
+      id: 'q-has',
+      topic: 'selectors',
+      prompt: 'До яких елементів застосується це правило?',
+      code: '.book-card:has(.badge) { border-color: orange; }',
+      lang: 'css',
+      options: ['до карток, які самі мають клас badge', 'до карток, усередині яких на будь-якій глибині є елемент з класом badge', 'до елементів .badge, що лежать усередині карток', 'лише до карток, де .badge — прямий дочірній елемент'],
+      correct: 1,
+      explanation: 'Стилізується елемент перед :has(), тобто картка. Аргумент без комбінатора шукається серед нащадків на будь-якій глибині. Для прямого дочірнього треба :has(> .badge), а «картка з класом badge» записується як .book-card.badge.'
+    },
+    {
+      id: 'q-content-box',
+      topic: 'boxModel',
+      prompt: 'box-sizing не змінювали. Яку ширину займе картка від зовнішнього краю лівої рамки до зовнішнього краю правої?',
+      code: '.book-card {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid navy;\n  margin: 10px;\n}',
+      lang: 'css',
+      options: ['200px', '250px', '270px', '230px'],
+      correct: 1,
+      explanation: 'Типове content-box: width задає лише контент. Padding і рамка додаються зовні: 200 + 2 × 20 + 2 × 5 = 250px. 270px — це вже разом із margin, а margin не входить у блок із рамкою.'
+    },
+    {
+      id: 'q-border-box',
+      topic: 'boxModel',
+      prompt: 'Тепер з border-box. Яка ширина області контенту?',
+      code: '.book-card {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 20px;\n  border: 5px solid navy;\n  margin: 10px;\n}',
+      lang: 'css',
+      options: ['200px', '150px', '160px', '130px'],
+      correct: 1,
+      explanation: 'У border-box width включає padding і рамку, а контенту лишається решта: 200 − 2 × 20 − 2 × 5 = 150px. 160px вийде, якщо забути одну рамку; 130px — якщо відняти ще й margin, який у border-box не входить.'
+    },
+    {
+      id: 'q-margin-collapse',
+      topic: 'marginCollapse',
+      prompt: 'Два абзаци стоять один за одним у звичайному блоковому контейнері. Який вертикальний проміжок між ними?',
+      code: '.intro { margin-bottom: 30px; }\n.details { margin-top: 20px; }',
+      lang: 'css',
+      options: ['50px', '30px', '20px', '10px'],
+      correct: 1,
+      explanation: 'Вертикальні margin сусідніх блоків у звичайному потоці згортаються в один — найбільший: max(30, 20) = 30px. 50px було б у flex- чи grid-контейнері, де згортання немає.'
+    },
+    {
+      id: 'q-inheritance',
+      topic: 'inheritance',
+      prompt: 'Що з цього абзац <p> усередині картки отримає через успадкування?',
+      code: '.book-card {\n  color: navy;\n  border: 1px solid orange;\n  padding: 16px;\n}',
+      lang: 'css',
+      options: ['лише color', 'color, border і padding', 'color і border', 'нічого: успадкування вмикають словом inherit'],
+      correct: 0,
+      explanation: 'color — текстова властивість і успадковується. border і padding належать блоку й не успадковуються: інакше кожен абзац і посилання в картці мали б власну рамку. Слово inherit потрібне лише для того, щоб примусово успадкувати неуспадковувану властивість.'
+    },
+    {
+      id: 'q-line-height',
+      topic: 'inheritance',
+      prompt: 'Кореневий шрифт — 16px. Яким буде line-height заголовка h3?',
+      code: '.book-card { font-size: 1rem; line-height: 1.5em; }\n.book-card h3 { font-size: 2rem; }',
+      lang: 'css',
+      options: ['48px', '24px', '1.5 — множник від шрифту h3', '36px'],
+      correct: 1,
+      explanation: 'Успадковується обчислене значення. 1.5em на картці одразу стає 1,5 × 16 = 24px, і h3 отримує вже 24px, хоча його шрифт 32px, — рядки налазитимуть. 48px вийшло б із множником без одиниць line-height: 1.5, який успадковується як множник.'
+    }
+  ];
+
+  /* =====================================================================
+     Quiz — pure state functions
+     ===================================================================== */
+  const QUIZ_STORAGE_KEY = 'css-lecture-04-quiz-v1';
+  const OPTION_KEYS = ['А', 'Б', 'В', 'Г'];
+
+  function shuffle(items) {
+    const copy = items.slice();
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+    }
+    return copy;
+  }
+
+  function createQuizState(questions) {
+    const optionOrders = {};
+    questions.forEach(function (q) { optionOrders[q.id] = shuffle(q.options.map(function (_, i) { return i; })); });
+    return { order: shuffle(questions.map(function (q) { return q.id; })), optionOrders: optionOrders, answers: {}, current: 0 };
+  }
+
+  function answerQuestion(state, questionId, optionIndex) {
+    if (Object.prototype.hasOwnProperty.call(state.answers, questionId)) return state;
+    const answers = Object.assign({}, state.answers);
+    answers[questionId] = optionIndex;
+    return Object.assign({}, state, { answers: answers });
+  }
+
+  function goToNextQuestion(state) {
+    return Object.assign({}, state, { current: state.current + 1 });
+  }
+
+  function getQuestionById(questions, id) {
+    return questions.find(function (q) { return q.id === id; });
+  }
+
+  function getQuizResults(state, questions) {
+    let correct = 0;
+    const review = {};
+    state.order.forEach(function (id, position) {
+      const q = getQuestionById(questions, id);
+      if (state.answers[id] === q.correct) {
+        correct += 1;
+      } else {
+        if (!review[q.topic]) review[q.topic] = [];
+        review[q.topic].push(position + 1);
+      }
+    });
+    return {
+      correct: correct,
+      total: state.order.length,
+      review: Object.keys(review).map(function (topic) { return { topic: topic, positions: review[topic] }; })
+    };
+  }
+
+  function isValidQuizState(state, questions) {
+    if (!state || !Array.isArray(state.order) || typeof state.current !== 'number') return false;
+    if (state.order.length !== questions.length) return false;
+    const ids = questions.map(function (q) { return q.id; });
+    if (!state.order.every(function (id) { return ids.indexOf(id) !== -1; })) return false;
+    if (!state.optionOrders || !state.answers) return false;
+    return questions.every(function (q) {
+      const order = state.optionOrders[q.id];
+      return Array.isArray(order) && order.length === q.options.length;
+    }) && state.current >= 0 && state.current <= questions.length;
+  }
+
+  function loadQuizState(questions) {
+    try {
+      const raw = window.localStorage.getItem(QUIZ_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return isValidQuizState(parsed, questions) ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveQuizState(state) {
+    try {
+      window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(state));
+    } catch (error) {
+      /* storage unavailable: the quiz still works for this visit */
+    }
+  }
+
+  function getResultMessage(correct, total) {
+    const ratio = correct / total;
+    if (ratio === 1) return 'Усі відповіді правильні — каскад і блокова модель під контролем.';
+    if (ratio >= 0.75) return 'Добрий результат. Поверніться до тем нижче, щоб закрити прогалини.';
+    if (ratio >= 0.5) return 'Основу засвоєно, але кілька механізмів варто перечитати.';
+    return 'Варто ще раз пройти теорію: почніть з тем нижче й перевірте себе в інтерактивних демо.';
+  }
+
+  /* =====================================================================
+     Quiz — UI
+     ===================================================================== */
+  function initQuiz() {
+    const root = document.getElementById('quiz-root');
+    if (!root) return;
+    let state = loadQuizState(QUESTIONS) || createQuizState(QUESTIONS);
+
+    function setState(next) {
+      state = next;
+      saveQuizState(state);
+    }
+
+    function renderHead() {
+      const done = Object.keys(state.answers).length;
+      const position = Math.min(state.current + 1, state.order.length);
+      const text = state.current >= state.order.length
+        ? 'Квіз завершено'
+        : 'Запитання ' + position + ' з ' + state.order.length;
+      const restart = el('button', { type: 'button', className: 'btn btn-ghost', text: 'Почати спочатку' });
+      restart.addEventListener('click', restartQuiz);
+      const bar = el('div', { className: 'quiz-bar', 'aria-hidden': 'true' }, [el('span')]);
+      bar.firstChild.style.width = Math.round((done / state.order.length) * 100) + '%';
+      return [el('div', { className: 'quiz-head' }, [el('p', { className: 'quiz-progress-text', text: text }), restart]), bar];
+    }
+
+    function buildFeedback(question, chosen) {
+      const isCorrect = chosen === question.correct;
+      const box = el('div', { className: 'quiz-feedback', role: 'status' });
+      box.append(el('p', { className: 'fb-title ' + (isCorrect ? 'ok' : 'fail'), text: isCorrect ? 'Правильно.' : 'Неправильно.' }));
+      if (!isCorrect) {
+        box.append(el('p', { text: 'Правильна відповідь: ' + question.options[question.correct] + '.' }));
+      }
+      box.append(el('p', { text: question.explanation }));
+      return box;
+    }
+
+    function renderQuestion(focusHeading) {
+      const id = state.order[state.current];
+      const question = getQuestionById(QUESTIONS, id);
+      const chosen = state.answers[id];
+      const answered = chosen !== undefined;
+
+      const heading = el('h3', { id: 'quiz-question', tabindex: '-1', text: question.prompt });
+      const nodes = [el('p', { className: 'quiz-topic', text: 'Тема: ' + TOPICS[question.topic].title }), heading];
+
+      if (question.code) {
+        const pre = el('pre', { 'data-lang': question.lang }, [el('code', { text: question.code })]);
+        nodes.push(pre);
+      }
+
+      const optionsBox = el('div', { className: 'quiz-options', role: 'group', 'aria-labelledby': 'quiz-question' });
+      state.optionOrders[id].forEach(function (originalIndex, displayIndex) {
+        const button = el('button', { type: 'button', className: 'quiz-option' }, [
+          el('span', { className: 'opt-key', 'aria-hidden': 'true', text: OPTION_KEYS[displayIndex] }),
+          el('span', { text: question.options[originalIndex] })
+        ]);
+        if (answered) {
+          button.disabled = true;
+          if (originalIndex === question.correct) button.classList.add('is-correct');
+          else if (originalIndex === chosen) button.classList.add('is-wrong');
+        } else {
+          button.addEventListener('click', function () { handleAnswer(id, originalIndex); });
+        }
+        optionsBox.append(button);
+      });
+      nodes.push(optionsBox);
+
+      if (answered) {
+        nodes.push(buildFeedback(question, chosen));
+        const isLast = state.current === state.order.length - 1;
+        const next = el('button', { type: 'button', className: 'btn', id: 'quiz-next', text: isLast ? 'Показати результат' : 'Наступне запитання' });
+        next.addEventListener('click', handleNext);
+        nodes.push(el('div', { className: 'quiz-nav' }, [next]));
+      }
+
+      root.replaceChildren.apply(root, renderHead().concat(nodes));
+      enhanceAllCodeBlocks(root);
+      if (focusHeading) heading.focus();
+    }
+
+    function renderResults() {
+      const results = getQuizResults(state, QUESTIONS);
+      const heading = el('h3', { id: 'quiz-question', tabindex: '-1', text: 'Результат' });
+      const nodes = [
+        heading,
+        el('p', { className: 'quiz-score', text: results.correct + ' з ' + results.total }),
+        el('p', { text: getResultMessage(results.correct, results.total) })
+      ];
+      if (results.review.length) {
+        nodes.push(el('p', { text: 'Теми, які варто повторити:' }));
+        nodes.push(el('ul', { className: 'review-list' }, results.review.map(function (item) {
+          const topic = TOPICS[item.topic];
+          const link = el('a', { href: topic.href, text: topic.title });
+          return el('li', {}, [link, document.createTextNode(' — запитання ' + item.positions.join(', '))]);
+        })));
+      }
+      const again = el('button', { type: 'button', className: 'btn', text: 'Пройти ще раз' });
+      again.addEventListener('click', restartQuiz);
+      nodes.push(el('div', { className: 'quiz-nav' }, [again]));
+      root.replaceChildren.apply(root, renderHead().concat(nodes));
+      heading.focus();
+    }
+
+    function render(focusHeading) {
+      if (state.current >= state.order.length) renderResults();
+      else renderQuestion(focusHeading);
+    }
+
+    function handleAnswer(questionId, optionIndex) {
+      setState(answerQuestion(state, questionId, optionIndex));
+      render(false);
+      const next = document.getElementById('quiz-next');
+      if (next) next.focus();
+    }
+
+    function handleNext() {
+      setState(goToNextQuestion(state));
+      render(true);
+    }
+
+    function restartQuiz() {
+      setState(createQuizState(QUESTIONS));
+      render(true);
+    }
+
+    render(false);
+  }
+
+  /* =====================================================================
+     Start
+     ===================================================================== */
+  function init() {
+    enhanceAllCodeBlocks(document);
+    initSpecificityCalculator();
+    initBoxModelDemo();
+    initMarginCollapseDemo();
+    initCheatsheetPrint();
+    initQuiz();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+<script>
+(function () {
+  var button = document.getElementById("theme-toggle");
+  if (!button) return;
+  function saved() {
+    try {
+      var value = localStorage.getItem("ctw-theme");
+      return value === "dark" || value === "light" ? value : "";
+    } catch (error) {
+      return "";
+    }
+  }
+  function current() {
+    var value = saved();
+    if (value) return value;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function paint(theme) {
+    button.textContent = theme === "dark" ? "Світла тема" : "Темна тема";
+    button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  }
+  var theme = current();
+  paint(theme);
+  button.addEventListener("click", function () {
+    theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("ctw-theme", theme); } catch (error) {}
+    paint(theme);
+  });
+})();
+</script>
+</body>
+</html>

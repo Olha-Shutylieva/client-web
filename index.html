@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="uk" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Програма курсу «Клієнтські технології вебпрограмування» для спеціальності 122 «Комп’ютерні науки»: 16 лекцій бакалаврату.">
+  <title>Клієнтські технології вебпрограмування</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231c2e5a'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-size='12' font-family='Georgia,serif' fill='%23ffffff'%3E122%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+  <script>
+    document.documentElement.classList.replace("no-js", "js");
+    try {
+      var savedTheme = localStorage.getItem("ctw-theme");
+      if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+    } catch (error) {}
+  </script>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --ink: #16213a;
+      --muted: #4a5876;
+      --line: #d3dbe8;
+      --accent: #1c2e5a;
+      --on-accent: #ffffff;
+      --copper: #b04e0f;
+      --good: #1e7b4b;
+      --good-bg: #e5f5ec;
+      --bad: #b42318;
+      --bad-bg: #fdecea;
+      --code: #0f1b33;
+      --code-ink: #e3e9f5;
+      --focus: #e8772e;
+      --glow-a: rgba(232, 119, 46, 0.12);
+      --glow-b: rgba(28, 46, 90, 0.1);
+      --shadow: 0 16px 40px rgba(22, 33, 58, 0.08);
+      --serif: "Unbounded", "Commissioner", "Segoe UI", system-ui, sans-serif;
+      --sans: "Commissioner", "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+      --header: 4.4rem;
+      --radius: 18px;
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d1526;
+        --surface: #141f36;
+        --ink: #e7ecf5;
+        --muted: #a8b4cc;
+        --line: #2b3a5c;
+        --accent: #ff9a4d;
+        --on-accent: #1c1208;
+        --copper: #ffae6b;
+        --good: #6fd69b;
+        --good-bg: #15332a;
+        --bad: #ff8a80;
+        --bad-bg: #3a1c1f;
+        --code: #0a1224;
+        --code-ink: #e3e9f5;
+        --focus: #ffae6b;
+        --glow-a: rgba(255, 154, 77, 0.12);
+        --glow-b: rgba(127, 168, 255, 0.1);
+        --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0d1526;
+      --surface: #141f36;
+      --ink: #e7ecf5;
+      --muted: #a8b4cc;
+      --line: #2b3a5c;
+      --accent: #ff9a4d;
+      --on-accent: #1c1208;
+      --copper: #ffae6b;
+      --good: #6fd69b;
+      --good-bg: #15332a;
+      --bad: #ff8a80;
+      --bad-bg: #3a1c1f;
+      --code: #0a1224;
+      --code-ink: #e3e9f5;
+      --focus: #ffae6b;
+      --glow-a: rgba(255, 154, 77, 0.12);
+      --glow-b: rgba(127, 168, 255, 0.1);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--ink);
+      background:
+        radial-gradient(1000px 420px at -10% -10%, var(--glow-a), transparent 55%),
+        radial-gradient(800px 380px at 110% 0%, var(--glow-b), transparent 50%),
+        var(--bg);
+    }
+    h1, h2, h3 { font-family: var(--serif); line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
+    h1 { font-size: clamp(2rem, 1.15rem + 2.6vw, 3.5rem); margin: 0 0 0.6rem; }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.85rem); margin: 0 0 0.7rem; }
+    h3 { font-size: 1.15rem; margin: 0 0 0.4rem; }
+    p { margin: 0 0 0.8rem; }
+    a { color: var(--accent); }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .skip {
+      position: absolute;
+      left: 0.75rem;
+      top: 0.75rem;
+      transform: translateY(-150%);
+      background: var(--accent);
+      color: var(--on-accent);
+      padding: 0.6rem 0.9rem;
+      border-radius: 999px;
+      z-index: 20;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .skip:focus { transform: none; }
+    .wrap { width: min(1120px, calc(100% - 1.5rem)); margin-inline: auto; }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .header__row {
+      min-height: var(--header);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem 1rem;
+      padding: 0.55rem 0;
+    }
+    .brand { display: flex; align-items: center; gap: 0.7rem; color: inherit; text-decoration: none; font-weight: 700; }
+    .theme-toggle {
+      min-height: 44px;
+      border-radius: 999px;
+      border: 2px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.4rem 0.95rem;
+      cursor: pointer;
+    }
+    .crumb { margin: 0 0 0.7rem; }
+    .crumb a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0.25rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .crumb a::before { content: "← "; }
+    .brand__mark {
+      width: 2.6rem;
+      height: 2.6rem;
+      display: grid;
+      place-items: center;
+      border-radius: 0.7rem;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-family: var(--serif);
+    }
+    .route-progress { width: min(1120px, calc(100% - 1.5rem)); margin: 0.35rem auto 0; }
+    .route-progress p { margin: 0; color: var(--muted); font-size: 0.92rem; font-weight: 700; }
+    .route-progress__track { height: 0.35rem; background: var(--line); border-radius: 999px; margin: 0.35rem 0 0.7rem; overflow: hidden; }
+    .route-progress__track span { display: block; height: 100%; width: 0; background: var(--copper); }
+    .view { padding: 1.2rem 0 3rem; }
+    .js .view { display: none; }
+    .js .view.is-active { display: block; }
+    .eyebrow { margin: 0 0 0.4rem; color: var(--copper); font-weight: 700; letter-spacing: 0.02em; }
+    .lead { font-size: 1.15rem; max-width: 68ch; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0; }
+    .button, button, input, select, textarea { font: inherit; }
+    .button, .lab button:not(.button--ghost):not(.codeblock__copy), .chipset button {
+      min-height: 44px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      padding: 0.45rem 0.95rem;
+      background: var(--accent);
+      color: var(--on-accent);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    a.button { display: inline-flex; align-items: center; text-decoration: none; }
+    .button--ghost, .chipset button {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .chipset button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+    .hero, .split, .compare { display: grid; gap: 1rem; }
+    .hero > *, .split > *, .compare > * { min-width: 0; }
+    .arc, .syllabus, .clean { list-style: none; margin: 0; padding: 0; }
+    .arc { display: grid; gap: 0.6rem; }
+    .arc a, .syllabus a {
+      display: grid;
+      gap: 0.15rem 0.8rem;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      box-shadow: var(--shadow);
+    }
+    .arc a { grid-template-columns: auto 1fr; align-items: center; }
+    .arc span, .num { font-family: var(--serif); color: var(--copper); font-weight: 700; }
+    .num { font-size: 1.7rem; line-height: 1; }
+    .program {
+      margin-top: 2.2rem;
+      padding: clamp(1rem, 2vw, 1.45rem);
+      background: color-mix(in srgb, var(--surface) 88%, var(--bg));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+    .program > h2 { margin-bottom: 1rem; }
+    .syllabus { display: grid; gap: 0.75rem; }
+    .syllabus > li { min-width: 0; }
+    .syllabus a {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: 0.85rem;
+      min-width: 0;
+      height: 100%;
+      padding: 1rem 1.05rem;
+      border-radius: 16px;
+    }
+    .syllabus a:hover { border-color: color-mix(in srgb, var(--copper) 50%, var(--line)); }
+    .syllabus .num {
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--copper) 16%, var(--bg));
+      font-size: 1rem;
+    }
+    .syllabus a > span:last-child {
+      display: grid;
+      align-content: start;
+      gap: 0.28rem;
+      min-width: 0;
+    }
+    .syllabus strong {
+      display: block;
+      font-size: 1.02rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+    .syllabus small { display: block; line-height: 1.45; }
+    .syllabus a.is-visited { background: var(--good-bg); }
+    .syllabus small, .hint, .route-progress p, figcaption span + span { color: var(--muted); }
+    .visited-flag { display: block; justify-self: start; color: var(--good); font-weight: 700; font-size: 0.85rem; }
+    .filters { border: 0; border-radius: 0; padding: 0; margin: 0 0 1.35rem; background: transparent; }
+    .filters fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0;
+      min-inline-size: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+    .filters legend {
+      width: 100%;
+      padding: 0;
+      margin: 0 0 0.15rem;
+      font-family: var(--serif);
+      font-weight: 700;
+    }
+    .filters label {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      margin: 0;
+      min-height: 44px;
+      padding: 0.35rem 0.95rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .filters input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .filters label:has(:checked) {
+      background: var(--accent);
+      color: var(--on-accent);
+      border-color: transparent;
+    }
+    .filters label:has(:focus-visible) { outline: 3px solid var(--focus); outline-offset: 3px; }
+    #filter-status { margin: 0.8rem 0 0; font-weight: 700; }
+    .group { margin: 0 0 1.35rem; }
+    .group:last-child { margin-bottom: 0; }
+    .group h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+      margin: 0 0 0.75rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .lab, .panel, .compare__item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .lab, .panel { padding: 1rem; }
+    .lab { border-top: 4px solid var(--copper); display: grid; gap: 0.75rem; align-content: start; }
+    .field { display: grid; gap: 0.3rem; }
+    .field label { font-weight: 600; }
+    input[type="text"], input[type="url"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 0.5rem 0.7rem;
+      border-radius: 12px;
+      border: 2px solid var(--line);
+      background: var(--bg);
+      color: var(--ink);
+    }
+    textarea { min-height: 6rem; resize: vertical; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    fieldset.plain { border: 1px solid var(--line); border-radius: 14px; margin: 0; padding: 0.8rem; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .output, .stage {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 0.75rem;
+      overflow-wrap: anywhere;
+    }
+    .deflist { display: grid; gap: 0.25rem 0.75rem; margin: 0; }
+    .deflist dt { font-weight: 800; }
+    .chipset { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .compare__item { padding: 0.9rem; margin: 0; }
+    .compare__item--bad { background: var(--bad-bg); border-color: var(--bad); }
+    .compare__item--good { background: var(--good-bg); border-color: var(--good); }
+    .flag {
+      display: inline-block;
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      margin-right: 0.35rem;
+    }
+    .flag--bad { background: var(--bad); color: #fffaf1; }
+    .flag--good { background: var(--good); color: var(--on-accent); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .flag--bad,
+      :root:not([data-theme="light"]) .flag--good { color: #1b1712; }
+    }
+    :root[data-theme="dark"] .flag--bad,
+    :root[data-theme="dark"] .flag--good { color: #1b1712; }
+    .codeblock { margin: 0.4rem 0 0.8rem; border-radius: 14px; overflow: hidden; background: var(--code); color: var(--code-ink); max-width: 100%; }
+    .codeblock__bar { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem 0.35rem 0.8rem; background: color-mix(in srgb, var(--code-ink) 8%, var(--code)); }
+    .codeblock__lang { font-family: var(--mono); font-size: 0.78rem; }
+    .codeblock .codeblock__copy { min-height: 36px; border-radius: 999px; border: 0; background: transparent; color: var(--code-ink); font-weight: 700; cursor: pointer; }
+    pre { margin: 0; padding: 0.85rem 1rem 1rem; overflow-x: auto; max-width: 100%; }
+    code { font-family: var(--mono); font-size: 0.86rem; line-height: 1.55; }
+    .tok--comment { color: #c3b8a6; }
+    .tok--keyword { color: #f0b089; }
+    .tok--string { color: #9ddec0; }
+    .tok--number { color: #f6d58a; }
+    .tok--tag { color: #9ec5ff; }
+    .tok--attr { color: #f0b089; }
+    .tok--fn { color: #d7c4ff; }
+    .box-scene { display: grid; justify-content: start; overflow-x: auto; max-width: 100%; }
+    .box-margin { background: color-mix(in srgb, var(--copper) 25%, var(--bg)); }
+    .box-border { background: var(--copper); }
+    .box-padding { background: color-mix(in srgb, var(--accent) 35%, var(--surface)); }
+    .box-content { background: var(--accent); color: var(--on-accent); display: grid; place-items: center; min-height: 2.4rem; font-weight: 800; }
+    .layout-stage { display: flex; flex-wrap: wrap; gap: 0.5rem; min-height: 8rem; }
+    .layout-stage div { flex: 1 1 6.5rem; min-height: 4.2rem; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; font-weight: 800; }
+    .cq-frame { overflow-x: auto; max-width: 100%; border: 1px dashed var(--line); border-radius: 12px; padding: 0.4rem; }
+    .cq-demo { container-type: inline-size; width: 320px; }
+    .cq-card { display: grid; gap: 0.6rem; background: var(--surface); border-radius: 12px; padding: 0.8rem; }
+    .swatch { width: 100%; height: 4.5rem; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--copper)); }
+    .cq-card h3 { font-size: clamp(1rem, 0.55rem + 4cqw, 2.4rem); margin: 0; }
+    @container (min-width: 420px) {
+      .cq-card { grid-template-columns: 7rem 1fr; align-items: center; }
+      .swatch { height: 100%; min-height: 5rem; }
+    }
+    .motion-track { height: 2.4rem; border-radius: 999px; background: var(--bg); position: relative; overflow: hidden; }
+    .motion-dot { width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--copper); position: absolute; top: 0.5rem; left: 0.5rem; }
+    .stack { display: grid; gap: 0.45rem; }
+    .stack div { min-height: 2.4rem; border-radius: 10px; background: var(--bg); padding: 0.35rem 0.6rem; }
+    .table-wrap { overflow-x: auto; max-width: 100%; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; vertical-align: top; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); }
+    caption { text-align: left; font-weight: 800; margin-bottom: 0.4rem; }
+    .pager { display: grid; gap: 0.6rem; margin-top: 1.4rem; }
+    .pager a { text-decoration: none; color: inherit; border: 1px solid var(--line); border-radius: 16px; padding: 0.8rem 1rem; background: var(--surface); display: grid; }
+    .pager strong { font-family: var(--serif); font-size: 1.15rem; }
+    .site-footer { border-top: 1px solid var(--line); padding: 1.2rem 0 2rem; color: var(--muted); }
+    .noscript { margin: 0.8rem auto; width: min(1120px, calc(100% - 1.5rem)); background: var(--surface); padding: 0.8rem 1rem; border-radius: 12px; }
+    .checkline { display: flex; gap: 0.55rem; align-items: flex-start; margin: 0.35rem 0; }
+    @media (min-width: 800px) {
+      .hero { grid-template-columns: 1.45fr 0.8fr; align-items: end; }
+      .syllabus { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .deflist { grid-template-columns: minmax(7rem, max-content) 1fr; }
+    }
+    @media (min-width: 960px) {
+      .split, .compare { grid-template-columns: 1fr 1fr; align-items: start; }
+      .split > *, .compare > * { min-width: 0; }
+      .pager { grid-template-columns: 1fr 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .route-progress__track span { transition: none; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .js .view.is-active.is-entering { animation: rise 460ms cubic-bezier(.16, 1, .3, 1); }
+      .route-progress__track span { transition: width 360ms ease; }
+      .motion-dot.is-moving { animation: slide 900ms ease; }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes slide {
+      from { left: 0.5rem; }
+      to { left: calc(100% - 1.9rem); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Перейти до вмісту</a>
+  <header class="site-header">
+    <div class="wrap header__row">
+      <a class="brand" href="#overview">
+        <span class="brand__mark">122</span>
+        <span>Клієнтські технології</span>
+      </a>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false">Темна тема</button>
+    </div>
+  </header>
+  <div class="route-progress wrap">
+    <p id="route-label">Програма курсу</p>
+    <div class="route-progress__track" id="route-track" hidden><span id="route-bar"></span></div>
+  </div>
+  <noscript><p class="noscript">Інтерактивні переходи і практика працюють із JavaScript. Текст програми нижче можна читати і без нього.</p></noscript>
+  <main id="main" tabindex="-1">
+
+    <section class="view" id="overview" aria-labelledby="course-title">
+      <div class="wrap">
+        <p class="eyebrow">Спеціальність 122 «Комп’ютерні науки» · бакалаврат</p>
+        <div class="hero">
+          <div>
+            <h1 id="course-title">Клієнтські технології вебпрограмування</h1>
+            <p class="lead">Шістнадцять лекцій про шлях від адреси в рядку браузера до зібраного клієнтського застосунку: розмітка, стилі, мова, типи й перевірка якості.</p>
+            <p id="visited-count">Відкрито лекцій: 0 з 16</p>
+            <p class="hint" id="storage-note"></p>
+            <div class="actions">
+              <a class="button" href="topic-01/lecture-01-how-web-works.html" data-open="lecture-1">Почати з лекції 1</a>
+            </div>
+          </div>
+          <ol class="arc" aria-label="Дуга курсу">
+            <li><a href="topic-01/lecture-01-how-web-works.html" data-open="lecture-1"><span>01–03</span><strong>Веб і HTML</strong></a></li>
+            <li><a href="topic-04/lecture-04-css-basics.html" data-open="lecture-4"><span>04–06</span><strong>CSS і верстка</strong></a></li>
+            <li><a href="#lecture-7"><span>07–12</span><strong>JavaScript у браузері</strong></a></li>
+            <li><a href="#lecture-13"><span>13–16</span><strong>Типи, інструменти, якість</strong></a></li>
+          </ol>
+        </div>
+
+        <h2>Після курсу</h2>
+        <ul>
+          <li>поясните шлях запиту від URL через DNS до відповіді HTTP і кадру на екрані;</li>
+          <li>зберете доступний документ і форму засобами HTML;</li>
+          <li>зверстаєте макет Flexbox і Grid, стійкий від 360px і в світлій та темній темі;</li>
+          <li>напишете модульний JavaScript: події, асинхронність, стани даних;</li>
+          <li>опишете типи в TypeScript і зберете проєкт інструментами Node.js;</li>
+          <li>перевірите доступність, базові метрики та гігієну проти XSS.</li>
+        </ul>
+
+        <section class="program" aria-labelledby="syllabus">
+        <h2 id="syllabus">Програма</h2>
+        <form class="filters" id="block-filter">
+          <fieldset>
+            <legend>Блок курсу</legend>
+            <label><input type="radio" name="block" value="all" checked> Усі</label>
+            <label><input type="radio" name="block" value="html"> Веб і HTML</label>
+            <label><input type="radio" name="block" value="css"> CSS</label>
+            <label><input type="radio" name="block" value="js"> JavaScript</label>
+            <label><input type="radio" name="block" value="ts"> Типи і якість</label>
+          </fieldset>
+          <p id="filter-status" aria-live="polite">Усі лекції: 16</p>
+        </form>
+
+        <div data-group="html" class="group">
+          <h3>Веб і HTML</h3>
+          <ol class="syllabus">
+            <li data-lecture="1"><a href="topic-01/lecture-01-how-web-works.html" data-open="lecture-1"><span class="num">01</span><span><strong>Як працює веб. Середовище розробки</strong><small>HTTP, DNS, DOM, DevTools, Git</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="2"><a href="topic-02/lecture-02-html5-structure-semantics.html" data-open="lecture-2"><span class="num">02</span><span><strong>HTML5: структура і семантика</strong><small>Документ, посилання, орієнтири</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="3"><a href="topic-03/lecture-03-html-forms-accessibility.html" data-open="lecture-3"><span class="num">03</span><span><strong>HTML-форми та доступність</strong><small>Поля, валідація, фокус, ARIA</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+          </ol>
+        </div>
+        <div data-group="css" class="group">
+          <h3>CSS і верстка</h3>
+          <ol class="syllabus" start="4">
+            <li data-lecture="4"><a href="topic-04/lecture-04-css-basics.html" data-open="lecture-4"><span class="num">04</span><span><strong>Основи, каскад, блокова модель</strong><small>Селектори, специфічність, box-sizing</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="5"><a href="#lecture-5"><span class="num">05</span><span><strong>Flexbox і Grid</strong><small>Одна вісь або два виміри</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="6"><a href="#lecture-6"><span class="num">06</span><span><strong>Адаптивний дизайн</strong><small>Mobile-first, clamp, теми, рух</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+          </ol>
+        </div>
+        <div data-group="js" class="group">
+          <h3>JavaScript у браузері</h3>
+          <ol class="syllabus" start="7">
+            <li data-lecture="7"><a href="#lecture-7"><span class="num">07</span><span><strong>Основи мови</strong><small>Типи, ===, область видимості</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="8"><a href="#lecture-8"><span class="num">08</span><span><strong>Об’єкти, масиви, модулі</strong><small>Колекції, копії, import/export</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="9"><a href="#lecture-9"><span class="num">09</span><span><strong>DOM і події</strong><small>Пошук вузлів, делегування, XSS</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="10"><a href="#lecture-10"><span class="num">10</span><span><strong>Асинхронний JavaScript</strong><small>Цикл подій, проміси, async/await</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="11"><a href="#lecture-11"><span class="num">11</span><span><strong>HTTP, REST і Fetch API</strong><small>Статуси, стани екрана, CORS</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="12"><a href="#lecture-12"><span class="num">12</span><span><strong>Сховища, URL, валідація</strong><small>localStorage, History, FormData</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+          </ol>
+        </div>
+        <div data-group="ts" class="group">
+          <h3>Типи, інструменти, якість</h3>
+          <ol class="syllabus" start="13">
+            <li data-lecture="13"><a href="#lecture-13"><span class="num">13</span><span><strong>TypeScript: основи</strong><small>Анотації, any і unknown</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="14"><a href="#lecture-14"><span class="num">14</span><span><strong>TypeScript: просунуті типи</strong><small>Звуження, generics, tsconfig</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="15"><a href="#lecture-15"><span class="num">15</span><span><strong>Інструменти фронтенду</strong><small>npm, Vite, ESLint, Prettier</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="16"><a href="#lecture-16"><span class="num">16</span><span><strong>Якість клієнтського застосунку</strong><small>WCAG, Web Vitals, XSS, модулі</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+          </ol>
+        </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-5" aria-labelledby="l5-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 5 з 16</p>
+        <h1 id="l5-title">Сучасна верстка: Flexbox і Grid</h1>
+        <p class="lead">Flexbox розкладає елементи вздовж однієї осі. Grid одразу тримає рядки й колонки. Той самий набір карток нижче перемикається між моделями.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>головна і поперечна осі, вирівнювання, <code>flex-grow</code>, <code>flex-shrink</code>, <code>flex-basis</code>, перенесення, <code>gap</code>;</li>
+              <li>колонки й рядки Grid, <code>fr</code>, <code>repeat</code>, <code>minmax</code>, <code>auto-fit</code> і <code>auto-fill</code>;</li>
+              <li>іменовані області <code>grid-template-areas</code>, <code>subgrid</code>;</li>
+              <li>коли обирати одновимірну модель, а коли двовимірну.</li>
+            </ul>
+            <p>Flexbox доречний для ряду кнопок, навігації, вирівнювання в одному напрямку. Grid доречний для каркаса сторінки і сітки карток, де важливі обидва виміри.</p>
+          </div>
+          <section class="lab" aria-labelledby="l5-lab">
+            <h2 id="l5-lab">Практика</h2>
+            <form id="layout-form">
+              <fieldset class="plain">
+                <legend>Модель</legend>
+                <label><input type="radio" name="mode" value="flex" checked> Flexbox</label>
+                <label><input type="radio" name="mode" value="grid"> Grid</label>
+              </fieldset>
+              <div class="field">
+                <label for="layout-direction">Напрямок flex</label>
+                <select id="layout-direction" name="direction">
+                  <option value="row">row</option>
+                  <option value="column">column</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="layout-justify">justify-content</label>
+                <select id="layout-justify" name="justify">
+                  <option value="flex-start">flex-start</option>
+                  <option value="space-between">space-between</option>
+                  <option value="center">center</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="layout-columns">Колонки grid: <output id="layout-columns-out">3</output></label>
+                <input id="layout-columns" name="columns" type="range" min="1" max="3" value="3">
+              </div>
+              <div class="field">
+                <label for="layout-gap">Проміжок: <output id="layout-gap-out">12</output> px</label>
+                <input id="layout-gap" name="gap" type="range" min="0" max="28" value="12">
+              </div>
+            </form>
+            <div class="layout-stage" id="layout-stage">
+              <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div>
+            </div>
+            <p id="layout-readout" class="output" aria-live="polite"></p>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">CSS</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="css">.page {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="topic-04/lecture-04-css-basics.html" data-open="lecture-4"><span>Назад</span><strong>Каскад і блокова модель</strong></a>
+          <a href="#lecture-6"><span>Далі</span><strong>Адаптивний дизайн і сучасний CSS</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-6" aria-labelledby="l6-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 6 з 16</p>
+        <h1 id="l6-title">Адаптивний дизайн і сучасні можливості CSS</h1>
+        <p class="lead">Інтерфейс тримається на вузькому екрані, у великій типографіці й у темі, яку обрала система. Ця сторінка сама змінює кольори за <code>prefers-color-scheme</code>.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>mobile-first, метатег viewport, медіазапити і контейнерні запити;</li>
+              <li>адаптивні зображення: <code>srcset</code> і <code>sizes</code>;</li>
+              <li>плавна типографіка через <code>clamp()</code>;</li>
+              <li>користувацькі властивості, світла і темна тема;</li>
+              <li>переходи, анімації, <code>prefers-reduced-motion</code>, вкладеність правил.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l6-lab">
+            <h2 id="l6-lab">Практика</h2>
+            <div class="field">
+              <label for="viewport-range">Ширина контейнера: <output id="viewport-out">360</output> px</label>
+              <input id="viewport-range" type="range" min="320" max="960" value="360">
+            </div>
+            <div class="cq-frame">
+              <div class="cq-demo" id="cq-demo">
+                <article class="cq-card">
+                  <div class="swatch" aria-hidden="true"></div>
+                  <div>
+                    <h3 id="fluid-title">Клієнт</h3>
+                    <p>Колонки тут змінює контейнерний запит, а не ширина вікна.</p>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <p id="adaptive-readout" class="output" aria-live="polite"></p>
+            <button type="button" id="motion-btn" aria-pressed="false">Програти короткий рух</button>
+            <div class="motion-track" aria-hidden="true"><div class="motion-dot" id="motion-dot"></div></div>
+            <p id="motion-note" class="hint"></p>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">CSS</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="css">:root { --ink: #1b1712; --bg: #efe7d6; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #f4efe6; --bg: #12161c; }
+}
+h1 { font-size: clamp(2rem, 1.15rem + 2.6vw, 3.5rem); }
+@media (prefers-reduced-motion: reduce) {
+  .motion-dot { animation: none; }
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-5"><span>Назад</span><strong>Flexbox і Grid</strong></a>
+          <a href="#lecture-7"><span>Далі</span><strong>JavaScript: основи мови</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-7" aria-labelledby="l7-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 7 з 16</p>
+        <h1 id="l7-title">JavaScript: основи мови</h1>
+        <p class="lead">Скрипт підключається усвідомлено, змінні мають межі видимості, а порівняння не покладається на приховане приведення типів.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li><code>defer</code> і <code>type="module"</code>;</li>
+              <li><code>let</code>, <code>const</code>, примітиви, <code>typeof</code>, неявне приведення, <code>==</code> і <code>===</code>;</li>
+              <li>оператори, умови, цикли;</li>
+              <li>оголошення функцій, вирази, стрілки, параметри за замовчуванням;</li>
+              <li>область видимості, підняття, тимчасова мертва зона;</li>
+              <li>налагодження в DevTools.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l7-lab">
+            <h2 id="l7-lab">Практика</h2>
+            <form id="cmp-form">
+              <div class="field">
+                <label for="cmp-left">Ліве значення</label>
+                <select id="cmp-left" name="left"></select>
+              </div>
+              <div class="field">
+                <label for="cmp-right">Праве значення</label>
+                <select id="cmp-right" name="right"></select>
+              </div>
+            </form>
+            <div id="cmp-result" class="output" aria-live="polite"></div>
+          </section>
+        </div>
+        <h2>Порівняйте підходи</h2>
+        <div class="compare">
+          <figure class="compare__item compare__item--bad">
+            <figcaption><span class="flag flag--bad">Погано</span> Приведення і var</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">var count = "1";
+if (count == 1) {
+  console.log(count);
+}</code></pre></div>
+          </figure>
+          <figure class="compare__item compare__item--good">
+            <figcaption><span class="flag flag--good">Добре</span> Явний тип і суворе порівняння</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">const count = 1;
+if (count === 1) {
+  console.log(count);
+}</code></pre></div>
+          </figure>
+        </div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-6"><span>Назад</span><strong>Адаптивний дизайн</strong></a>
+          <a href="#lecture-8"><span>Далі</span><strong>Об’єкти, масиви, модулі</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-8" aria-labelledby="l8-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 8 з 16</p>
+        <h1 id="l8-title">JavaScript: об’єкти, масиви, модулі</h1>
+        <p class="lead">Дані інтерфейсу рідко бувають поодиноким значенням. Їх перетворюють методами колекцій і віддають назовні через модуль.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>властивості, методи, базове розуміння <code>this</code>;</li>
+              <li><code>map</code>, <code>filter</code>, <code>reduce</code>, <code>find</code>, <code>some</code>, <code>every</code>, <code>sort</code>, <code>toSorted</code>;</li>
+              <li>деструктуризація, spread і rest, optional chaining, nullish coalescing;</li>
+              <li>поверхнева і глибока копія (<code>structuredClone</code>), JSON;</li>
+              <li>ES-модулі: <code>import</code> і <code>export</code>.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l8-lab">
+            <h2 id="l8-lab">Практика</h2>
+            <p>Оцінки групи вже вбудовані в сторінку. Оберіть метод.</p>
+            <div class="chipset" id="collection-methods" role="group" aria-label="Метод масиву">
+              <button type="button" data-method="map">map</button>
+              <button type="button" data-method="filter">filter</button>
+              <button type="button" data-method="reduce">reduce</button>
+              <button type="button" data-method="find">find</button>
+              <button type="button" data-method="some">some</button>
+              <button type="button" data-method="every">every</button>
+              <button type="button" data-method="toSorted">toSorted</button>
+            </div>
+            <div id="collection-result" class="output" aria-live="polite"></div>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">export function average(grades) {
+  const total = grades.reduce((sum, grade) =&gt; sum + grade, 0);
+  return total / grades.length;
+}</code></pre></div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">const copy = structuredClone(student);
+const city = student.address?.city ?? "невідомо";</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-7"><span>Назад</span><strong>Основи мови</strong></a>
+          <a href="#lecture-9"><span>Далі</span><strong>DOM і події</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-9" aria-labelledby="l9-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 9 з 16</p>
+        <h1 id="l9-title">DOM і події</h1>
+        <p class="lead">Інтерфейс оживає, коли код знаходить вузол і слухає подію на спільному предку. Текст від людини лишається текстом.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li><code>querySelector</code> і <code>querySelectorAll</code>;</li>
+              <li>створення, вставлення, видалення вузлів;</li>
+              <li><code>textContent</code> і <code>innerHTML</code>, ризик XSS;</li>
+              <li><code>classList</code>, <code>dataset</code>, <code>template</code>;</li>
+              <li><code>addEventListener</code>, фази події, делегування, <code>preventDefault</code>;</li>
+              <li>події форм і клавіатури.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l9-lab">
+            <h2 id="l9-lab">Практика</h2>
+            <p>Клік по пункту перемикає вибір. Обробник висить на списку, а не на кожній кнопці.</p>
+            <ul id="dom-list" class="clean stack"></ul>
+            <form id="dom-form" class="row" onsubmit="event.preventDefault()">
+              <div class="field" style="flex:1 1 12rem">
+                <label for="dom-input">Новий пункт</label>
+                <input id="dom-input" name="item" type="text" maxlength="80" value="&lt;b&gt;жирний&lt;/b&gt;">
+              </div>
+              <button type="submit">Додати текстом</button>
+            </form>
+            <p id="dom-status" class="output" aria-live="polite"></p>
+          </section>
+        </div>
+        <h2>Порівняйте підходи</h2>
+        <div class="compare">
+          <figure class="compare__item compare__item--bad">
+            <figcaption><span class="flag flag--bad">Погано</span> Рядок користувача стає розміткою</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">list.innerHTML += itemText;</code></pre></div>
+          </figure>
+          <figure class="compare__item compare__item--good">
+            <figcaption><span class="flag flag--good">Добре</span> Текст не парситься як HTML</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">button.textContent = itemText;
+list.append(item);</code></pre></div>
+          </figure>
+        </div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-8"><span>Назад</span><strong>Об’єкти, масиви, модулі</strong></a>
+          <a href="#lecture-10"><span>Далі</span><strong>Асинхронний JavaScript</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-10" aria-labelledby="l10-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 10 з 16</p>
+        <h1 id="l10-title">Асинхронний JavaScript</h1>
+        <p class="lead">Потік один. Ілюзію паралельності створюють черги: спочатку поточний стек, потім мікрозадачі, потім макрозадачі.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>стек викликів, цикл подій, макро- і мікрозадачі;</li>
+              <li><code>setTimeout</code>, <code>setInterval</code>, межі колбеків;</li>
+              <li>стани проміса, <code>then</code>, <code>catch</code>, <code>finally</code>;</li>
+              <li><code>Promise.all</code>, <code>allSettled</code>, <code>race</code>, <code>any</code>;</li>
+              <li><code>async/await</code>, помилки, <code>AbortController</code>.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l10-lab">
+            <h2 id="l10-lab">Практика</h2>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">console.log("A");
+setTimeout(() =&gt; console.log("B"), 0);
+Promise.resolve().then(() =&gt; console.log("C"));
+console.log("D");</code></pre></div>
+            <div class="row">
+              <button type="button" id="loop-prev">Крок назад</button>
+              <button type="button" id="loop-next">Наступний крок</button>
+              <button type="button" id="loop-reset" class="button button--ghost">Спочатку</button>
+            </div>
+            <div id="loop-view" class="output" aria-live="polite"></div>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">async function loadCourse(signal) {
+  try {
+    const response = await fetch("/api/course", { signal });
+    return await response.json();
+  } catch (error) {
+    if (error.name === "AbortError") return null;
+    throw error;
+  }
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-9"><span>Назад</span><strong>DOM і події</strong></a>
+          <a href="#lecture-11"><span>Далі</span><strong>HTTP, REST і Fetch API</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-11" aria-labelledby="l11-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 11 з 16</p>
+        <h1 id="l11-title">HTTP, REST і Fetch API</h1>
+        <p class="lead">Відповідь — це статус і тіло. Екран під час запиту має один зрозумілий стан: завантаження, помилка, порожньо або дані.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>методи HTTP, коди статусів, заголовки, JSON, принципи REST;</li>
+              <li>Fetch: метод, заголовки, тіло, <code>response.ok</code>;</li>
+              <li>мережева помилка і помилка статусу — різні випадки;</li>
+              <li>стани інтерфейсу: завантаження, помилка, порожній результат, дані;</li>
+              <li>CORS, вкладка Network, модуль API-клієнта.</li>
+            </ul>
+            <div class="table-wrap">
+              <table>
+                <caption>Коди, які варто впізнавати</caption>
+                <thead><tr><th scope="col">Код</th><th scope="col">Сенс для інтерфейсу</th></tr></thead>
+                <tbody>
+                  <tr><td>200</td><td>Можна читати тіло успішної відповіді.</td></tr>
+                  <tr><td>201</td><td>Ресурс створено.</td></tr>
+                  <tr><td>204</td><td>Успіх без тіла.</td></tr>
+                  <tr><td>400</td><td>Запит зібрано неправильно.</td></tr>
+                  <tr><td>401</td><td>Потрібна автентифікація.</td></tr>
+                  <tr><td>404</td><td>Ресурсу немає. Проміс при цьому виконано.</td></tr>
+                  <tr><td>500</td><td>Помилка на сервері.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <section class="lab" aria-labelledby="l11-lab">
+            <h2 id="l11-lab">Практика</h2>
+            <p>Запити імітовані таймером. Сторінка не звертається до мережі.</p>
+            <div class="chipset" role="group" aria-label="Сценарій відповіді">
+              <button type="button" data-scenario="success">Дані</button>
+              <button type="button" data-scenario="empty">Порожньо</button>
+              <button type="button" data-scenario="status">Статус 404</button>
+              <button type="button" data-scenario="network">Мережа</button>
+              <button type="button" id="fetch-cancel">Скасувати</button>
+            </div>
+            <div id="fetch-view" class="output" aria-live="polite">Оберіть сценарій.</div>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">export async function getNotes(signal) {
+  const response = await fetch("/api/notes", { signal });
+  if (!response.ok) {
+    throw new Error("Статус " + response.status);
+  }
+  return response.json();
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-10"><span>Назад</span><strong>Асинхронний JavaScript</strong></a>
+          <a href="#lecture-12"><span>Далі</span><strong>Сховища, URL, валідація форм у JS</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-12" aria-labelledby="l12-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 12 з 16</p>
+        <h1 id="l12-title">Браузерні API: сховища, URL, валідація форм у JS</h1>
+        <p class="lead">Частина стану живе в браузері, частина — в адресі. Запис у сховище завжди стоїть у <code>try/catch</code>: відмова сховища не ламає сторінку.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li><code>localStorage</code> і <code>sessionStorage</code>: рядки, обсяг, винятки, серіалізація;</li>
+              <li>огляд IndexedDB і cookies;</li>
+              <li><code>URL</code>, <code>URLSearchParams</code>, History API без перезавантаження;</li>
+              <li>Constraint Validation API: <code>checkValidity</code>, <code>setCustomValidity</code>;</li>
+              <li>читання форми через <code>FormData</code>.</li>
+            </ul>
+            <dl class="deflist">
+              <dt>localStorage</dt><dd>Лишається після закриття вкладки. Спільне для вкладок одного походження.</dd>
+              <dt>sessionStorage</dt><dd>Живе до закриття вкладки.</dd>
+              <dt>cookie</dt><dd>Їде із запитами на сервер, обсяг невеликий.</dd>
+              <dt>IndexedDB</dt><dd>Структуровані дані, асинхронний доступ.</dd>
+            </dl>
+          </div>
+          <div class="stack">
+            <section class="lab" aria-labelledby="l12-store">
+              <h2 id="l12-store">Сховище</h2>
+              <form id="note-form" onsubmit="event.preventDefault()">
+                <div class="field">
+                  <label for="note-input">Нотатка лекції</label>
+                  <textarea id="note-input" name="note" maxlength="280"></textarea>
+                </div>
+                <div class="row">
+                  <button type="submit">Зберегти</button>
+                  <button type="button" id="note-load">Прочитати</button>
+                  <button type="button" id="note-broken">Сховище недоступне</button>
+                </div>
+              </form>
+              <p id="note-status" class="output" aria-live="polite"></p>
+            </section>
+            <section class="lab" aria-labelledby="l12-url">
+              <h2 id="l12-url">Адреса</h2>
+              <form id="query-form" onsubmit="event.preventDefault()">
+                <div class="field">
+                  <label for="query-input">Рядок запиту</label>
+                  <input id="query-input" name="query" type="text" value="?lang=uk&amp;topic=css">
+                </div>
+                <button type="submit">Розібрати параметри</button>
+              </form>
+              <div id="query-result" class="output" aria-live="polite"></div>
+              <form id="topic-form" onsubmit="event.preventDefault()">
+                <div class="field">
+                  <label for="topic-select">Тема без перезавантаження</label>
+                  <select id="topic-select" name="topic">
+                    <option value="all">Усі</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="js">JavaScript</option>
+                  </select>
+                </div>
+                <button type="submit">Записати в адресу</button>
+              </form>
+              <ul id="topic-list"></ul>
+              <p id="topic-url" class="hint"></p>
+            </section>
+            <section class="lab" aria-labelledby="l12-nick">
+              <h2 id="l12-nick">Власна перевірка</h2>
+              <form id="nick-form" novalidate onsubmit="event.preventDefault()">
+                <div class="field">
+                  <label for="nick-input">Ім’я користувача</label>
+                  <input id="nick-input" name="nick" type="text" required minlength="3" autocomplete="username">
+                </div>
+                <button type="submit">Перевірити</button>
+              </form>
+              <p id="nick-result" class="output" aria-live="polite"></p>
+            </section>
+          </div>
+        </div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-11"><span>Назад</span><strong>HTTP, REST і Fetch</strong></a>
+          <a href="#lecture-13"><span>Далі</span><strong>TypeScript: основи</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-13" aria-labelledby="l13-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 13 з 16</p>
+        <h1 id="l13-title">TypeScript: основи</h1>
+        <p class="lead">TypeScript перевіряє наміри до того, як браузер отримає JavaScript. У рантаймі лишаються значення, а не анотації.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>навіщо TypeScript і як він компілюється в JavaScript;</li>
+              <li>анотації і виведення типів;</li>
+              <li>примітиви, масиви, кортежі, об’єктні типи, <code>type</code> і <code>interface</code>;</li>
+              <li>необов’язкові й <code>readonly</code> властивості;</li>
+              <li>типізація функцій, <code>any</code> і <code>unknown</code>, строгий режим компілятора.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l13-lab">
+            <h2 id="l13-lab">Практика</h2>
+            <div class="field">
+              <label for="ts-value">Значення</label>
+              <select id="ts-value" name="value">
+                <option value="title">рядок «веб»</option>
+                <option value="count">число 16</option>
+                <option value="empty">null</option>
+              </select>
+            </div>
+            <div class="row">
+              <button type="button" id="ts-any">Прийняти як any</button>
+              <button type="button" id="ts-unknown">Прийняти як unknown</button>
+            </div>
+            <p id="ts-result" class="output" aria-live="polite"></p>
+          </section>
+        </div>
+        <h2>Порівняйте підходи</h2>
+        <div class="compare">
+          <figure class="compare__item compare__item--bad">
+            <figcaption><span class="flag flag--bad">Погано</span> any вимикає перевірку</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">TypeScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="ts">function lengthOf(value: any) {
+  return value.length;
+}</code></pre></div>
+          </figure>
+          <figure class="compare__item compare__item--good">
+            <figcaption><span class="flag flag--good">Добре</span> unknown вимагає звуження</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">TypeScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="ts">function lengthOf(value: unknown) {
+  if (typeof value === "string") return value.length;
+  return null;
+}</code></pre></div>
+          </figure>
+        </div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-12"><span>Назад</span><strong>Сховища, URL, валідація</strong></a>
+          <a href="#lecture-14"><span>Далі</span><strong>TypeScript: просунуті типи</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-14" aria-labelledby="l14-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 14 з 16</p>
+        <h1 id="l14-title">TypeScript: просунуті типи</h1>
+        <p class="lead">Точність типу зростає від фактів у коді: літерал дискримінанта, <code>typeof</code>, <code>in</code>, <code>instanceof</code>. Гілка, яка не повинна існувати, має тип <code>never</code>.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>об’єднання, перетини, літеральні типи;</li>
+              <li>звуження, дискриміновані об’єднання, власні type guards, вичерпність через <code>never</code>;</li>
+              <li>generics і обмеження, <code>Partial</code>, <code>Pick</code>, <code>Omit</code>, <code>Record</code>, <code>ReturnType</code>;</li>
+              <li><code>satisfies</code>, вибір між <code>enum</code> і об’єднанням літералів;</li>
+              <li>типізація DOM і відповідей API, <code>tsconfig</code>.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l14-lab">
+            <h2 id="l14-lab">Практика</h2>
+            <form id="shape-form">
+              <fieldset class="plain">
+                <legend>Фігура</legend>
+                <label><input type="radio" name="kind" value="circle" checked> коло</label>
+                <label><input type="radio" name="kind" value="square"> квадрат</label>
+                <label><input type="radio" name="kind" value="triangle"> трикутник</label>
+              </fieldset>
+              <div class="field">
+                <label for="shape-size">Радіус або сторона</label>
+                <input id="shape-size" name="size" type="number" min="1" max="100" value="10">
+              </div>
+            </form>
+            <p id="shape-result" class="output" aria-live="polite"></p>
+          </section>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">TypeScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="ts">type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; side: number };
+
+function area(shape: Shape): number {
+  switch (shape.kind) {
+    case "circle":
+      return Math.PI * shape.radius ** 2;
+    case "square":
+      return shape.side ** 2;
+    default: {
+      const _exhaustive: never = shape;
+      return _exhaustive;
+    }
+  }
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-13"><span>Назад</span><strong>TypeScript: основи</strong></a>
+          <a href="#lecture-15"><span>Далі</span><strong>Інструменти фронтенд-розробки</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-15" aria-labelledby="l15-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 15 з 16</p>
+        <h1 id="l15-title">Інструменти фронтенд-розробки</h1>
+        <p class="lead"><code>package.json</code> фіксує, чим проєкт живе під час розробки і що потрапляє в збірку. Секрети в клієнтські змінні не кладуть.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>Node.js і npm: залежності, devDependencies, scripts, lock-файл, <code>npx</code>, семвер;</li>
+              <li>Vite: сервер розробки, модулі, збірка;</li>
+              <li>змінні середовища і їх публічність на клієнті;</li>
+              <li>ESLint, Prettier, збирання для продакшену.</li>
+            </ul>
+          </div>
+          <section class="lab" aria-labelledby="l15-lab">
+            <h2 id="l15-lab">Практика</h2>
+            <p>Кнопки нічого не встановлюють: вони пояснюють роль скрипта.</p>
+            <div class="chipset" role="group" aria-label="npm scripts">
+              <button type="button" data-script="dev">dev</button>
+              <button type="button" data-script="build">build</button>
+              <button type="button" data-script="lint">lint</button>
+              <button type="button" data-script="format">format</button>
+            </div>
+            <p id="script-result" class="output" aria-live="polite"></p>
+            <form id="semver-form">
+              <fieldset class="plain">
+                <legend>Оновити 1.4.2</legend>
+                <label><input type="radio" name="level" value="patch" checked> patch</label>
+                <label><input type="radio" name="level" value="minor"> minor</label>
+                <label><input type="radio" name="level" value="major"> major</label>
+              </fieldset>
+            </form>
+            <p id="semver-result" class="output"></p>
+          </section>
+        </div>
+        <h2>Порівняйте підходи</h2>
+        <div class="compare">
+          <figure class="compare__item compare__item--bad">
+            <figcaption><span class="flag flag--bad">Погано</span> Секрет у змінній клієнта</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">const key = import.meta.env.VITE_SECRET;</code></pre></div>
+          </figure>
+          <figure class="compare__item compare__item--good">
+            <figcaption><span class="flag flag--good">Добре</span> На клієнті лише публічна адреса</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">const endpoint = import.meta.env.VITE_API_URL;</code></pre></div>
+          </figure>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JSON</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="json">{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  }
+}</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-14"><span>Назад</span><strong>Просунуті типи</strong></a>
+          <a href="#lecture-16"><span>Далі</span><strong>Якість клієнтського застосунку</strong></a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="view lecture" id="lecture-16" aria-labelledby="l16-title">
+      <div class="wrap">
+        <p class="crumb"><a href="#overview">На головну</a></p>
+        <p class="eyebrow">Лекція 16 з 16</p>
+        <h1 id="l16-title">Якість клієнтського застосунку</h1>
+        <p class="lead">Якість видно в аудиті: сторінка керується з клавіатури, макет не стрибає, дія отримує відповідь, а дані людини не стають розміткою.</p>
+        <div class="split">
+          <div>
+            <h2>Питання лекції</h2>
+            <ul>
+              <li>доступність за основними критеріями WCAG, аудит Lighthouse;</li>
+              <li>Core Web Vitals: LCP, INP, CLS;</li>
+              <li>розміри зображень, відкладене завантаження, <code>defer</code> і <code>async</code>;</li>
+              <li>XSS, екранування, ідея Content Security Policy;</li>
+              <li>структура застосунку і поділ на модулі.</li>
+            </ul>
+            <dl class="deflist">
+              <dt>LCP</dt><dd>Коли з’являється найбільший видимий вміст.</dd>
+              <dt>INP</dt><dd>Наскільки швидко інтерфейс відповідає на дію.</dd>
+              <dt>CLS</dt><dd>Чи зміщується макет під час завантаження.</dd>
+            </dl>
+          </div>
+          <section class="lab" aria-labelledby="l16-lab">
+            <h2 id="l16-lab">Практика</h2>
+            <p>Позначте проблеми, які ще є на уявній сторінці. Рахунок спаде.</p>
+            <form id="audit-form">
+              <label class="checkline"><input type="checkbox" name="alt" checked> У зображення немає текстової альтернативи</label>
+              <label class="checkline"><input type="checkbox" name="label" checked> Поле без label</label>
+              <label class="checkline"><input type="checkbox" name="button" checked> Кнопка зроблена з div</label>
+              <label class="checkline"><input type="checkbox" name="cls" checked> Картинка без розмірів зсуває макет</label>
+              <label class="checkline"><input type="checkbox" name="motion"> Анімація ігнорує prefers-reduced-motion</label>
+            </form>
+            <p id="audit-result" class="output" aria-live="polite"></p>
+          </section>
+        </div>
+        <h2>Порівняйте підходи</h2>
+        <div class="compare">
+          <figure class="compare__item compare__item--bad">
+            <figcaption><span class="flag flag--bad">Погано</span> Div з обробником кліку</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">HTML</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="html">&lt;div class="btn" onclick="save()"&gt;Зберегти&lt;/div&gt;</code></pre></div>
+          </figure>
+          <figure class="compare__item compare__item--good">
+            <figcaption><span class="flag flag--good">Добре</span> Нативна кнопка</figcaption>
+            <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">HTML</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="html">&lt;button type="button"&gt;Зберегти&lt;/button&gt;</code></pre></div>
+          </figure>
+        </div>
+        <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">Text</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="text">Content-Security-Policy: default-src 'self'</code></pre></div>
+        <nav class="pager" aria-label="Сусідні лекції">
+          <a href="#lecture-15"><span>Назад</span><strong>Інструменти</strong></a>
+          <a href="#overview"><span>До програми</span><strong>Усі лекції курсу</strong></a>
+        </nav>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Курс «Клієнтські технології вебпрограмування», спеціальність 122 «Комп’ютерні науки», бакалаврат.</p>
+      <p>Сторінка статична і розрахована на GitHub Pages. Приклади не ходять у мережу за даними.</p>
+    </div>
+  </footer>
+  <script>
+    "use strict";
+
+    const LECTURE_PAGES = {
+      "lecture-1": "topic-01/lecture-01-how-web-works.html",
+      "lecture-2": "topic-02/lecture-02-html5-structure-semantics.html",
+      "lecture-3": "topic-03/lecture-03-html-forms-accessibility.html",
+      "lecture-4": "topic-04/lecture-04-css-basics.html"
+    };
+    const STORAGE_KEY = "ctw-course-progress-v1";
+    const NOTE_KEY = "ctw-course-note-v1";
+    const STUDENTS = [
+      { name: "Оксана", grade: 92 },
+      { name: "Марко", grade: 74 },
+      { name: "Ірина", grade: 88 },
+      { name: "Тарас", grade: 61 },
+      { name: "Софія", grade: 95 }
+    ];
+    const VALUE_PRESETS = [
+      { id: "num", label: "число 1", value: 1 },
+      { id: "str", label: "рядок \"1\"", value: "1" },
+      { id: "zero", label: "число 0", value: 0 },
+      { id: "false", label: "false", value: false },
+      { id: "null", label: "null", value: null },
+      { id: "empty", label: "порожній рядок", value: "" }
+    ];
+    const SOURCES = [
+      { w: 480, label: "photo-480.jpg" },
+      { w: 800, label: "photo-800.jpg" },
+      { w: 1280, label: "photo-1280.jpg" }
+    ];
+    const LIBRARY = [
+      { topic: "html", title: "Семантичний каркас документа" },
+      { topic: "html", title: "Підписи полів форми" },
+      { topic: "css", title: "Каскад і блокова модель" },
+      { topic: "js", title: "Події і делегування" }
+    ];
+    const BLOCK_LABELS = {
+      all: "Усі лекції",
+      html: "Веб і HTML",
+      css: "CSS",
+      js: "JavaScript",
+      ts: "Типи і якість"
+    };
+
+    let progress = emptyProgress();
+    let storageReady = false;
+    let urlState = { parsed: null, step: 0 };
+    let loopStep = 0;
+    let fetchController = null;
+    let fetchToken = 0;
+    let routeReady = false;
+
+    function emptyProgress() {
+      return { visited: [] };
+    }
+
+    function browserStorage() {
+      try {
+        return window.localStorage;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function readStorage(key) {
+      try {
+        const storage = browserStorage();
+        if (!storage) return { ok: false, value: null };
+        const raw = storage.getItem(key);
+        if (raw == null) return { ok: true, value: null };
+        return { ok: true, value: JSON.parse(raw) };
+      } catch (error) {
+        return { ok: false, value: null };
+      }
+    }
+
+    function writeStorage(key, value) {
+      try {
+        const storage = browserStorage();
+        if (!storage) return { ok: false };
+        storage.setItem(key, JSON.stringify(value));
+        return { ok: true };
+      } catch (error) {
+        return { ok: false };
+      }
+    }
+
+    function writeWithStorage(storage, key, value) {
+      try {
+        if (!storage) throw new Error("no-storage");
+        storage.setItem(key, JSON.stringify(value));
+        return { ok: true, message: "Запис збережено в цьому браузері." };
+      } catch (error) {
+        return { ok: false, message: "Сховище відхилило запис. Сторінка й далі працює без нього." };
+      }
+    }
+
+    function readWithStorage(storage, key) {
+      try {
+        if (!storage) throw new Error("no-storage");
+        const raw = storage.getItem(key);
+        if (raw == null) return { ok: true, value: null, message: "У сховищі ще немає нотатки." };
+        return { ok: true, value: JSON.parse(raw), message: "Нотатку прочитано." };
+      } catch (error) {
+        return { ok: false, value: null, message: "Прочитати сховище не вдалося." };
+      }
+    }
+
+    function normalizeProgress(value) {
+      if (!value || typeof value !== "object") return emptyProgress();
+      const visited = Array.isArray(value.visited)
+        ? value.visited.filter((id) => /^lecture-([1-9]|1[0-6])$/.test(id))
+        : [];
+      return { visited: [...new Set(visited)] };
+    }
+
+    function loadProgress() {
+      const stored = readStorage(STORAGE_KEY);
+      storageReady = stored.ok;
+      if (!stored.ok || stored.value == null) return emptyProgress();
+      return normalizeProgress(stored.value);
+    }
+
+    function saveProgress(next) {
+      progress = next;
+      const result = writeStorage(STORAGE_KEY, progress);
+      storageReady = result.ok;
+      return result;
+    }
+
+    function storageNote(available) {
+      if (available) return "Переглянуті лекції зберігаються в localStorage цього браузера.";
+      return "Сховище браузера недоступне. Прогрес працює, доки сторінка відкрита.";
+    }
+
+    function formatVisited(visited) {
+      return { count: visited.length, total: 16, text: "Відкрито лекцій: " + visited.length + " з 16" };
+    }
+
+    function markVisited(current, id) {
+      if (current.visited.includes(id)) return current;
+      return Object.assign({}, current, { visited: current.visited.concat(id) });
+    }
+
+    function lectureBlock(number) {
+      if (number <= 3) return "html";
+      if (number <= 6) return "css";
+      if (number <= 12) return "js";
+      return "ts";
+    }
+
+    function countLectures(block) {
+      let count = 0;
+      for (let number = 1; number <= 16; number += 1) {
+        if (block === "all" || lectureBlock(number) === block) count += 1;
+      }
+      return count;
+    }
+
+    function filterSummary(block) {
+      return { block, count: countLectures(block), text: BLOCK_LABELS[block] + ": " + countLectures(block) };
+    }
+
+    function selectedBlock(form) {
+      const checked = form.querySelector('input[name="block"]:checked');
+      return checked ? checked.value : "all";
+    }
+
+    function resolveViewId(hash) {
+      const id = (hash || "#overview").replace(/^#/, "") || "overview";
+      const node = document.getElementById(id);
+      if (node && node.classList.contains("view")) return id;
+      return "overview";
+    }
+
+    function lectureProgress(id) {
+      const match = /^lecture-(\d+)$/.exec(id);
+      if (!match) return null;
+      const current = Number(match[1]);
+      return { current, total: 16, ratio: current / 16 };
+    }
+
+    function routeMeta(id) {
+      const lecture = lectureProgress(id);
+      if (!lecture) return { label: "Програма курсу", ratio: 0, showBar: false };
+      return { label: "Лекція " + lecture.current + " з " + lecture.total, ratio: lecture.ratio, showBar: true };
+    }
+
+    function navKey() {
+      return "overview";
+    }
+
+    function prefersReducedMotion() {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+
+    function readTheme() {
+      try {
+        const value = localStorage.getItem("ctw-theme");
+        return value === "dark" || value === "light" ? value : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function activeTheme(saved) {
+      if (saved === "dark" || saved === "light") return saved;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function paintThemeButton(button, theme) {
+      button.textContent = theme === "dark" ? "Світла тема" : "Темна тема";
+      button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      return theme;
+    }
+
+    function bindTheme() {
+      const button = document.getElementById("theme-toggle");
+      if (!button) return "";
+      let theme = activeTheme(readTheme());
+      paintThemeButton(button, theme);
+      button.addEventListener("click", () => {
+        theme = theme === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+        try { localStorage.setItem("ctw-theme", theme); } catch (error) {}
+        paintThemeButton(button, theme);
+      });
+      return theme;
+    }
+
+    function documentTitle(id) {
+      const heading = document.querySelector("#" + id + " h1");
+      const name = heading ? heading.textContent : "Курс";
+      if (id === "overview") return name;
+      return name + " · Клієнтські технології";
+    }
+
+    function clampIndex(index, total) {
+      if (!Number.isFinite(index)) return 0;
+      return Math.max(0, Math.min(total - 1, index));
+    }
+
+    function parseUrlParts(value) {
+      try {
+        const url = new URL(value);
+        return {
+          ok: true,
+          href: url.href,
+          protocol: url.protocol.replace(":", ""),
+          host: url.host,
+          port: url.port || (url.protocol === "https:" ? "443" : "80"),
+          pathname: url.pathname,
+          search: url.search || "немає",
+          hash: url.hash || "немає"
+        };
+      } catch (error) {
+        return { ok: false, error: "Потрібна абсолютна адреса з протоколом, наприклад https://university.example/course" };
+      }
+    }
+
+    function urlRows(parts) {
+      return [
+        ["Протокол", parts.protocol],
+        ["Хост", parts.host],
+        ["Порт", parts.port],
+        ["Шлях", parts.pathname],
+        ["Запит", parts.search],
+        ["Фрагмент", parts.hash]
+      ];
+    }
+
+    function journeySteps(parts) {
+      return [
+        { title: "Адреса", text: "Браузер отримує " + parts.href + "." },
+        { title: "DNS", text: "Ім’я " + parts.host + " запитується в DNS і перетворюється на IP-адресу." },
+        { title: "Запит", text: "Клієнт надсилає запит на шлях " + parts.pathname + "." },
+        { title: "Відповідь", text: "Сервер повертає статус, заголовки і тіло документа." },
+        { title: "Побудова", text: "Браузер будує DOM і CSSOM, виконує скрипти і малює кадр." }
+      ];
+    }
+
+    function stepIndex(index, delta, total) {
+      return Math.max(0, Math.min(total - 1, index + delta));
+    }
+
+    function landmarkInfo(name) {
+      const map = {
+        header: "header збирає вступну групу: назву, навігацію або інструменти ділянки. Він може бути в сторінки і в статті.",
+        nav: "nav — блок навігаційних посилань. Якщо їх кілька, кожному дають доступне ім’я.",
+        main: "main містить унікальний основний вміст. На сторінці він один, усередині нього не ставлять інший main.",
+        article: "article — самостійний матеріал, який має сенс окремо: допис, картка курсу, коментар.",
+        section: "section групує тему всередині документа і зазвичай має власний заголовок.",
+        aside: "aside тримає дотичне: примітку, джерела, блок «див. також», а не основний хід.",
+        footer: "footer закриває ділянку: авторство, посилання, юридичні рядки."
+      };
+      return map[name] || "Оберіть елемент, щоб побачити його роль.";
+    }
+
+    function collectFormState(form) {
+      const data = new FormData(form);
+      const values = {
+        name: String(data.get("name") || ""),
+        email: String(data.get("email") || ""),
+        year: String(data.get("year") || ""),
+        track: String(data.get("track") || ""),
+        about: String(data.get("about") || "")
+      };
+      const errors = [...form.elements]
+        .filter((element) => element.willValidate && !element.validity.valid)
+        .map((element) => ({ label: element.labels && element.labels[0] ? element.labels[0].textContent : element.name, message: element.validationMessage }));
+      return { valid: form.checkValidity(), values, errors, passwordLength: String(data.get("password") || "").length };
+    }
+
+    function registrationText(state) {
+      if (!state.valid) {
+        const lines = state.errors.map((error) => error.label + ": " + error.message);
+        return { tone: "bad", text: lines.join(" ") || "Форма ще не валідна." };
+      }
+      return {
+        tone: "good",
+        text: "Форма валідна. " + state.values.name + ", " + state.values.email + ", вступ " + state.values.year + ", трек «" + state.values.track + "». Довжина пароля: " + state.passwordLength + " символів."
+      };
+    }
+
+    function readBoxModel(form) {
+      const data = new FormData(form);
+      return {
+        content: Number(data.get("content")),
+        padding: Number(data.get("padding")),
+        border: Number(data.get("border")),
+        margin: Number(data.get("margin")),
+        sizing: String(data.get("sizing"))
+      };
+    }
+
+    function measureBox(model) {
+      if (model.sizing === "border-box") {
+        const inner = Math.max(0, model.content - model.padding * 2 - model.border * 2);
+        return {
+          content: inner,
+          borderBox: model.content,
+          total: model.content + model.margin * 2,
+          text: "border-box: задані " + model.content + " px уже містять padding і border. Контент лишається " + inner + " px. Разом із margin: " + (model.content + model.margin * 2) + " px."
+        };
+      }
+      const borderBox = model.content + model.padding * 2 + model.border * 2;
+      return {
+        content: model.content,
+        borderBox,
+        total: borderBox + model.margin * 2,
+        text: "content-box: до " + model.content + " px додаються padding і border. Рамка займає " + borderBox + " px, разом із margin — " + (borderBox + model.margin * 2) + " px."
+      };
+    }
+
+    function specificityWinner(choice) {
+      const rules = [
+        { id: "p", score: [0, 0, 1], text: "p має специфічність (0, 0, 1)." },
+        { id: ".note", score: [0, 1, 0], text: ".note має специфічність (0, 1, 0) і перемагає елемент." },
+        { id: "#intro .note", score: [1, 1, 0], text: "#intro .note має специфічність (1, 1, 0). Ідентифікатор переважує клас." }
+      ];
+      const winner = rules[2];
+      const picked = rules.find((rule) => rule.id === choice);
+      return {
+        ok: choice === winner.id,
+        text: (choice === winner.id ? "Так. " : "Перемагає інше правило. ") + (picked ? picked.text + " " : "") + winner.text
+      };
+    }
+
+    function readLayoutOptions(form) {
+      return {
+        mode: form.elements.mode.value,
+        direction: form.elements.direction.value,
+        justify: form.elements.justify.value,
+        columns: Number(form.elements.columns.value),
+        gap: Number(form.elements.gap.value)
+      };
+    }
+
+    function layoutDeclaration(options) {
+      if (options.mode === "grid") {
+        return {
+          display: "grid",
+          gridTemplateColumns: "repeat(" + options.columns + ", minmax(0, 1fr))",
+          gap: options.gap + "px",
+          summary: "Grid: " + options.columns + " колонки, проміжок " + options.gap + " px. Керуються обидва виміри."
+        };
+      }
+      return {
+        display: "flex",
+        flexDirection: options.direction,
+        flexWrap: "wrap",
+        justifyContent: options.justify,
+        gap: options.gap + "px",
+        summary: "Flexbox: головна вісь " + options.direction + ", вирівнювання " + options.justify + ". Це один ряд, який може перенестись."
+      };
+    }
+
+    function chooseSource(viewport, sources) {
+      return sources.find((source) => source.w >= viewport) || sources[sources.length - 1];
+    }
+
+    function adaptiveSnapshot(viewport) {
+      const source = chooseSource(viewport, SOURCES);
+      const columns = viewport >= 420 ? "дві колонки" : "одна колонка";
+      return {
+        viewport,
+        source,
+        columns,
+        text: "За ширини " + viewport + " px контейнерний запит дає " + columns + ". Для sizes=\"100vw\" браузер узяв би " + source.label + " (" + source.w + "w)."
+      };
+    }
+
+    function motionDecision(systemReduced, userAsked) {
+      if (systemReduced) return { animate: false, reason: "У системі увімкнено prefers-reduced-motion. Рух не запускається." };
+      if (!userAsked) return { animate: false, reason: "Рух зупинено." };
+      return { animate: true, reason: "Короткий перехід дозволений налаштуванням системи." };
+    }
+
+    function presetById(id) {
+      return VALUE_PRESETS.find((item) => item.id === id) || VALUE_PRESETS[0];
+    }
+
+    function compareEquality(leftId, rightId) {
+      const left = presetById(leftId);
+      const right = presetById(rightId);
+      return {
+        text: "typeof ліворуч: " + typeof left.value + ". typeof праворуч: " + typeof right.value + ". == дає " + String(left.value == right.value) + ". === дає " + String(left.value === right.value) + "."
+      };
+    }
+
+    function sortedByGrade(students) {
+      const copy = students.map((student) => ({ name: student.name, grade: student.grade }));
+      if (typeof copy.toSorted === "function") return copy.toSorted((a, b) => b.grade - a.grade);
+      return copy.sort((a, b) => b.grade - a.grade);
+    }
+
+    function runCollection(method, students) {
+      if (method === "map") return { text: "Імена: " + students.map((student) => student.name).join(", ") };
+      if (method === "filter") {
+        const passed = students.filter((student) => student.grade >= 80).map((student) => student.name);
+        return { text: "Оцінка від 80: " + passed.join(", ") };
+      }
+      if (method === "reduce") {
+        const average = students.reduce((sum, student) => sum + student.grade, 0) / students.length;
+        return { text: "Середнє: " + average.toFixed(1) };
+      }
+      if (method === "find") {
+        const found = students.find((student) => student.grade < 70);
+        return { text: found ? "Перша оцінка нижче 70: " + found.name + " (" + found.grade + ")" : "Такого запису немає." };
+      }
+      if (method === "some") return { text: "Чи є оцінка 100: " + String(students.some((student) => student.grade === 100)) };
+      if (method === "every") return { text: "Чи всі оцінки від 60: " + String(students.every((student) => student.grade >= 60)) };
+      const ranked = sortedByGrade(students).map((student) => student.name + " (" + student.grade + ")");
+      return { text: "toSorted за оцінкою: " + ranked.join(", ") + ". Початковий масив не змінено." };
+    }
+
+    function cleanItem(value) {
+      const text = value.trim();
+      if (!text) return { ok: false, text: "", message: "Введіть текст пункту." };
+      return { ok: true, text, message: "Пункт додано через textContent. Теги видно як символи, браузер їх не виконує." };
+    }
+
+    function buildLoopFrames() {
+      return [
+        { title: "Старт", stack: "порожньо", micro: "порожньо", macro: "порожньо", log: "ще немає", note: "Скрипт ще не зайняв стек викликів." },
+        { title: "log A", stack: "скрипт", micro: "порожньо", macro: "порожньо", log: "A", note: "Синхронний виклик пише в лог одразу." },
+        { title: "setTimeout", stack: "скрипт", micro: "порожньо", macro: "B", log: "A", note: "Таймер із нульовою затримкою стає макрозадачею, а не «наступним рядком»." },
+        { title: "Promise.then", stack: "скрипт", micro: "C", macro: "B", log: "A", note: "Колбек виконаного проміса потрапляє в чергу мікрозадач." },
+        { title: "log D", stack: "скрипт → вихід", micro: "C", macro: "B", log: "A, D", note: "Поточний скрипт добігає кінця раніше за обидві черги." },
+        { title: "Мікрозадача", stack: "C", micro: "порожньо", macro: "B", log: "A, D, C", note: "Після стека браузер спорожнює мікрозадачі." },
+        { title: "Макрозадача", stack: "B", micro: "порожньо", macro: "порожньо", log: "A, D, C, B", note: "Лише потім виконується колбек таймера. Порядок: A, D, C, B." }
+      ];
+    }
+
+    function getLoopFrame(index) {
+      const frames = buildLoopFrames();
+      const safe = clampIndex(index, frames.length);
+      return { index: safe, total: frames.length, frame: frames[safe] };
+    }
+
+    function mockFetch(scenario, signal) {
+      const notes = [
+        { title: "Маршрут", body: "Клієнт просить ресурс, сервер відповідає статусом." },
+        { title: "Стан екрана", body: "Покажіть завантаження, помилку, порожній список або дані." }
+      ];
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+          if (scenario === "network") {
+            reject(new TypeError("Failed to fetch"));
+            return;
+          }
+          if (scenario === "status") {
+            resolve({ ok: false, status: 404, data: [] });
+            return;
+          }
+          if (scenario === "empty") {
+            resolve({ ok: true, status: 200, data: [] });
+            return;
+          }
+          resolve({ ok: true, status: 200, data: notes });
+        }, 700);
+        const onAbort = () => {
+          clearTimeout(timer);
+          const abortError = new Error("Aborted");
+          abortError.name = "AbortError";
+          reject(abortError);
+        };
+        if (signal.aborted) {
+          onAbort();
+          return;
+        }
+        signal.addEventListener("abort", onAbort, { once: true });
+      });
+    }
+
+    function classifyFetchError(error) {
+      if (error && error.name === "AbortError") return "abort";
+      return "network";
+    }
+
+    function viewModelForFetch(result) {
+      if (result.kind === "abort") return { state: "idle", title: "Запит скасовано", detail: "AbortController перервав очікування. Стан екрана спокійний.", items: [] };
+      if (result.kind === "network") return { state: "error", title: "Мережа недоступна", detail: "Проміс відхилено. Об’єкта response немає, тож response.ok перевіряти ні на чому.", items: [] };
+      if (!result.response.ok) return { state: "error", title: "Статус " + result.response.status, detail: "Мережа відповіла, але response.ok дорівнює false. Це помилка статусу, не обрив.", items: [] };
+      if (result.response.data.length === 0) return { state: "empty", title: "Порожньо", detail: "Статус успішний, а список даних порожній. Це окремий стан інтерфейсу.", items: [] };
+      return { state: "data", title: "Дані", detail: "Можна показувати список.", items: result.response.data };
+    }
+
+    function serializeNote(text) {
+      return { text: text.slice(0, 280), savedAt: new Date().toISOString() };
+    }
+
+    function parseSearch(value) {
+      const normalized = value.trim().startsWith("?") ? value.trim() : "?" + value.trim();
+      try {
+        const params = new URLSearchParams(normalized);
+        const entries = [];
+        params.forEach((item, key) => entries.push({ key, value: item }));
+        if (!entries.length) return { ok: true, entries, text: "Параметрів немає." };
+        return { ok: true, entries, text: entries.map((entry) => entry.key + " = " + entry.value).join("; ") };
+      } catch (error) {
+        return { ok: false, entries: [], text: "Цей рядок не вдалося розібрати." };
+      }
+    }
+
+    function topicFromHref(href) {
+      try {
+        return new URL(href).searchParams.get("topic") || "all";
+      } catch (error) {
+        return "all";
+      }
+    }
+
+    function topicUrl(href, topic) {
+      const url = new URL(href);
+      if (!topic || topic === "all") url.searchParams.delete("topic");
+      else url.searchParams.set("topic", topic);
+      return url;
+    }
+
+    function notesForTopic(topic, notes) {
+      if (!topic || topic === "all") return notes;
+      return notes.filter((note) => note.topic === topic);
+    }
+
+    function nicknameVerdict(value) {
+      const nick = value.trim();
+      if (nick.length < 3) return { message: "Вкажіть щонайменше 3 символи.", tone: "bad" };
+      if (nick.toLowerCase() === "admin") return { message: "Це ім’я зарезервоване.", tone: "bad" };
+      return { message: "", tone: "good", text: "Ім’я «" + nick + "» можна використати." };
+    }
+
+    function describeJsValue(kind) {
+      const map = {
+        title: { label: "«веб»", value: "веб", type: "string" },
+        count: { label: "16", value: 16, type: "number" },
+        empty: { label: "null", value: null, type: "object", note: " typeof null історично дорівнює \"object\"." }
+      };
+      return map[kind] || map.title;
+    }
+
+    function acceptAsAny(described) {
+      return { tone: "bad", text: "any приймає " + described.label + " і дозволяє читати властивості без перевірки. Помилка проявиться вже під час виконання." };
+    }
+
+    function acceptAsUnknown(described) {
+      if (typeof described.value === "string") {
+        return { tone: "good", text: "unknown не відкриває значення одразу. Після typeof === \"string\" довжина «" + described.value + "» дорівнює " + described.value.length + "." };
+      }
+      return { tone: "good", text: "unknown блокує читання " + described.label + ", доки тип не звужено. Зараз це не рядок." + (described.note || "") };
+    }
+
+    function areaOf(kind, size) {
+      const amount = Number(size);
+      if (!Number.isFinite(amount) || amount <= 0) return { tone: "bad", text: "Потрібне додатне число." };
+      if (kind === "circle") return { tone: "good", text: "kind \"circle\" звужує тип до кола. Площа ≈ " + (Math.PI * amount * amount).toFixed(1) + "." };
+      if (kind === "square") return { tone: "good", text: "kind \"square\" звужує тип до квадрата. Площа = " + (amount * amount) + "." };
+      return { tone: "bad", text: "Літерал \"triangle\" не входить в об’єднання. У вичерпному switch гілка default отримала б never і не скомпілювалась би." };
+    }
+
+    function scriptInfo(name) {
+      const map = {
+        dev: "Запускає сервер розробки Vite і збирає модулі на льоту.",
+        build: "Збирає статичні файли для продакшену.",
+        lint: "ESLint шукає проблемні конструкції ще до рев’ю.",
+        format: "Prettier вирівнює формат, щоб diff лишався про зміст."
+      };
+      return { text: map[name] || "Такого скрипта в прикладі немає." };
+    }
+
+    function bumpVersion(version, level) {
+      const parts = version.split(".").map(Number);
+      if (level === "major") return (parts[0] + 1) + ".0.0";
+      if (level === "minor") return parts[0] + "." + (parts[1] + 1) + ".0";
+      return parts[0] + "." + parts[1] + "." + (parts[2] + 1);
+    }
+
+    function semverText(level) {
+      const next = bumpVersion("1.4.2", level);
+      const meaning = {
+        patch: "Виправлення без зміни контракту.",
+        minor: "Нова можливість, сумісна з попереднім кодом.",
+        major: "Зміна, яка може вимагати правок у викликах."
+      };
+      return next + " — " + (meaning[level] || "");
+    }
+
+    function auditScore(flags) {
+      const weights = { alt: 20, label: 20, button: 20, cls: 25, motion: 15 };
+      const labels = {
+        alt: "немає альтернативи зображення",
+        label: "поле без підпису",
+        button: "інтерактив на div",
+        cls: "ризик зсуву макета",
+        motion: "рух без урахування системного налаштування"
+      };
+      let score = 100;
+      const found = [];
+      Object.keys(weights).forEach((key) => {
+        if (flags[key]) {
+          score -= weights[key];
+          found.push(labels[key]);
+        }
+      });
+      const text = found.length
+        ? "Оцінка сторінки: " + score + " зі 100. Ще є: " + found.join("; ") + "."
+        : "Оцінка сторінки: 100 зі 100. Позначені проблеми зняті.";
+      return { score: Math.max(0, score), text };
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function dedent(source) {
+      const lines = source.replace(/^\n/, "").replace(/\s+$/, "").split("\n");
+      const indents = lines.filter((line) => line.trim()).map((line) => line.match(/^ */)[0].length);
+      const min = indents.length ? Math.min.apply(null, indents) : 0;
+      return lines.map((line) => line.slice(min)).join("\n");
+    }
+
+    function spanToken(type, text) {
+      return '<span class="tok tok--' + type + '">' + escapeHtml(text) + "</span>";
+    }
+
+    function highlightAttrs(raw) {
+      let result = "";
+      const pattern = /([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*')/g;
+      let last = 0;
+      let match = pattern.exec(raw);
+      while (match) {
+        result += escapeHtml(raw.slice(last, match.index));
+        result += spanToken("attr", match[1]) + escapeHtml(match[2]) + spanToken("string", match[3]);
+        last = match.index + match[0].length;
+        match = pattern.exec(raw);
+      }
+      return result + escapeHtml(raw.slice(last));
+    }
+
+    function highlightHtml(source) {
+      let html = "";
+      let index = 0;
+      while (index < source.length) {
+        if (source.startsWith("<!--", index)) {
+          const end = source.indexOf("-->", index + 4);
+          const stop = end === -1 ? source.length : end + 3;
+          html += spanToken("comment", source.slice(index, stop));
+          index = stop;
+          continue;
+        }
+        if (source[index] === "<") {
+          const end = source.indexOf(">", index + 1);
+          const stop = end === -1 ? source.length : end + 1;
+          const tag = source.slice(index, stop);
+          const parts = /^<\/?([^\s/>]+)([\s\S]*?)(\/?>)$/.exec(tag);
+          if (!parts) html += escapeHtml(tag);
+          else html += escapeHtml(tag.slice(0, tag.indexOf(parts[1]))) + spanToken("tag", parts[1]) + highlightAttrs(parts[2]) + escapeHtml(parts[3]);
+          index = stop;
+          continue;
+        }
+        const next = source.indexOf("<", index);
+        const stop = next === -1 ? source.length : next;
+        html += escapeHtml(source.slice(index, stop));
+        index = stop;
+      }
+      return html;
+    }
+
+    function highlightJs(source, language) {
+      const keywords = new Set(["const", "let", "var", "function", "return", "if", "else", "for", "while", "of", "in", "new", "typeof", "instanceof", "import", "export", "from", "async", "await", "try", "catch", "throw", "switch", "case", "break", "default", "true", "false", "null", "undefined", "class"]);
+      if (language === "ts") ["type", "interface", "satisfies", "unknown", "never", "readonly", "keyof", "as"].forEach((word) => keywords.add(word));
+      let html = "";
+      let index = 0;
+      while (index < source.length) {
+        if (source.startsWith("//", index)) {
+          const end = source.indexOf("\n", index);
+          const stop = end === -1 ? source.length : end;
+          html += spanToken("comment", source.slice(index, stop));
+          index = stop;
+          continue;
+        }
+        const quote = source[index];
+        if (quote === '"' || quote === "'" || quote === "`") {
+          let cursor = index + 1;
+          while (cursor < source.length) {
+            if (source[cursor] === "\\") { cursor += 2; continue; }
+            if (source[cursor] === quote) { cursor += 1; break; }
+            cursor += 1;
+          }
+          html += spanToken("string", source.slice(index, cursor));
+          index = cursor;
+          continue;
+        }
+        if (/\d/.test(source[index]) && (index === 0 || !/[\w$]/.test(source[index - 1]))) {
+          const number = /^\d+(?:\.\d+)?/.exec(source.slice(index));
+          html += spanToken("number", number[0]);
+          index += number[0].length;
+          continue;
+        }
+        if (/[\w$]/.test(source[index])) {
+          const word = /^[\w$]+/.exec(source.slice(index))[0];
+          const rest = source.slice(index + word.length);
+          const kind = keywords.has(word) ? "keyword" : (/^\s*\(/.test(rest) ? "fn" : "plain");
+          html += kind === "plain" ? escapeHtml(word) : spanToken(kind, word);
+          index += word.length;
+          continue;
+        }
+        html += escapeHtml(source[index]);
+        index += 1;
+      }
+      return html;
+    }
+
+    function highlightCss(source) {
+      let html = "";
+      let index = 0;
+      while (index < source.length) {
+        if (source.startsWith("/*", index)) {
+          const end = source.indexOf("*/", index + 2);
+          const stop = end === -1 ? source.length : end + 2;
+          html += spanToken("comment", source.slice(index, stop));
+          index = stop;
+          continue;
+        }
+        const quote = source[index];
+        if (quote === '"' || quote === "'") {
+          let cursor = index + 1;
+          while (cursor < source.length && source[cursor] !== quote) cursor += 1;
+          html += spanToken("string", source.slice(index, Math.min(source.length, cursor + 1)));
+          index = Math.min(source.length, cursor + 1);
+          continue;
+        }
+        if (/[\w-]/.test(source[index]) && source.slice(index).match(/^[\w-]+\s*:/)) {
+          const name = /^[\w-]+/.exec(source.slice(index))[0];
+          html += spanToken("attr", name);
+          index += name.length;
+          continue;
+        }
+        if (source[index] === "#" || /\d/.test(source[index])) {
+          const number = /^#[\w]+|\d+(?:\.\d+)?(?:px|rem|em|vw|vh|%)?/.exec(source.slice(index));
+          if (number) {
+            html += spanToken("number", number[0]);
+            index += number[0].length;
+            continue;
+          }
+        }
+        html += escapeHtml(source[index]);
+        index += 1;
+      }
+      return html;
+    }
+
+    function highlightCode(source, language) {
+      if (language === "html") return highlightHtml(source);
+      if (language === "css") return highlightCss(source);
+      if (language === "shell") {
+        return source.split("\n").map((line) => line.trim().startsWith("#") ? spanToken("comment", line) : escapeHtml(line)).join("\n");
+      }
+      if (language === "text") return escapeHtml(source);
+      return highlightJs(source, language === "ts" ? "ts" : "js");
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text).then(() => ({ ok: true })).catch(() => fallbackCopy(text));
+      }
+      return Promise.resolve(fallbackCopy(text));
+    }
+
+    function fallbackCopy(text) {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-999px";
+      document.body.append(area);
+      area.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (error) { ok = false; }
+      area.remove();
+      return { ok };
+    }
+
+    function h(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    }
+
+    function fillOutput(node, model) {
+      if (!node) return;
+      node.classList.remove("compare__item--bad", "compare__item--good");
+      node.textContent = model.text || "";
+    }
+
+    function renderUrlLab(state) {
+      const partsNode = document.getElementById("url-parts");
+      const journeyNode = document.getElementById("url-journey");
+      partsNode.replaceChildren();
+      journeyNode.replaceChildren();
+      if (!state.parsed || !state.parsed.ok) {
+        partsNode.append(h("p", "hint", state.parsed ? state.parsed.error : "Введіть адресу і натисніть «Розібрати»."));
+        return;
+      }
+      const list = h("dl", "deflist");
+      urlRows(state.parsed).forEach((row) => {
+        list.append(h("dt", "", row[0]), h("dd", "", row[1]));
+      });
+      partsNode.append(list);
+      const steps = journeySteps(state.parsed);
+      const current = steps[state.step];
+      journeyNode.append(h("strong", "", "Крок " + (state.step + 1) + " з " + steps.length + ". " + current.title));
+      journeyNode.append(h("p", "", current.text));
+    }
+
+    function renderRegistration(state) {
+      const node = document.getElementById("reg-result");
+      const view = registrationText(state);
+      node.textContent = view.text;
+    }
+
+    function renderBox(model) {
+      const measured = measureBox(model);
+      document.getElementById("box-content-out").textContent = String(model.content);
+      document.getElementById("box-padding-out").textContent = String(model.padding);
+      document.getElementById("box-border-out").textContent = String(model.border);
+      document.getElementById("box-margin-out").textContent = String(model.margin);
+      document.getElementById("box-readout").textContent = measured.text;
+      const scene = document.getElementById("box-scene");
+      scene.replaceChildren();
+      const margin = h("div", "box-margin");
+      const border = h("div", "box-border");
+      const padding = h("div", "box-padding");
+      const content = h("div", "box-content", measured.content + " px");
+      margin.style.padding = model.margin + "px";
+      border.style.padding = model.border + "px";
+      padding.style.padding = model.padding + "px";
+      content.style.width = measured.content + "px";
+      padding.append(content);
+      border.append(padding);
+      margin.append(border);
+      scene.append(margin);
+    }
+
+    function renderLayout(options) {
+      const declaration = layoutDeclaration(options);
+      const stage = document.getElementById("layout-stage");
+      stage.style.display = declaration.display;
+      stage.style.flexDirection = declaration.flexDirection || "";
+      stage.style.flexWrap = declaration.flexWrap || "";
+      stage.style.justifyContent = declaration.justifyContent || "";
+      stage.style.gridTemplateColumns = declaration.gridTemplateColumns || "";
+      stage.style.gap = declaration.gap;
+      document.getElementById("layout-columns-out").textContent = String(options.columns);
+      document.getElementById("layout-gap-out").textContent = String(options.gap);
+      document.getElementById("layout-direction").disabled = options.mode !== "flex";
+      document.getElementById("layout-justify").disabled = options.mode !== "flex";
+      document.getElementById("layout-columns").disabled = options.mode !== "grid";
+      document.getElementById("layout-readout").textContent = declaration.summary;
+    }
+
+    function renderAdaptive(viewport) {
+      const snapshot = adaptiveSnapshot(viewport);
+      document.getElementById("viewport-out").textContent = String(viewport);
+      document.getElementById("cq-demo").style.width = viewport + "px";
+      document.getElementById("adaptive-readout").textContent = snapshot.text;
+    }
+
+    function renderComparison(leftId, rightId) {
+      document.getElementById("cmp-result").textContent = compareEquality(leftId, rightId).text;
+    }
+
+    function renderLoop(index) {
+      const view = getLoopFrame(index);
+      loopStep = view.index;
+      const frame = view.frame;
+      const node = document.getElementById("loop-view");
+      node.replaceChildren();
+      const list = h("dl", "deflist");
+      [["Крок", frame.title + " (" + (view.index + 1) + "/" + view.total + ")"], ["Стек", frame.stack], ["Мікрозадачі", frame.micro], ["Макрозадачі", frame.macro], ["Лог", frame.log]].forEach((row) => {
+        list.append(h("dt", "", row[0]), h("dd", "", row[1]));
+      });
+      node.append(list, h("p", "", frame.note));
+    }
+
+    function renderFetch(model) {
+      const node = document.getElementById("fetch-view");
+      node.replaceChildren(h("strong", "", model.title), h("p", "", model.detail));
+      if (model.items.length) {
+        const list = document.createElement("ul");
+        model.items.forEach((item) => list.append(h("li", "", item.title + " — " + item.body)));
+        node.append(list);
+      }
+    }
+
+    function renderTopics(topic) {
+      const notes = notesForTopic(topic, LIBRARY);
+      const list = document.getElementById("topic-list");
+      list.replaceChildren();
+      notes.forEach((note) => list.append(h("li", "", note.title)));
+      const url = topicUrl(location.href, topic);
+      document.getElementById("topic-url").textContent = "Поточний параметр: " + (topic === "all" ? "усі теми" : topic) + ". " + url.pathname + url.search + url.hash;
+    }
+
+    function renderAudit(form) {
+      const flags = {};
+      [...form.elements].forEach((element) => {
+        if (element.name) flags[element.name] = element.checked;
+      });
+      document.getElementById("audit-result").textContent = auditScore(flags).text;
+    }
+
+    function renderVisited() {
+      const summary = formatVisited(progress.visited);
+      const count = document.getElementById("visited-count");
+      if (count) count.textContent = summary.text;
+      document.querySelectorAll("[data-lecture]").forEach((item) => {
+        const id = "lecture-" + item.dataset.lecture;
+        const flag = item.querySelector(".visited-flag");
+        const link = item.querySelector("a");
+        const seen = progress.visited.includes(id);
+        if (flag) flag.hidden = !seen;
+        if (link) link.classList.toggle("is-visited", seen);
+      });
+    }
+
+    function activateView(id, options) {
+      document.querySelectorAll(".view").forEach((view) => {
+        const active = view.id === id;
+        view.classList.toggle("is-active", active);
+        view.classList.remove("is-entering");
+        if (active && options.animate && !prefersReducedMotion()) view.classList.add("is-entering");
+      });
+      const meta = routeMeta(id);
+      document.getElementById("route-label").textContent = meta.label;
+      document.getElementById("route-track").hidden = !meta.showBar;
+      document.getElementById("route-bar").style.width = (meta.ratio * 100) + "%";
+      document.querySelectorAll(".site-nav a").forEach((link) => {
+        if (link.dataset.nav === navKey(id)) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+      document.title = documentTitle(id);
+      if (options.focus) {
+        const heading = document.querySelector("#" + id + " h1");
+        if (heading) {
+          heading.setAttribute("tabindex", "-1");
+          heading.focus({ preventScroll: true });
+        }
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+      }
+    }
+
+    function brokenStorage() {
+      return {
+        getItem() { throw new Error("unavailable"); },
+        setItem() { throw new Error("unavailable"); }
+      };
+    }
+
+    function bindCommon() {
+      document.getElementById("block-filter").addEventListener("change", (event) => {
+        const summary = filterSummary(selectedBlock(event.currentTarget));
+        document.querySelectorAll("[data-lecture]").forEach((item) => {
+          item.hidden = summary.block !== "all" && lectureBlock(Number(item.dataset.lecture)) !== summary.block;
+        });
+        document.querySelectorAll("[data-group]").forEach((group) => {
+          group.hidden = summary.block !== "all" && group.dataset.group !== summary.block;
+        });
+        document.getElementById("filter-status").textContent = summary.text;
+      });
+
+      document.querySelectorAll("a[data-open]").forEach((link) => {
+        link.addEventListener("click", () => {
+          progress = markVisited(progress, link.dataset.open);
+          saveProgress(progress);
+        });
+      });
+
+      document.body.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-copy]");
+        if (!button) return;
+        const code = button.closest(".codeblock").querySelector("code");
+        copyText(code.textContent).then((result) => {
+          button.textContent = result.ok ? "Скопійовано" : "Не вдалося";
+          window.setTimeout(() => { button.textContent = "Копіювати"; }, 1600);
+        });
+      });
+    }
+
+    function bindLabs() {
+      const urlForm = document.getElementById("url-form");
+      if (urlForm) {
+        urlForm.addEventListener("submit", () => {
+          urlState = { parsed: parseUrlParts(document.getElementById("url-input").value), step: 0 };
+          renderUrlLab(urlState);
+        });
+        document.getElementById("url-next").addEventListener("click", () => {
+          if (!urlState.parsed || !urlState.parsed.ok) return;
+          urlState.step = stepIndex(urlState.step, 1, journeySteps(urlState.parsed).length);
+          renderUrlLab(urlState);
+        });
+        document.getElementById("url-prev").addEventListener("click", () => {
+          if (!urlState.parsed || !urlState.parsed.ok) return;
+          urlState.step = stepIndex(urlState.step, -1, journeySteps(urlState.parsed).length);
+          renderUrlLab(urlState);
+        });
+        renderUrlLab(urlState);
+      }
+
+      document.querySelectorAll("[data-landmark]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("[data-landmark]").forEach((item) => item.setAttribute("aria-pressed", item === button ? "true" : "false"));
+          document.getElementById("landmark-text").textContent = landmarkInfo(button.dataset.landmark);
+        });
+      });
+
+      const regForm = document.getElementById("reg-form");
+      if (regForm) {
+        regForm.addEventListener("submit", (event) => {
+          const form = event.currentTarget;
+          const state = collectFormState(form);
+          if (!state.valid) form.reportValidity();
+          renderRegistration(state);
+        });
+      }
+
+      const boxForm = document.getElementById("box-form");
+      if (boxForm) {
+        const updateBox = () => renderBox(readBoxModel(boxForm));
+        boxForm.addEventListener("input", updateBox);
+        updateBox();
+        document.getElementById("spec-form").addEventListener("submit", () => {
+          const choice = new FormData(document.getElementById("spec-form")).get("winner");
+          document.getElementById("spec-result").textContent = specificityWinner(String(choice)).text;
+        });
+      }
+
+      const layoutForm = document.getElementById("layout-form");
+      const updateLayout = () => renderLayout(readLayoutOptions(layoutForm));
+      layoutForm.addEventListener("input", updateLayout);
+      updateLayout();
+
+      const viewport = document.getElementById("viewport-range");
+      const updateViewport = () => renderAdaptive(Number(viewport.value));
+      viewport.addEventListener("input", updateViewport);
+      updateViewport();
+      document.getElementById("motion-btn").addEventListener("click", (event) => {
+        const pressed = event.currentTarget.getAttribute("aria-pressed") !== "true";
+        const decision = motionDecision(prefersReducedMotion(), pressed);
+        event.currentTarget.setAttribute("aria-pressed", decision.animate ? "true" : "false");
+        document.getElementById("motion-dot").classList.toggle("is-moving", decision.animate);
+        document.getElementById("motion-note").textContent = decision.reason;
+      });
+      document.getElementById("motion-note").textContent = motionDecision(prefersReducedMotion(), false).reason;
+
+      const left = document.getElementById("cmp-left");
+      const right = document.getElementById("cmp-right");
+      VALUE_PRESETS.forEach((preset) => {
+        left.append(new Option(preset.label, preset.id));
+        right.append(new Option(preset.label, preset.id));
+      });
+      right.value = "str";
+      const updateCmp = () => renderComparison(left.value, right.value);
+      left.addEventListener("change", updateCmp);
+      right.addEventListener("change", updateCmp);
+      updateCmp();
+
+      document.getElementById("collection-methods").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-method]");
+        if (!button) return;
+        document.querySelectorAll("[data-method]").forEach((item) => item.setAttribute("aria-pressed", item === button ? "true" : "false"));
+        document.getElementById("collection-result").textContent = runCollection(button.dataset.method, STUDENTS).text;
+      });
+
+      const list = document.getElementById("dom-list");
+      ["DOM", "CSSOM", "Події"].forEach((name) => list.append(createDomItem(name)));
+      list.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button || !list.contains(button)) return;
+        const next = button.getAttribute("aria-pressed") !== "true";
+        button.setAttribute("aria-pressed", next ? "true" : "false");
+        document.getElementById("dom-status").textContent = next ? "Обрано: " + button.textContent : "Вибір знято.";
+      });
+      document.getElementById("dom-form").addEventListener("submit", () => {
+        const cleaned = cleanItem(document.getElementById("dom-input").value);
+        document.getElementById("dom-status").textContent = cleaned.message;
+        if (!cleaned.ok) return;
+        list.append(createDomItem(cleaned.text));
+        document.getElementById("dom-input").value = "";
+      });
+
+      document.getElementById("loop-next").addEventListener("click", () => renderLoop(getLoopFrame(loopStep).index + 1));
+      document.getElementById("loop-prev").addEventListener("click", () => renderLoop(getLoopFrame(loopStep).index - 1));
+      document.getElementById("loop-reset").addEventListener("click", () => renderLoop(0));
+      renderLoop(0);
+
+      document.querySelectorAll("[data-scenario]").forEach((button) => {
+        button.addEventListener("click", () => handleScenario(button.dataset.scenario));
+      });
+      document.getElementById("fetch-cancel").addEventListener("click", () => {
+        if (fetchController) fetchController.abort();
+      });
+
+      document.getElementById("note-form").addEventListener("submit", () => {
+        const note = serializeNote(document.getElementById("note-input").value);
+        const result = writeWithStorage(browserStorage(), NOTE_KEY, note);
+        document.getElementById("note-status").textContent = result.message;
+      });
+      document.getElementById("note-load").addEventListener("click", () => {
+        const result = readWithStorage(browserStorage(), NOTE_KEY);
+        if (result.ok && result.value && result.value.text) {
+          document.getElementById("note-input").value = result.value.text;
+          document.getElementById("note-status").textContent = result.message + " " + result.value.text;
+          return;
+        }
+        document.getElementById("note-status").textContent = result.message;
+      });
+      document.getElementById("note-broken").addEventListener("click", () => {
+        const result = writeWithStorage(brokenStorage(), NOTE_KEY, serializeNote("тест"));
+        document.getElementById("note-status").textContent = result.message;
+      });
+
+      document.getElementById("query-form").addEventListener("submit", () => {
+        document.getElementById("query-result").textContent = parseSearch(document.getElementById("query-input").value).text;
+      });
+      document.getElementById("topic-form").addEventListener("submit", () => {
+        const topic = document.getElementById("topic-select").value;
+        const url = topicUrl(location.href, topic);
+        history.pushState({ topic }, "", url.pathname + url.search + url.hash);
+        renderTopics(topic);
+      });
+      window.addEventListener("popstate", () => {
+        const topic = topicFromHref(location.href);
+        document.getElementById("topic-select").value = ["all", "html", "css", "js"].includes(topic) ? topic : "all";
+        renderTopics(document.getElementById("topic-select").value);
+      });
+      const initialTopic = topicFromHref(location.href);
+      if (["html", "css", "js", "all"].includes(initialTopic)) document.getElementById("topic-select").value = initialTopic;
+      renderTopics(document.getElementById("topic-select").value);
+
+      const nick = document.getElementById("nick-input");
+      nick.addEventListener("input", () => nick.setCustomValidity(""));
+      document.getElementById("nick-form").addEventListener("submit", (event) => {
+        const form = event.currentTarget;
+        const verdict = nicknameVerdict(new FormData(form).get("nick") || "");
+        nick.setCustomValidity(verdict.message);
+        if (verdict.message) form.reportValidity();
+        document.getElementById("nick-result").textContent = verdict.message || verdict.text;
+      });
+
+      const tsValue = document.getElementById("ts-value");
+      const showTs = (mode) => {
+        const described = describeJsValue(tsValue.value);
+        const result = mode === "any" ? acceptAsAny(described) : acceptAsUnknown(described);
+        document.getElementById("ts-result").textContent = "typeof: " + described.type + ". " + result.text;
+      };
+      document.getElementById("ts-any").addEventListener("click", () => showTs("any"));
+      document.getElementById("ts-unknown").addEventListener("click", () => showTs("unknown"));
+      showTs("unknown");
+
+      const shapeForm = document.getElementById("shape-form");
+      const updateShape = () => {
+        const data = new FormData(shapeForm);
+        document.getElementById("shape-result").textContent = areaOf(String(data.get("kind")), data.get("size")).text;
+      };
+      shapeForm.addEventListener("input", updateShape);
+      updateShape();
+
+      document.querySelectorAll("[data-script]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("[data-script]").forEach((item) => item.setAttribute("aria-pressed", item === button ? "true" : "false"));
+          document.getElementById("script-result").textContent = scriptInfo(button.dataset.script).text;
+        });
+      });
+      const semverForm = document.getElementById("semver-form");
+      const updateSemver = () => {
+        document.getElementById("semver-result").textContent = semverText(String(new FormData(semverForm).get("level")));
+      };
+      semverForm.addEventListener("input", updateSemver);
+      updateSemver();
+
+      const auditForm = document.getElementById("audit-form");
+      auditForm.addEventListener("input", () => renderAudit(auditForm));
+      renderAudit(auditForm);
+    }
+
+    function createDomItem(text) {
+      const item = document.createElement("li");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "button button--ghost";
+      button.textContent = text;
+      button.setAttribute("aria-pressed", "false");
+      item.append(button);
+      return item;
+    }
+
+    function handleScenario(scenario) {
+      if (fetchController) fetchController.abort();
+      const controller = new AbortController();
+      fetchController = controller;
+      fetchToken += 1;
+      const token = fetchToken;
+      document.querySelectorAll("[data-scenario]").forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.scenario === scenario ? "true" : "false");
+      });
+      renderFetch({ title: "Завантаження", detail: "Чекаємо на імітовану відповідь.", items: [] });
+      mockFetch(scenario, controller.signal).then((response) => {
+        if (token !== fetchToken) return;
+        renderFetch(viewModelForFetch({ kind: "ok", response }));
+      }).catch((error) => {
+        if (token !== fetchToken) return;
+        renderFetch(viewModelForFetch({ kind: classifyFetchError(error), response: null }));
+      });
+    }
+
+    function enhanceCode() {
+      document.querySelectorAll("pre code[data-lang]").forEach((code) => {
+        const raw = dedent(code.textContent);
+        code.textContent = raw;
+        code.innerHTML = highlightCode(raw, code.dataset.lang);
+      });
+    }
+
+    function boot() {
+      progress = loadProgress();
+      const raw = (location.hash || "#overview").replace(/^#/, "") || "overview";
+      if (LECTURE_PAGES[raw]) {
+        progress = markVisited(progress, raw);
+        saveProgress(progress);
+        location.replace(LECTURE_PAGES[raw]);
+        return;
+      }
+      const id = resolveViewId(location.hash);
+      if (raw !== id) history.replaceState(null, "", "#" + id);
+      activateView(id, { focus: false, animate: false });
+      enhanceCode();
+      bindCommon();
+      bindLabs();
+      bindTheme();
+      renderVisited();
+      document.getElementById("storage-note").textContent = storageNote(storageReady);
+      if (id.startsWith("lecture-")) {
+        progress = markVisited(progress, id);
+        saveProgress(progress);
+        renderVisited();
+      }
+      routeReady = true;
+      window.addEventListener("hashchange", () => {
+        const rawNext = (location.hash || "#overview").replace(/^#/, "") || "overview";
+        if (LECTURE_PAGES[rawNext]) {
+          progress = markVisited(progress, rawNext);
+          saveProgress(progress);
+          location.replace(LECTURE_PAGES[rawNext]);
+          return;
+        }
+        const nextId = resolveViewId(location.hash);
+        activateView(nextId, { focus: true, animate: true });
+        if (nextId.startsWith("lecture-")) {
+          progress = markVisited(progress, nextId);
+          saveProgress(progress);
+          renderVisited();
+          document.getElementById("storage-note").textContent = storageNote(storageReady);
+        }
+      });
+    }
+
+    const rawBoot = (location.hash || "#overview").replace(/^#/, "") || "overview";
+    if (!LECTURE_PAGES[rawBoot]) activateView(resolveViewId(location.hash), { focus: false, animate: false });
+    boot();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+try {
+  var savedTheme = localStorage.getItem("ctw-theme");
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+} catch (error) {}
+</script>
+<title>Лекція 2. HTML5: структура документа і семантика</title>
+<meta name="description" content="Лекція дисципліни «Клієнтські технології вебпрограмування»: doctype, head і meta, текстові елементи, заголовки, посилання, зображення, списки, таблиці, семантичні елементи, валідація.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F3F5F9;
+  --surface: #FFFFFF;
+  --surface-2: #E9EDF5;
+  --ink: #16213A;
+  --muted: #4A5670;
+  --navy: #1B2A4A;
+  --accent: #B8520A;
+  --accent-strong: #E8772E;
+  --accent-soft: #FFEBDA;
+  --line: #D3DAE7;
+  --good: #1B7248;
+  --good-soft: #E1F3E9;
+  --bad: #B3261E;
+  --bad-soft: #FBE6E4;
+  --focus: #E8772E;
+  --code-bg: #0E1830;
+  --code-ink: #E3E9F7;
+  --code-tag: #FFA15C;
+  --code-attr: #8FD3FF;
+  --code-val: #B9E48C;
+  --code-comment: #8391AD;
+  --code-punct: #9FB0D4;
+  --font-body: "IBM Plex Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Unbounded", "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  --gutter: 0px;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1526;
+    --surface: #15213A;
+    --surface-2: #1C2B49;
+    --ink: #E6EBF5;
+    --muted: #A9B4CA;
+    --navy: #A9C1F0;
+    --accent: #FF9E57;
+    --accent-strong: #FF9E57;
+    --accent-soft: #3A2616;
+    --line: #2B3B5C;
+    --good: #6AD39B;
+    --good-soft: #13301F;
+    --bad: #FF8F85;
+    --bad-soft: #3A1A18;
+    --focus: #FF9E57;
+    --code-bg: #0A1122;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1526;
+  --surface: #15213A;
+  --surface-2: #1C2B49;
+  --ink: #E6EBF5;
+  --muted: #A9B4CA;
+  --navy: #A9C1F0;
+  --accent: #FF9E57;
+  --accent-strong: #FF9E57;
+  --accent-soft: #3A2616;
+  --line: #2B3B5C;
+  --good: #6AD39B;
+  --good-soft: #13301F;
+  --bad: #FF8F85;
+  --bad-soft: #3A1A18;
+  --focus: #FF9E57;
+  --code-bg: #0A1122;
+  color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+img, svg, iframe { max-width: 100%; }
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+.skip-link { position: absolute; left: 12px; top: -60px; background: var(--navy); color: var(--surface); padding: 8px 14px; border-radius: 6px; z-index: 10; }
+.skip-link:focus { top: 12px; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- layout ---------- */
+.wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+.prose { max-width: 46rem; }
+@media (min-width: 1000px) {
+  :root { --gutter: 96px; }
+  .doc { padding-left: var(--gutter); }
+}
+
+.ap-list > *, .ap-pair > *, .demo-grid > *, .compare-grid > *, .cs-grid > *, .hero-grid > * { min-width: 0; }
+
+/* ---------- page tag markers: the page shows its own markup ---------- */
+.tagged { position: relative; }
+.tagged::before {
+  content: attr(data-tag);
+  content: attr(data-tag) / "";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+@media (min-width: 1000px) {
+  .tagged::before {
+    position: absolute;
+    left: calc(-1 * var(--gutter));
+    top: 0.35em;
+    width: calc(var(--gutter) - 16px);
+    text-align: right;
+    margin: 0;
+  }
+}
+
+/* ---------- hero ---------- */
+.site-header { background: var(--navy); color: #F2F5FB; padding: 40px 0 36px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .site-header { background: #111D35; } }
+:root[data-theme="dark"] .site-header { background: #111D35; }
+.site-header .course { margin: 0 0 20px; font-size: 0.95rem; color: #C9D3E8; }
+.site-header h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 1.2rem + 3.2vw, 3.4rem);
+  line-height: 1.12;
+  margin: 0 0 12px;
+  max-width: 20ch;
+}
+.site-header h1 .lecture-no { display: block; font-size: 0.42em; font-weight: 500; color: #FFB27A; margin-bottom: 10px; }
+.site-header .tagged::before { color: #FFB27A; }
+.hero-grid { display: grid; gap: 28px; margin-top: 28px; }
+@media (min-width: 860px) { .hero-grid { grid-template-columns: 1.1fr 1fr; } }
+.hero-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 18px 20px; }
+.hero-card h2 { font-family: var(--font-display); font-weight: 500; font-size: 1.05rem; margin: 0 0 10px; color: #FFFFFF; }
+.hero-card ol, .hero-card ul { margin: 0; padding-left: 1.3em; }
+.hero-card li { margin: 4px 0; }
+.hero-card a { color: #FFD1AD; }
+.hero-card li::marker { color: #FFB27A; }
+
+/* ---------- sections ---------- */
+main { padding: 8px 0 48px; }
+.block { padding: 48px 0 8px; border-bottom: 1px solid var(--line); }
+.block:last-child { border-bottom: 0; }
+.block > .wrap > h2, .block h2.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.2rem);
+  line-height: 1.2;
+  margin: 0 0 18px;
+  color: var(--navy);
+}
+.doc h3 { font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; line-height: 1.3; margin: 40px 0 12px; color: var(--navy); }
+.doc h4 { font-size: 1.05rem; margin: 24px 0 8px; }
+.doc p { margin: 0 0 14px; }
+.lead { font-size: 1.12rem; color: var(--muted); }
+.steps { margin: 6px 0 14px; }
+.steps dt { font-weight: 600; color: var(--accent); margin-top: 10px; }
+.steps dd { margin: 2px 0 0; }
+code:not(pre code) { font-family: var(--font-mono); font-size: 0.88em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+kbd { font-family: var(--font-mono); font-size: 0.85em; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; background: var(--surface); }
+.callout { background: var(--accent-soft); border-left: 4px solid var(--accent-strong); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 18px 0; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* ---------- code blocks ---------- */
+.code { margin: 14px 0 20px; border-radius: 10px; overflow: hidden; background: var(--code-bg); border: 1px solid #22335A; }
+.code-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 8px 6px 14px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.code-lang { font-family: var(--font-mono); font-size: 0.75rem; color: var(--code-punct); }
+.copy-btn { font: inherit; font-size: 0.8rem; background: transparent; color: #DDE5F5; border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.copy-btn:hover { background: rgba(255,255,255,0.1); }
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+pre { font-family: var(--font-mono); font-size: 0.86rem; line-height: 1.55; color: var(--code-ink); tab-size: 2; }
+pre code { font-family: inherit; }
+.t-tag { color: var(--code-tag); }
+.t-attr { color: var(--code-attr); }
+.t-val { color: var(--code-val); }
+.t-com { color: var(--code-comment); font-style: italic; }
+.t-punct { color: var(--code-punct); }
+.t-doctype { color: var(--code-comment); }
+.t-prop { color: var(--code-attr); }
+.t-sel { color: var(--code-tag); }
+
+/* ---------- demo ---------- */
+.demo-shell { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin: 18px 0 30px; }
+.demo-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.92rem; }
+select, .btn {
+  font: inherit; font-size: 0.95rem; border-radius: 8px; padding: 8px 14px; min-height: 42px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.btn { cursor: pointer; font-weight: 600; }
+.btn-primary { background: var(--navy); color: var(--surface); border-color: var(--navy); }
+.btn-accent { background: var(--accent-strong); color: #1B1206; border-color: var(--accent-strong); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.demo-grid { display: grid; gap: 16px; }
+@media (min-width: 980px) { .demo-grid { grid-template-columns: 1fr 1fr; } }
+.editor-label { display: block; font-weight: 600; margin-bottom: 6px; }
+textarea.editor {
+  width: 100%; min-height: 420px; resize: vertical;
+  font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.5;
+  background: var(--code-bg); color: var(--code-ink); border: 1px solid #22335A; border-radius: 10px; padding: 12px;
+  tab-size: 2; white-space: pre; overflow: auto;
+}
+.pane { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.doc .pane-title, .pane-title { margin: 0; font-family: var(--font-body); line-height: 1.4; color: var(--ink); font-size: 0.95rem; font-weight: 600; padding: 8px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.pane iframe { display: block; width: 100%; height: 300px; border: 0; background: #FFFFFF; }
+.pane-body { padding: 10px 12px 12px; overflow-x: auto; }
+.outline, .outline ul { list-style: none; margin: 0; padding: 0; }
+.outline ul { padding-left: 18px; border-left: 2px solid var(--line); margin-left: 6px; }
+.outline li { margin: 4px 0; }
+.node { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: 0.92rem; }
+.badge { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
+.badge-landmark { background: var(--navy); color: var(--surface); }
+.badge-struct { background: var(--surface-2); color: var(--ink); border: 1px dashed var(--muted); }
+.badge-heading { background: var(--accent-soft); color: var(--ink); border: 1px solid var(--accent-strong); }
+.node-skip { color: var(--bad); font-weight: 600; }
+.empty-note { color: var(--muted); font-style: italic; margin: 4px 0; }
+.issues { list-style: none; margin: 0; padding: 0; }
+.issues li { display: grid; grid-template-columns: auto 1fr; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: 0.92rem; }
+.issues li:last-child { border-bottom: 0; }
+.sev { font-weight: 700; font-size: 0.8rem; border-radius: 5px; padding: 1px 7px; height: fit-content; white-space: nowrap; }
+.sev-error { background: var(--bad-soft); color: var(--bad); }
+.sev-warn { background: var(--accent-soft); color: var(--accent); }
+.sev-ok { background: var(--good-soft); color: var(--good); }
+.hint { font-size: 0.9rem; color: var(--muted); margin: 8px 0 0; }
+.compare-grid { display: grid; gap: 16px; }
+@media (min-width: 900px) { .compare-grid { grid-template-columns: 1fr 1fr; } }
+.stats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; padding: 0; list-style: none; font-size: 0.88rem; }
+.stats li { background: var(--surface-2); border-radius: 6px; padding: 2px 8px; }
+details.src { margin-top: 10px; }
+details.src summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
+
+/* ---------- cheatsheet ---------- */
+.cs-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.cs-head h2 { margin: 0 !important; }
+.cs-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.cs-card { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--navy); border-radius: 10px; padding: 14px 16px; break-inside: avoid; }
+.cs-card h3 { font-family: var(--font-display); font-weight: 500; font-size: 1rem; margin: 0 0 8px; color: var(--navy); }
+.cs-card dl { margin: 0; font-size: 0.9rem; line-height: 1.45; }
+.cs-card dt { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 600; color: var(--accent); margin-top: 6px; }
+.cs-card dd { margin: 0 0 0 0; }
+.cs-card .code { margin: 8px 0 0; }
+.cs-card pre { font-size: 0.78rem; }
+
+/* ---------- antipatterns / best practices ---------- */
+.ap-list { display: grid; gap: 22px; }
+.ap { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.ap h3 { margin-top: 0 !important; }
+.ap-pair { display: grid; gap: 12px; }
+@media (min-width: 900px) { .ap-pair { grid-template-columns: 1fr 1fr; } }
+.verdict { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; margin: 6px 0 -6px; }
+.verdict-bad { color: var(--bad); }
+.verdict-good { color: var(--good); }
+.verdict svg { width: 18px; height: 18px; }
+.code-bad { border-left: 5px solid var(--bad); }
+.code-good { border-left: 5px solid var(--good); }
+.why { background: var(--bad-soft); border-radius: 8px; padding: 10px 14px; margin: 12px 0; }
+.why p { margin: 0; }
+.bp { border-left: 4px solid var(--good); }
+
+/* ---------- quiz ---------- */
+.quiz { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 12px; }
+.quiz-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 10px; font-size: 0.95rem; color: var(--muted); }
+.progress { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; margin-bottom: 18px; }
+.progress span { display: block; height: 100%; background: var(--accent-strong); width: 0; transition: width .25s; }
+.quiz fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.quiz legend { font-weight: 600; font-size: 1.1rem; margin-bottom: 10px; padding: 0; }
+.opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 8px 0; cursor: pointer; background: var(--surface); }
+.opt:hover { border-color: var(--accent-strong); }
+.opt input { margin-top: 5px; accent-color: var(--accent-strong); width: 18px; height: 18px; flex: none; }
+.opt.is-correct { border-color: var(--good); background: var(--good-soft); }
+.opt.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt .mark { margin-left: auto; font-weight: 700; flex: none; }
+.feedback { margin-top: 14px; border-radius: 10px; padding: 12px 16px; }
+.feedback.good { background: var(--good-soft); }
+.feedback.bad { background: var(--bad-soft); }
+.feedback h3 { margin: 0 0 6px; font-size: 1.05rem; font-family: var(--font-body); }
+.feedback ul { margin: 6px 0 0; padding-left: 1.2em; }
+.quiz-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.score { font-family: var(--font-display); font-size: 2.4rem; font-weight: 700; color: var(--navy); margin: 0; }
+.opt-text { overflow-wrap: anywhere; }
+
+/* ---------- links / footer ---------- */
+.links-list { padding-left: 1.2em; }
+.links-list li { margin: 8px 0; }
+.site-footer { padding: 28px 0 40px; color: var(--muted); font-size: 0.9rem; }
+.site-footer a { font-weight: 700; }
+.page-tools {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 1.25rem;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.page-tools a, .page-tools button {
+  font: inherit;
+  font-weight: 700;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+}
+.page-tools a { color: var(--ink); text-decoration: none; }
+.page-tools button {
+  border: 2px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* ---------- print ---------- */
+@media print {
+  :root { --bg: #fff; --surface: #fff; --ink: #000; --muted: #333; --navy: #1B2A4A; --line: #bbb; --code-bg: #F4F5F8; --code-ink: #111; --code-tag: #8A3A00; --code-attr: #0B4F8A; --code-val: #2F5E0C; --code-comment: #555; --code-punct: #333; }
+  body { background: #fff; font-size: 11pt; }
+  .copy-btn, .skip-link, #print-cs, .demo-shell, .quiz-actions, .page-tools { display: none !important; }
+  .code { border: 1px solid #bbb; }
+  .code pre { white-space: pre-wrap; }
+  .site-header { background: #fff; color: #000; }
+  a { color: #000; }
+  body.printing-cheatsheet > *:not(main),
+  body.printing-cheatsheet main > *:not(#cheatsheet) { display: none !important; }
+  body.printing-cheatsheet #cheatsheet { padding: 0; border: 0; }
+  body.printing-cheatsheet .cs-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  body.printing-cheatsheet .cs-card { padding: 8px 10px; border-top-width: 3px; }
+  body.printing-cheatsheet .cs-card h3 { font-size: 10.5pt; margin-bottom: 4px; }
+  body.printing-cheatsheet .cs-card dl { font-size: 8.5pt; }
+  body.printing-cheatsheet .cs-card pre { font-size: 7.5pt; padding: 6px 8px; }
+  body.printing-cheatsheet .cs-card .code-bar { display: none; }
+  @page { margin: 12mm; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти до змісту лекції</a>
+<div class="page-tools">
+  <a href="../index.html">← На головну</a>
+  <button type="button" id="theme-toggle" aria-pressed="false">Темна тема</button>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <p class="course">Клієнтські технології вебпрограмування · 122 «Комп'ютерні науки»</p>
+    <div class="doc">
+      <h1 class="tagged" data-tag="<h1>"><span class="lecture-no">Лекція 2</span>HTML5: структура документа і семантика</h1>
+    </div>
+    <div class="hero-grid">
+      <nav class="hero-card" aria-labelledby="plan-title">
+        <h2 id="plan-title">План лекції</h2>
+        <ol>
+          <li><a href="#skeleton">Скелет документа: doctype і lang</a></li>
+          <li><a href="#head">Head і meta: charset, viewport, title</a></li>
+          <li><a href="#text">Текстові елементи</a></li>
+          <li><a href="#headings">Ієрархія заголовків</a></li>
+          <li><a href="#links">Посилання: абсолютні й відносні</a></li>
+          <li><a href="#images">Зображення і picture</a></li>
+          <li><a href="#lists">Списки</a></li>
+          <li><a href="#tables">Таблиці для табличних даних</a></li>
+          <li><a href="#semantics">Семантичні елементи й орієнтири</a></li>
+          <li><a href="#validation">Валідація розмітки</a></li>
+          <li><a href="#demo">Інтерактив: пісочниця і «div-суп проти семантики»</a></li>
+          <li><a href="#cheatsheet">Шпаргалка</a></li>
+          <li><a href="#antipatterns">Антипатерни</a></li>
+          <li><a href="#best">Бест практики</a></li>
+          <li><a href="#quiz">Квіз для самоперевірки</a></li>
+          <li><a href="#docs">Корисні посилання</a></li>
+        </ol>
+      </nav>
+      <section class="hero-card" aria-labelledby="outcomes-title">
+        <h2 id="outcomes-title">Після лекції ви зможете</h2>
+        <ul>
+          <li>зібрати коректний скелет HTML-документа і пояснити, що робить кожен рядок у head;</li>
+          <li>побудувати ієрархію заголовків і розмітку сторінки семантичними елементами так, щоб її «бачили» скрінрідери і пошуковики;</li>
+          <li>правильно розмічати посилання, зображення, списки й таблиці та обирати між абсолютним і відносним шляхом;</li>
+          <li>писати змістовний alt або свідомо лишати його порожнім;</li>
+          <li>перевіряти розмітку валідатором і читати реальне DOM-дерево в DevTools.</li>
+        </ul>
+        <p style="margin:12px 0 0;color:#C9D3E8;font-size:.92rem">Наскрізний приклад лекції — сторінка каталогу книжок невеликої онлайн-книгарні.</p>
+      </section>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- ================= THEORY ================= -->
+<section class="block" id="theory" aria-labelledby="theory-title">
+<div class="wrap doc">
+<h2 id="theory-title" class="tagged" data-tag="<h2>">Теоретичний матеріал</h2>
+<div class="prose">
+<p class="lead">HTML описує не те, як сторінка виглядає, а що кожен її фрагмент означає: це заголовок, це навігація, це таблиця з цінами. Вигляд додає CSS. Коли значення задано правильно, ним користуються всі, хто читає сторінку без очей: браузер, скрінрідер, пошуковий робот, режим читання, перекладач. Уся лекція — про те, як це значення передати точно.</p>
+
+<!-- skeleton -->
+<section id="skeleton">
+<h3 class="tagged" data-tag="<h3>">Скелет документа: doctype і lang</h3>
+<p>Браузер отримує від сервера звичайний текст і має вирішити, за якими правилами його розбирати і відображати. Проблема історична: у 1990-х сторінки писали під помилки конкретних браузерів, і коли браузери почали дотримуватися стандартів CSS, старі сайти «розсипалися». Тому браузери досі мають два основні режими рендерингу: <em>режим сумісності</em> (quirks mode), який імітує старі помилки, і <em>стандартний режим</em> (no-quirks). Перемикачем служить перший рядок документа — оголошення типу документа.</p>
+<p>Рядок <code>&lt;!DOCTYPE html&gt;</code> — не тег і не посилання на специфікацію. Це найкоротший рядок, який вмикає стандартний режим. Якщо його немає, сторінка все одно відобразиться, але частина CSS рахуватиметься за старими правилами: інакше поводитимуться розміри блоків, висота рядків навколо зображень, успадкування шрифтів у таблицях. Такі баги важко знайти, бо код CSS виглядає правильним.</p>
+<p>Кореневий елемент <code>&lt;html&gt;</code> отримує атрибут <code>lang</code>. Він повідомляє мову вмісту: скрінрідер обирає голос і правила вимови (без <code>lang="uk"</code> український текст може бути прочитаний англійською вимовою), браузер правильно переносить слова через CSS-властивість <code>hyphens</code>, пропонує або не пропонує переклад і обирає словник для перевірки правопису. Фрагмент іншою мовою позначають тим самим атрибутом на його елементі.</p>
+<pre data-lang="html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="uk"&gt;
+  &lt;head&gt;
+    &lt;!-- metadata: not shown on the page --&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;!-- everything the user sees --&gt;
+    &lt;p&gt;Оригінальна назва: &lt;i lang="en"&gt;The Quiet Library&lt;/i&gt;&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Застосовуйте це завжди: doctype — першим рядком кожного HTML-файлу, <code>lang</code> — на кожному <code>&lt;html&gt;</code>, а на окремих елементах — там, де мова змінюється.</p>
+</section>
+
+<!-- head -->
+<section id="head">
+<h3 class="tagged" data-tag="<h3>">Head і meta: charset, viewport, title</h3>
+<p>Усе, що всередині <code>&lt;head&gt;</code>, — метадані: інформація про документ, а не його вміст. Три рядки тут обов'язкові на практиці, і кожен розв'язує окрему проблему.</p>
+<p><strong>Кодування символів.</strong> Файл на диску — це байти, а не літери. Щоб перетворити байти на символи, браузер має знати кодування. Якщо сервер його не повідомив (а при відкритті файлу з диска сервера немає взагалі), браузер вгадує, і кирилиця перетворюється на набір незрозумілих символів. Рядок <code>&lt;meta charset="utf-8"&gt;</code> знімає проблему. Специфікація вимагає, щоб він повністю вміщався в перші 1024 байти файлу, бо браузер шукає його лише на початку. Тому його ставлять першим у <code>&lt;head&gt;</code>, до <code>&lt;title&gt;</code> з кириличним текстом. Єдине допустиме значення для HTML — <code>utf-8</code>.</p>
+<p><strong>Viewport.</strong> Коли з'явилися смартфони, майже всі сайти були зверстані під ширину монітора. Щоб їх можна було хоч якось переглядати, мобільні браузери за замовчуванням рендерять сторінку на віртуальному полотні шириною близько 980 CSS-пікселів і зменшують результат до ширини екрана. Для адаптивної сторінки це катастрофа: текст стає дрібним, медіазапити CSS спрацьовують так, ніби екран широкий. Рядок <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</code> каже браузеру: ця сторінка вміє підлаштовуватися, бери справжню ширину пристрою і не масштабуй.</p>
+<p><strong>Заголовок документа.</strong> <code>&lt;title&gt;</code> — це текст вкладки, назва закладки, заголовок у результатах пошуку і перше, що оголошує скрінрідер після завантаження. Він має відрізняти сторінку від інших сторінок того ж сайту: спершу конкретне («Тиха бібліотека»), потім загальне («Книгарня „Сторінка"»).</p>
+<pre data-lang="html"><code>&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Каталог книжок — Книгарня «Сторінка»&lt;/title&gt;
+  &lt;meta name="description" content="Каталог художньої та технічної літератури з цінами й наявністю."&gt;
+  &lt;link rel="stylesheet" href="styles/main.css"&gt;
+&lt;/head&gt;</code></pre>
+<p><code>&lt;meta name="description"&gt;</code> часто стає текстом-описом у пошуковій видачі, а <code>&lt;link rel="stylesheet"&gt;</code> підключає CSS (про нього — у наступних лекціях). Ці три обов'язкові рядки мають бути в кожному документі без винятків.</p>
+</section>
+
+<!-- text -->
+<section id="text">
+<h3 class="tagged" data-tag="<h3>">Текстові елементи</h3>
+<p>Проблема, яку розв'язують текстові елементи, така: вигляд можна скопіювати, а значення — ні. Жирний шрифт може означати важливе попередження, назву терміна чи просто стиль дизайнера. Браузер, скрінрідер і пошуковик не бачать шрифту, вони бачать елемент. Тому елемент обирають за значенням, а вигляд змінюють у CSS: браузер має вбудовану таблицю стилів за замовчуванням (user agent stylesheet), яка і робить <code>&lt;strong&gt;</code> жирним, а <code>&lt;em&gt;</code> курсивним, але цей вигляд завжди можна перевизначити.</p>
+<p>Абзац — <code>&lt;p&gt;</code>. Сильна важливість, серйозність або терміновість — <code>&lt;strong&gt;</code>. Логічний наголос, що змінює зміст речення, — <code>&lt;em&gt;</code>: «Ця книжка є <em>в наявності</em>» і «<em>Ця</em> книжка є в наявності» — різні твердження. Елементи <code>&lt;b&gt;</code> та <code>&lt;i&gt;</code> не застарілі: специфікація визначає їх як виділення без додаткової важливості — наприклад, <code>&lt;i&gt;</code> для назви іншомовною мовою чи терміна. Цитата-блок — <code>&lt;blockquote&gt;</code>, коротка цитата в рядку — <code>&lt;q&gt;</code>, назва твору — <code>&lt;cite&gt;</code>, фрагмент коду — <code>&lt;code&gt;</code>.</p>
+<p>Важливий механізм — згортання пробілів. Браузер замінює будь-яку послідовність пробілів, табуляцій і переносів рядків у тексті на один пробіл. Тому відступи в коді не впливають на результат, а спроба «вирівняти» текст пробілами або переносами нічого не дасть. Примусовий перенос <code>&lt;br&gt;</code> існує для випадків, коли розрив рядка є частиною змісту: рядки вірша, частини поштової адреси. Для відступів між блоками використовують CSS-властивість <code>margin</code>.</p>
+<pre data-lang="html"><code>&lt;p&gt;
+  Ціна:        320 грн
+  (рядок відобразиться в одну лінію з одним пробілом)
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Увага:&lt;/strong&gt; знижка діє до кінця тижня.&lt;/p&gt;
+&lt;p&gt;Роман &lt;cite&gt;Тиха бібліотека&lt;/cite&gt; починається словами
+  &lt;q&gt;У цьому місті книжки читали вночі&lt;/q&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Книга — це мрія, яку тримаєш у руках.&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+<p>Правило вибору просте: спитайте себе, що цей фрагмент означає, і шукайте елемент з таким значенням. Якщо жодний не підходить і потрібен лише вигляд — це задача CSS.</p>
+</section>
+
+<!-- headings -->
+<section id="headings">
+<h3 class="tagged" data-tag="<h3>">Ієрархія заголовків</h3>
+<p>Зрячий користувач охоплює сторінку поглядом за секунду: великі написи підказують, де що. Користувач скрінрідера так не може, тому він навігує заголовками: у більшості скрінрідерів клавіша <kbd>H</kbd> переходить до наступного заголовка, цифри <kbd>1</kbd>–<kbd>6</kbd> — до заголовка певного рівня, а окрема команда показує список усіх заголовків — фактично зміст сторінки. Пошукові системи теж використовують заголовки, щоб зрозуміти тему і розділи.</p>
+<p>Елементи <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> задають не розмір шрифту, а <em>ранг</em> розділу. Правильна ієрархія читається як зміст книжки: один <code>&lt;h1&gt;</code> — тема сторінки; <code>&lt;h2&gt;</code> — її основні розділи; <code>&lt;h3&gt;</code> — підрозділи конкретного <code>&lt;h2&gt;</code> і так далі. Рівні не пропускають: <code>&lt;h4&gt;</code> одразу після <code>&lt;h2&gt;</code> змушує користувача думати, що він пропустив розділ. Якщо дизайн вимагає, щоб підзаголовок був маленьким, змінюють CSS, а не рівень.</p>
+<pre data-lang="html"><code>&lt;h1&gt;Каталог книжок&lt;/h1&gt;
+  &lt;h2&gt;Нові надходження&lt;/h2&gt;
+    &lt;h3&gt;Тиха бібліотека&lt;/h3&gt;
+    &lt;h3&gt;Мапа для мандрівника&lt;/h3&gt;
+  &lt;h2&gt;Бестселери місяця&lt;/h2&gt;
+    &lt;h3&gt;Код без поспіху&lt;/h3&gt;</code></pre>
+<p>Відступи в прикладі лише для наочності — браузер їх ігнорує. Окремо про поширений міф: у ранніх версіях HTML5 існував «алгоритм побудови структури документа» (outline algorithm), за яким <code>&lt;h1&gt;</code> усередині <code>&lt;section&gt;</code> мав автоматично ставати заголовком нижчого рівня. Жоден браузер і жоден скрінрідер його не реалізували, і в 2022 році його вилучили зі специфікації HTML. Рівень заголовка визначає лише цифра в тегу, тому ієрархію треба будувати самостійно. Браузери також прибирають зі своїх стилів за замовчуванням зменшений шрифт для <code>&lt;h1&gt;</code> у <code>&lt;section&gt;</code> та <code>&lt;article&gt;</code>, щоб не створювати ілюзію, ніби рівень змінився.</p>
+</section>
+
+<!-- links -->
+<section id="links">
+<h3 class="tagged" data-tag="<h3>">Посилання: абсолютні й відносні</h3>
+<p>Посилання — це елемент <code>&lt;a&gt;</code> з атрибутом <code>href</code>. Проблема в тому, щоб браузер правильно знайшов адресу, куди вести. Механізм такий: значення <code>href</code> браузер <em>розв'язує</em> відносно базової адреси поточного документа — так само, як шлях у файловій системі розв'язується відносно поточної папки.</p>
+<p>Абсолютна адреса містить протокол і домен: <code>https://books.example/catalog/</code>. Вона однаково працює з будь-якої сторінки, тому її використовують для посилань на інші сайти. Шлях від кореня сайту починається зі слеша: <code>/about.html</code> — завжди файл у корені поточного домену. Відносний шлях без слеша рахується від папки поточної сторінки: <code>authors.html</code> або <code>./authors.html</code> — файл у тій самій папці, <code>../authors.html</code> — на рівень вище. Фрагмент <code>#reviews</code> веде до елемента з <code>id="reviews"</code> на поточній сторінці.</p>
+<pre data-lang="html"><code>&lt;!-- current page: https://books.example/catalog/fiction/index.html --&gt;
+&lt;a href="https://other-shop.example/"&gt;Інший сайт&lt;/a&gt;          &lt;!-- absolute --&gt;
+&lt;a href="/about.html"&gt;Про нас&lt;/a&gt;                             &lt;!-- books.example/about.html --&gt;
+&lt;a href="quiet-library.html"&gt;Тиха бібліотека&lt;/a&gt;              &lt;!-- /catalog/fiction/quiet-library.html --&gt;
+&lt;a href="../authors.html"&gt;Усі автори&lt;/a&gt;                      &lt;!-- /catalog/authors.html --&gt;
+&lt;a href="#reviews"&gt;Відгуки&lt;/a&gt;                                &lt;!-- same page, id="reviews" --&gt;
+&lt;a href="mailto:shop@books.example"&gt;Написати нам&lt;/a&gt;
+&lt;a href="tel:+380441234567"&gt;Подзвонити&lt;/a&gt;</code></pre>
+<div class="callout" role="note"><p><strong>Пастка:</strong> <code>href="www.books.example"</code> без <code>https://</code> — це не адреса сайту, а відносний шлях до файлу з дивною назвою в поточній папці. Браузер слухняно перейде на <code>…/catalog/fiction/www.books.example</code>.</p></div>
+<p>Коли що обирати: для сторінок власного сайту зазвичай беруть шляхи від кореня або відносні — сайт можна перенести на інший домен без правок; відносні шляхи також працюють, коли сторінку відкривають з диска, де кореня сайту немає. Для інших сайтів — лише абсолютні.</p>
+<p>Текст посилання має бути зрозумілим без контексту. Скрінрідер уміє показати список усіх посилань сторінки, і десять пунктів «тут» чи «детальніше» в ньому нічого не означають. Якщо посилання відкривається в новій вкладці через <code>target="_blank"</code>, сучасні браузери автоматично поводяться так, ніби вказано <code>rel="noopener"</code>, тож нова сторінка не отримає доступу до вашої; але про нову вкладку варто попередити користувача в тексті.</p>
+</section>
+
+<!-- images -->
+<section id="images">
+<h3 class="tagged" data-tag="<h3>">Зображення і picture</h3>
+<p>Зображення — порожній елемент <code>&lt;img&gt;</code> з атрибутами <code>src</code> (адреса файлу) і <code>alt</code> (текстова альтернатива). Проблема, яку розв'язує <code>alt</code>: картинку бачать не всі. Скрінрідер читає <code>alt</code> замість зображення; якщо файл не завантажився, браузер показує <code>alt</code> на його місці; пошуковики індексують його як опис. Якщо атрибута немає зовсім, скрінрідер часто зачитує назву файлу — «IMG underscore 2041 dot jpg».</p>
+<p>Що писати в <code>alt</code>, залежить від ролі зображення. Інформативне (обкладинка, графік, схема) — коротко передайте те, що людина мала б з нього зрозуміти. Функціональне (іконка всередині посилання чи кнопки) — опишіть дію або ціль: «Кошик», а не «іконка візка». Декоративне (орнамент, фоновий візерунок) — <code>alt=""</code>: порожнє значення каже скрінрідеру «пропусти», і це свідоме рішення, а не лінь. Слова «зображення», «фото», «картинка» в <code>alt</code> зайві: скрінрідер і так оголошує, що це зображення.</p>
+<p>Атрибути <code>width</code> і <code>height</code> варто вказувати завжди. Браузер знає розміри картинки лише після завантаження файлу, і поки файл вантажиться, під нею не зарезервовано місця — текст зсувається, коли картинка з'являється. Знаючи <code>width</code> і <code>height</code>, браузер обчислює пропорції заздалегідь і резервує місце, навіть якщо CSS потім змінить розмір. Атрибут <code>loading="lazy"</code> відкладає завантаження картинок, які далеко внизу сторінки.</p>
+<pre data-lang="html"><code>&lt;figure&gt;
+  &lt;img src="covers/quiet-library.jpg"
+       alt="Обкладинка: освітлене вікно бібліотеки серед нічного міста"
+       width="400" height="600" loading="lazy"&gt;
+  &lt;figcaption&gt;«Тиха бібліотека», видання 2026 року&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;img src="decor/ornament.svg" alt=""&gt;  &lt;!-- decorative: screen readers skip it --&gt;</code></pre>
+<p>Елемент <code>&lt;picture&gt;</code> розв'язує іншу проблему: одне зображення в кількох варіантах. Наприклад, сучасні формати AVIF і WebP стискають краще за JPEG, але старі браузери їх не підтримують. Усередині <code>&lt;picture&gt;</code> розміщують кілька <code>&lt;source&gt;</code> і обов'язковий <code>&lt;img&gt;</code> останнім. Браузер переглядає <code>&lt;source&gt;</code> по черзі й бере <em>перший</em>, чий <code>type</code> він підтримує і чий <code>media</code> збігається з поточними умовами; якщо не підійшов жоден — бере <code>src</code> з <code>&lt;img&gt;</code>. Відображає картинку завжди сам <code>&lt;img&gt;</code> — <code>&lt;source&gt;</code> лише пропонує йому іншу адресу. Тому <code>alt</code>, <code>width</code> і <code>height</code> пишуть на <code>&lt;img&gt;</code>.</p>
+<pre data-lang="html"><code>&lt;picture&gt;
+  &lt;!-- art direction: a square crop for narrow screens --&gt;
+  &lt;source media="(max-width: 600px)" srcset="covers/quiet-library-square.avif" type="image/avif"&gt;
+  &lt;!-- format selection: first supported type wins --&gt;
+  &lt;source srcset="covers/quiet-library.avif" type="image/avif"&gt;
+  &lt;source srcset="covers/quiet-library.webp" type="image/webp"&gt;
+  &lt;img src="covers/quiet-library.jpg"
+       alt="Обкладинка: освітлене вікно бібліотеки серед нічного міста"
+       width="400" height="600"&gt;
+&lt;/picture&gt;</code></pre>
+<p>Коли що обирати: якщо варіант один — достатньо <code>&lt;img&gt;</code>. Якщо потрібні ті самі кадри різної роздільної здатності — атрибути <code>srcset</code> і <code>sizes</code> на <code>&lt;img&gt;</code> (браузер сам обирає файл). <code>&lt;picture&gt;</code> потрібен, коли ви хочете керувати вибором: різні формати або різне кадрування для різних екранів. <code>&lt;figure&gt;</code> з <code>&lt;figcaption&gt;</code> використовують, коли в зображення є підпис, пов'язаний з ним.</p>
+</section>
+
+<!-- lists -->
+<section id="lists">
+<h3 class="tagged" data-tag="<h3>">Списки</h3>
+<p>Коли на сторінці кілька однорідних пунктів, користувачу скрінрідера корисно знати, скільки їх і де кінець, — скрінрідер оголошує «список, 5 елементів» і дозволяє перестрибнути його цілком. Це працює лише з розміткою списком, а не абзацами з дефісами.</p>
+<p><code>&lt;ul&gt;</code> — невпорядкований список, де порядок не змінює змісту (жанри, пункти меню). <code>&lt;ol&gt;</code> — впорядкований, де порядок важливий (рейтинг, кроки оформлення замовлення); його атрибути <code>start</code> і <code>reversed</code> керують нумерацією, а нумерацію генерує браузер. Пункти обох — <code>&lt;li&gt;</code>, і лише вони можуть бути прямими дітьми <code>&lt;ul&gt;</code>/<code>&lt;ol&gt;</code>. <code>&lt;dl&gt;</code> — список описів: пари «термін (<code>&lt;dt&gt;</code>) — опис (<code>&lt;dd&gt;</code>)», ідеальні для характеристик товару. Навігаційне меню — теж список посилань, тому його розмічають через <code>&lt;ul&gt;</code> усередині <code>&lt;nav&gt;</code>.</p>
+<pre data-lang="html"><code>&lt;h2&gt;Топ-3 тижня&lt;/h2&gt;
+&lt;ol&gt;
+  &lt;li&gt;Тиха бібліотека&lt;/li&gt;
+  &lt;li&gt;Код без поспіху&lt;/li&gt;
+  &lt;li&gt;Мапа для мандрівника&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;Автор&lt;/dt&gt;       &lt;dd&gt;Олена Коваль&lt;/dd&gt;
+  &lt;dt&gt;Сторінок&lt;/dt&gt;    &lt;dd&gt;312&lt;/dd&gt;
+  &lt;dt&gt;Палітурка&lt;/dt&gt;   &lt;dd&gt;тверда&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+</section>
+
+<!-- tables -->
+<section id="tables">
+<h3 class="tagged" data-tag="<h3>">Таблиці для табличних даних</h3>
+<p>Таблиця існує для двовимірних даних: кожна клітинка має сенс лише разом із заголовком свого рядка і стовпця. Механізм доступності таблиці такий: коли користувач скрінрідера переходить між клітинками, скрінрідер оголошує відповідні заголовки — «Ціна, 320 грн». Для цього він має знати, які клітинки є заголовками.</p>
+<p>Тому заголовкові клітинки розмічають <code>&lt;th&gt;</code>, а не <code>&lt;td&gt;</code> з жирним шрифтом, і уточнюють атрибутом <code>scope</code>: <code>col</code> — заголовок стовпця, <code>row</code> — заголовок рядка. <code>&lt;caption&gt;</code> — перший дочірній елемент таблиці — дає таблиці назву, яку скрінрідер оголошує при вході. <code>&lt;thead&gt;</code>, <code>&lt;tbody&gt;</code>, <code>&lt;tfoot&gt;</code> групують рядки; якщо <code>&lt;tbody&gt;</code> не написати, браузер додасть його в DOM сам.</p>
+<pre data-lang="html"><code>&lt;table&gt;
+  &lt;caption&gt;Наявність книжок на складі&lt;/caption&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;Назва&lt;/th&gt;
+      &lt;th scope="col"&gt;Автор&lt;/th&gt;
+      &lt;th scope="col"&gt;Ціна, грн&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Тиха бібліотека&lt;/th&gt;
+      &lt;td&gt;Олена Коваль&lt;/td&gt;
+      &lt;td&gt;320&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th scope="row"&gt;Код без поспіху&lt;/th&gt;
+      &lt;td&gt;Андрій Мельник&lt;/td&gt;
+      &lt;td&gt;450&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+<p>Коли не застосовувати: для розкладки сторінки на колонки. Таблиця оголошує скрінрідеру «таблиця, 3 стовпці» там, де даних немає, фіксує порядок читання за рядками і погано перебудовується на вузьких екранах. Макет будують CSS Grid і Flexbox — їм присвячені наступні лекції.</p>
+</section>
+
+<!-- semantics -->
+<section id="semantics">
+<h3 class="tagged" data-tag="<h3>">Семантичні елементи й орієнтири</h3>
+<p>Проблема: сторінка з одних <code>&lt;div&gt;</code> для браузера — це набір безіменних коробок. Людина бачить шапку, меню і підвал завдяки дизайну, а допоміжні технології — ні. Щоб перейти до основного вмісту, користувач скрінрідера змушений прослуховувати все підряд.</p>
+<p>Механізм рішення — дерево доступності (accessibility tree). З DOM браузер будує паралельне дерево, де кожен вузол має <em>роль</em>, <em>ім'я</em> і <em>стан</em>. Семантичні елементи мають неявні ролі, і частина цих ролей — <em>орієнтири</em> (landmarks): скрінрідери показують їхній список і переходять між ними однією командою. Ось відповідність.</p>
+<dl class="steps">
+  <dt>&lt;header&gt;</dt><dd>Шапка сайту: логотип, назва, пошук. Роль <code>banner</code> він має лише тоді, коли не вкладений в <code>article</code>, <code>aside</code>, <code>main</code>, <code>nav</code> чи <code>section</code>; усередині них це просто вступна частина розділу.</dd>
+  <dt>&lt;nav&gt;</dt><dd>Блок основних навігаційних посилань, роль <code>navigation</code>. Якщо таких блоків кілька, дайте кожному ім'я через <code>aria-label</code>.</dd>
+  <dt>&lt;main&gt;</dt><dd>Основний вміст, унікальний для цієї сторінки, роль <code>main</code>. Видимий <code>&lt;main&gt;</code> має бути один.</dd>
+  <dt>&lt;article&gt;</dt><dd>Самодостатній фрагмент, зрозумілий і поза сторінкою: картка товару, допис, коментар.</dd>
+  <dt>&lt;section&gt;</dt><dd>Тематичний розділ, у якого зазвичай є заголовок. Орієнтиром <code>region</code> стає лише тоді, коли має ім'я (<code>aria-labelledby</code> або <code>aria-label</code>).</dd>
+  <dt>&lt;aside&gt;</dt><dd>Додатковий, непрямо пов'язаний вміст: порада, реклама, бічна колонка; роль <code>complementary</code>.</dd>
+  <dt>&lt;footer&gt;</dt><dd>Підвал: контакти, авторські права. Роль <code>contentinfo</code> — за тим самим правилом вкладеності, що й <code>header</code>.</dd>
+</dl>
+<pre data-lang="html"><code>&lt;body&gt;
+  &lt;header&gt;
+    &lt;p&gt;Книгарня «Сторінка»&lt;/p&gt;
+    &lt;nav aria-label="Головне меню"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="/"&gt;Головна&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="/catalog/"&gt;Каталог&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;h1&gt;Каталог книжок&lt;/h1&gt;
+    &lt;section aria-labelledby="new-books"&gt;
+      &lt;h2 id="new-books"&gt;Нові надходження&lt;/h2&gt;
+      &lt;article&gt;
+        &lt;h3&gt;Тиха бібліотека&lt;/h3&gt;
+        &lt;p&gt;Олена Коваль · 320 грн&lt;/p&gt;
+        &lt;a href="/books/quiet-library.html"&gt;Детальніше про «Тиху бібліотеку»&lt;/a&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;aside aria-label="Порада тижня"&gt;
+    &lt;h2&gt;Порада тижня&lt;/h2&gt;
+    &lt;p&gt;Читайте по 20 сторінок щовечора.&lt;/p&gt;
+  &lt;/aside&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;© 2026 Книгарня «Сторінка»&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+<p>Чи означає це, що <code>&lt;div&gt;</code> поганий? Ні. <code>&lt;div&gt;</code> — нейтральний контейнер без значення, і він правильний вибір, коли обгортка потрібна лише для стилів (сітка, фон, відступи). Проблема виникає тоді, коли <code>&lt;div&gt;</code> замінює елемент, що має значення. Специфікація WAI-ARIA формулює це як перше правило: якщо існує рідний HTML-елемент з потрібною семантикою, використовуйте його, а не <code>&lt;div&gt;</code> з атрибутом <code>role</code>. Серед новіших елементів варто знати <code>&lt;search&gt;</code> — обгортку для форми пошуку з роллю <code>search</code>.</p>
+</section>
+
+<!-- validation -->
+<section id="validation">
+<h3 class="tagged" data-tag="<h3>">Валідація розмітки</h3>
+<p>HTML-парсер ніколи не відмовляється показувати сторінку: для кожної помилки специфікація описує, як її «виправити». Це зручно, але небезпечно — виправлення може бути не таким, як ви задумали, і помилка залишається непоміченою, поки щось не зламається в CSS чи JavaScript.</p>
+<p>Класичний приклад: абзац не може містити блочних елементів на кшталт <code>&lt;div&gt;</code>. Зустрівши <code>&lt;div&gt;</code> усередині <code>&lt;p&gt;</code>, парсер закриває абзац перед ним, а закривальний <code>&lt;/p&gt;</code> наприкінці перетворює на новий порожній абзац. У DOM опиняється зовсім інша структура, ніж у вашому файлі, і стилі на кшталт <code>p div</code> перестають спрацьовувати.</p>
+<pre data-lang="html"><code>&lt;!-- source file --&gt;
+&lt;p&gt;Ціна: &lt;div class="price"&gt;320 грн&lt;/div&gt;&lt;/p&gt;
+
+&lt;!-- DOM that the browser actually builds --&gt;
+&lt;p&gt;Ціна: &lt;/p&gt;
+&lt;div class="price"&gt;320 грн&lt;/div&gt;
+&lt;p&gt;&lt;/p&gt;</code></pre>
+<p>Рішення — перевіряти розмітку двома інструментами. Перший — валідатор W3C Nu HTML Checker (<a href="https://validator.w3.org/nu/">validator.w3.org/nu</a>): вставте код, завантажте файл або вкажіть адресу, і він покаже помилки з номерами рядків та попередження (наприклад, про пропущений рівень заголовка). Другий — панель Elements у DevTools браузера: вона показує не ваш файл, а реальне DOM-дерево, яке побудував парсер, а вкладка Accessibility — дерево доступності з ролями й іменами. Валідуйте кожну сторінку перед здачею роботи і щоразу, коли верстка поводиться дивно.</p>
+</section>
+</div>
+</div>
+</section>
+
+<!-- ================= DEMO ================= -->
+<section class="block" id="demo" aria-labelledby="demo-title">
+<div class="wrap doc">
+<h2 id="demo-title" class="tagged" data-tag="<h2>">Інтерактив: пісочниця HTML</h2>
+<div class="prose">
+<p>Редагуйте код ліворуч — результат, карта структури і перевірка оновлюються за мить. Карта показує те, що «бачить» скрінрідер: орієнтири (темні мітки), структурні елементи без ролі орієнтира (пунктир) і заголовки з рівнями. Почніть із шаблону «Зламана ієрархія» і виправте всі зауваження.</p>
+</div>
+<div class="demo-shell">
+  <div class="demo-controls">
+    <div class="field">
+      <label for="preset">Шаблон</label>
+      <select id="preset">
+        <option value="semantic">Каталог книжок: семантична розмітка</option>
+        <option value="soup">Каталог книжок: div-суп</option>
+        <option value="broken">Зламана ієрархія</option>
+      </select>
+    </div>
+    <button class="btn" type="button" id="reset-sandbox">Відновити шаблон</button>
+  </div>
+  <div class="demo-grid">
+    <div>
+      <label class="editor-label" for="sandbox-code">Код сторінки</label>
+      <textarea id="sandbox-code" class="editor" spellcheck="false" autocomplete="off" aria-describedby="sandbox-hint"></textarea>
+      <p class="hint" id="sandbox-hint">Клавіша Tab переводить фокус далі, а не вставляє відступ. Посилання в результаті не відкриваються, а зображень навмисно немає — так видно, як працює alt.</p>
+    </div>
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="pane">
+        <h3 class="pane-title" id="result-title">Результат</h3>
+        <iframe id="sandbox-frame" title="Результат пісочниці" sandbox=""></iframe>
+      </div>
+      <div class="pane">
+        <h3 class="pane-title">Карта структури</h3>
+        <div class="pane-body" id="sandbox-outline" aria-live="polite"></div>
+      </div>
+      <div class="pane">
+        <h3 class="pane-title">Перевірка</h3>
+        <div class="pane-body" id="sandbox-issues"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 class="tagged" data-tag="<h3>">Div-суп проти семантики</h3>
+<div class="prose">
+<p>Дві сторінки нижче виглядають майже однаково — CSS підганяє вигляд. Різниця видна лише в тому, що отримують допоміжні технології. Порівняйте карти: ліворуч немає жодного орієнтира й заголовка, тож користувачу скрінрідера залишається слухати сторінку від початку до кінця.</p>
+</div>
+<div class="compare-grid" id="compare"></div>
+</div>
+</section>
+
+<!-- ================= CHEATSHEET ================= -->
+<section class="block" id="cheatsheet" aria-labelledby="cs-title">
+<div class="wrap">
+<div class="cs-head">
+  <h2 id="cs-title" class="section-title">Шпаргалка</h2>
+  <button class="btn btn-accent" type="button" id="print-cs">Друкувати шпаргалку</button>
+</div>
+<div class="cs-grid">
+  <article class="cs-card">
+    <h3>Мінімальний документ</h3>
+<pre data-lang="html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="uk"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport"
+    content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Сторінка — Сайт&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;…&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+  </article>
+  <article class="cs-card">
+    <h3>Head і meta</h3>
+    <dl>
+      <dt>&lt;!DOCTYPE html&gt;</dt><dd>вмикає стандартний режим рендерингу</dd>
+      <dt>lang="uk"</dt><dd>мова: вимова скрінрідера, переноси, переклад</dd>
+      <dt>&lt;meta charset="utf-8"&gt;</dt><dd>кодування; у перших 1024 байтах</dd>
+      <dt>&lt;meta name="viewport"&gt;</dt><dd>справжня ширина пристрою замість ~980px</dd>
+      <dt>&lt;title&gt;</dt><dd>вкладка, закладка, пошук, перше оголошення</dd>
+      <dt>&lt;meta name="description"&gt;</dt><dd>опис у пошуковій видачі</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Текст</h3>
+    <dl>
+      <dt>&lt;p&gt;</dt><dd>абзац</dd>
+      <dt>&lt;strong&gt; / &lt;em&gt;</dt><dd>важливість / логічний наголос</dd>
+      <dt>&lt;b&gt; / &lt;i&gt;</dt><dd>виділення без важливості; термін, іншомовне</dd>
+      <dt>&lt;blockquote&gt; / &lt;q&gt; / &lt;cite&gt;</dt><dd>цитата-блок / в рядку / назва твору</dd>
+      <dt>&lt;br&gt;</dt><dd>лише змістовний перенос: вірш, адреса</dd>
+      <dt>пробіли</dt><dd>будь-яка послідовність згортається в один</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Заголовки</h3>
+    <dl>
+      <dt>&lt;h1&gt;–&lt;h6&gt;</dt><dd>ранг розділу, не розмір шрифту</dd>
+      <dt>один &lt;h1&gt;</dt><dd>тема сторінки</dd>
+      <dt>без пропусків</dt><dd>h2 → h3 → h4; назад — на будь-який рівень</dd>
+      <dt>section не змінює рівень</dt><dd>outline-алгоритм вилучено зі специфікації</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Посилання</h3>
+    <dl>
+      <dt>https://site.example/page</dt><dd>абсолютне</dd>
+      <dt>/page.html</dt><dd>від кореня домену</dd>
+      <dt>page.html, ./page.html</dt><dd>та сама папка</dd>
+      <dt>../page.html</dt><dd>на рівень вище</dd>
+      <dt>#id</dt><dd>фрагмент на цій сторінці</dd>
+      <dt>mailto: / tel:</dt><dd>лист / дзвінок</dd>
+      <dt>текст</dt><dd>зрозумілий поза контекстом, не «тут»</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Зображення</h3>
+    <dl>
+      <dt>alt="опис"</dt><dd>інформативне: що людина має зрозуміти</dd>
+      <dt>alt="Кошик"</dt><dd>функціональне: дія або ціль</dd>
+      <dt>alt=""</dt><dd>декоративне: скрінрідер пропускає</dd>
+      <dt>width + height</dt><dd>резерв місця, без стрибків макета</dd>
+      <dt>loading="lazy"</dt><dd>відкладене завантаження</dd>
+      <dt>&lt;picture&gt;</dt><dd>перший підхожий &lt;source&gt;, alt — на &lt;img&gt;</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Списки і таблиці</h3>
+    <dl>
+      <dt>&lt;ul&gt; / &lt;ol&gt; &gt; &lt;li&gt;</dt><dd>порядок неважливий / важливий</dd>
+      <dt>start, reversed</dt><dd>нумерація &lt;ol&gt;</dd>
+      <dt>&lt;dl&gt; &lt;dt&gt; &lt;dd&gt;</dt><dd>термін — опис</dd>
+      <dt>&lt;caption&gt;</dt><dd>назва таблиці, перший дочірній</dd>
+      <dt>&lt;th scope="col|row"&gt;</dt><dd>заголовок стовпця / рядка</dd>
+      <dt>&lt;thead&gt; &lt;tbody&gt; &lt;tfoot&gt;</dt><dd>групи рядків</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Орієнтири</h3>
+    <dl>
+      <dt>&lt;header&gt;</dt><dd>banner (лише верхнього рівня)</dd>
+      <dt>&lt;nav&gt;</dt><dd>navigation; кілька — з aria-label</dd>
+      <dt>&lt;main&gt;</dt><dd>main; один видимий</dd>
+      <dt>&lt;aside&gt;</dt><dd>complementary</dd>
+      <dt>&lt;footer&gt;</dt><dd>contentinfo (лише верхнього рівня)</dd>
+      <dt>&lt;section aria-labelledby&gt;</dt><dd>region лише з іменем</dd>
+      <dt>&lt;article&gt;</dt><dd>самодостатній фрагмент</dd>
+      <dt>&lt;div&gt;</dt><dd>обгортка лише для стилів</dd>
+    </dl>
+  </article>
+  <article class="cs-card">
+    <h3>Перевірка</h3>
+    <dl>
+      <dt>validator.w3.org/nu</dt><dd>помилки й попередження з номерами рядків</dd>
+      <dt>DevTools → Elements</dt><dd>реальне DOM після виправлень парсера</dd>
+      <dt>DevTools → Accessibility</dt><dd>ролі й імена в дереві доступності</dd>
+    </dl>
+  </article>
+</div>
+</div>
+</section>
+
+<!-- ================= ANTIPATTERNS ================= -->
+<section class="block" id="antipatterns" aria-labelledby="ap-title">
+<div class="wrap doc">
+<h2 id="ap-title" class="tagged" data-tag="<h2>">Антипатерни</h2>
+<div class="ap-list">
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>">Div для всього</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;div class="header"&gt;
+  &lt;div class="menu"&gt;
+    &lt;div&gt;&lt;a href="/"&gt;Головна&lt;/a&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="content"&gt;
+  &lt;div class="card"&gt;…&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;© 2026&lt;/div&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;header&gt;
+  &lt;nav aria-label="Головне меню"&gt;
+    &lt;ul&gt;&lt;li&gt;&lt;a href="/"&gt;Головна&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;
+  &lt;/nav&gt;
+&lt;/header&gt;
+&lt;main&gt;
+  &lt;article&gt;…&lt;/article&gt;
+&lt;/main&gt;
+&lt;footer&gt;© 2026&lt;/footer&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> у дереві доступності всі <code>div</code> — вузли без ролі. Скрінрідер не може показати список орієнтирів чи перейти до основного вмісту, тож користувач прослуховує шапку й меню на кожній сторінці. Класи на кшталт <code>header</code> бачить лише розробник: для браузера це просто рядок.</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>">Вибір заголовка за розміром шрифту</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;h1&gt;Каталог книжок&lt;/h1&gt;
+&lt;!-- h2 looked "too big" --&gt;
+&lt;h4&gt;Нові надходження&lt;/h4&gt;
+&lt;h2&gt;Знижка 20% на все!&lt;/h2&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;h1&gt;Каталог книжок&lt;/h1&gt;
+&lt;h2 class="subtle"&gt;Нові надходження&lt;/h2&gt;
+&lt;p class="promo"&gt;Знижка 20% на все!&lt;/p&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> рівень заголовка — це місце розділу в змісті сторінки. <code>h4</code> після <code>h1</code> каже скрінрідеру, що пропущено два рівні, а рекламний напис у <code>h2</code> з'являється в списку розділів як повноцінний розділ. Розмір змінюється в CSS класом, рівень — лише за структурою.</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>">Таблиці для верстки</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;nav&gt;…menu…&lt;/nav&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;h1&gt;Каталог&lt;/h1&gt; …&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;div class="layout"&gt; &lt;!-- CSS Grid, next lectures --&gt;
+  &lt;nav aria-label="Каталог"&gt;…&lt;/nav&gt;
+  &lt;main&gt;&lt;h1&gt;Каталог&lt;/h1&gt; …&lt;/main&gt;
+&lt;/div&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> скрінрідер оголошує таблицю з рядками і стовпцями там, де даних немає, і пропонує табличну навігацію. Колонки не перебудовуються на вузькому екрані — з'являється горизонтальна прокрутка. Будь-яка зміна макета вимагає переписувати HTML, хоча це задача CSS.</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>"><code>&lt;br&gt;</code> для відступів</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;p&gt;Тиха бібліотека&lt;/p&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;p&gt;Код без поспіху&lt;/p&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;p class="book"&gt;Тиха бібліотека&lt;/p&gt;
+&lt;p class="book"&gt;Код без поспіху&lt;/p&gt;
+&lt;style&gt;
+  .book { margin-block-end: 2rem; }
+&lt;/style&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> <code>br</code> — це розрив рядка в тексті, а не відстань. Висота відступу залежить від розміру шрифту, її не можна змінити для мобільної версії, а деякі скрінрідери оголошують порожні рядки. Відступ — властивість вигляду, тож він задається в CSS (у реальному проєкті — в окремому файлі стилів).</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>"><code>img</code> без <code>alt</code> або з <code>alt="image"</code></h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;img src="covers/IMG_2041.jpg"&gt;
+&lt;img src="covers/code.jpg" alt="image"&gt;
+&lt;img src="decor/ornament.svg" alt="орнамент"&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;img src="covers/IMG_2041.jpg"
+     alt="Обкладинка: вікно бібліотеки вночі"&gt;
+&lt;img src="covers/code.jpg"
+     alt="Обкладинка: чашка кави біля клавіатури"&gt;
+&lt;img src="decor/ornament.svg" alt=""&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> без <code>alt</code> скрінрідер зачитує назву файлу; <code>alt="image"</code> повторює те, що скрінрідер і так оголошує, і нічого не повідомляє про зміст. Описаний декоративний орнамент — зайвий шум. Якщо картинка не завантажиться, зрячий користувач теж побачить лише цей текст.</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>">Посилання «тут» без змісту</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;p&gt;Опис книжки «Тиха бібліотека» —
+  &lt;a href="/books/quiet-library.html"&gt;тут&lt;/a&gt;.&lt;/p&gt;
+&lt;a href="/books/code.html"&gt;Детальніше&lt;/a&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;p&gt;Прочитайте
+  &lt;a href="/books/quiet-library.html"&gt;опис книжки
+  «Тиха бібліотека»&lt;/a&gt;.&lt;/p&gt;
+&lt;a href="/books/code.html"&gt;Детальніше про «Код без поспіху»&lt;/a&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> скрінрідер показує список усіх посилань сторінки без навколишнього тексту — там буде кілька однакових «тут» і «Детальніше». Пошуковики теж використовують текст посилання як опис сторінки, на яку воно веде. Для зрячих ціль клікання стає меншою і менш помітною.</p></div>
+</article>
+
+<article class="ap">
+<h3 class="tagged" data-tag="<h3>">Заборона масштабування у viewport</h3>
+<div class="ap-pair">
+<div><p class="verdict verdict-bad"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg> Погано</p>
+<pre data-lang="html" data-kind="bad"><code>&lt;meta name="viewport"
+  content="width=device-width, initial-scale=1,
+           maximum-scale=1, user-scalable=no"&gt;</code></pre></div>
+<div><p class="verdict verdict-good"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M4 10.5l4 4 8-9" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> Добре</p>
+<pre data-lang="html" data-kind="good"><code>&lt;meta name="viewport"
+  content="width=device-width, initial-scale=1"&gt;</code></pre></div>
+</div>
+<div class="why"><p><strong>Чому погано:</strong> людям зі слабким зором масштабування жестом — основний спосіб прочитати дрібний текст. Заборона ламає цю можливість і порушує критерій доступності WCAG про зміну розміру тексту. Частина браузерів навіть ігнорує цю заборону, тож вона лише створює непослідовну поведінку.</p></div>
+</article>
+
+</div>
+</div>
+</section>
+
+<!-- ================= BEST PRACTICES ================= -->
+<section class="block" id="best" aria-labelledby="bp-title">
+<div class="wrap doc">
+<h2 id="bp-title" class="tagged" data-tag="<h2>">Бест практики</h2>
+<div class="ap-list">
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Один <code>h1</code> — тема сторінки</h3>
+<p>Специфікація формально не забороняє кілька <code>h1</code>, але один головний заголовок дає скрінрідеру й пошуковику однозначну відповідь на питання «про що ця сторінка». Логотип у шапці — не <code>h1</code>: він однаковий на всіх сторінках і не описує жодну з них.</p>
+<pre data-lang="html"><code>&lt;header&gt;&lt;p class="logo"&gt;Книгарня «Сторінка»&lt;/p&gt;&lt;/header&gt;
+&lt;main&gt;&lt;h1&gt;Каталог книжок&lt;/h1&gt; …&lt;/main&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Послідовна ієрархія заголовків</h3>
+<p>Спускаючись углиб, додавайте по одному рівню; повертатися можна на будь-який вищий. Тоді список заголовків у скрінрідері стає точним змістом, а валідатор не видає попереджень.</p>
+<pre data-lang="html"><code>&lt;h1&gt;Каталог книжок&lt;/h1&gt;
+&lt;h2&gt;Художня література&lt;/h2&gt;
+&lt;h3&gt;Тиха бібліотека&lt;/h3&gt;
+&lt;h2&gt;Технічна література&lt;/h2&gt;   &lt;!-- back up: fine --&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Один <code>main</code></h3>
+<p>Орієнтир <code>main</code> — ціль команди «перейти до основного вмісту» і посилання «Перейти до змісту» на початку сторінки. Якщо видимих <code>main</code> кілька, допоміжна технологія не знає, куди вести.</p>
+<pre data-lang="html"><code>&lt;a class="skip-link" href="#main"&gt;Перейти до змісту&lt;/a&gt;
+&lt;header&gt;…&lt;/header&gt;
+&lt;main id="main"&gt;…&lt;/main&gt;
+&lt;footer&gt;…&lt;/footer&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Змістовний <code>alt</code> або свідомо порожній</h3>
+<p>Спитайте: що втратить людина, яка не бачить картинки? Якщо щось важливе — опишіть саме це, коротко й без слова «зображення». Якщо нічого — поставте <code>alt=""</code>, і скрінрідер пропустить зображення.</p>
+<pre data-lang="html"><code>&lt;img src="covers/quiet-library.jpg" alt="Обкладинка: вікно бібліотеки вночі" width="400" height="600"&gt;
+&lt;a href="/cart"&gt;&lt;img src="icons/cart.svg" alt="Кошик" width="24" height="24"&gt;&lt;/a&gt;
+&lt;img src="decor/ornament.svg" alt=""&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>"><code>lang</code> у <code>html</code></h3>
+<p>Атрибут визначає мову вимови скрінрідера, правила переносу слів і пропозицію перекласти сторінку. Іншомовні фрагменти позначайте власним <code>lang</code>.</p>
+<pre data-lang="html"><code>&lt;html lang="uk"&gt;
+…
+&lt;p&gt;Оригінал: &lt;i lang="en"&gt;The Quiet Library&lt;/i&gt;&lt;/p&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Doctype і charset — першими</h3>
+<p>Doctype має бути першим рядком, щоб не ввімкнувся режим сумісності; <code>meta charset</code> — першим у <code>head</code>, щоб потрапити в перші 1024 байти до будь-якого кириличного тексту.</p>
+<pre data-lang="html"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="uk"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;Каталог книжок&lt;/title&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Розміри зображень завжди в розмітці</h3>
+<p><code>width</code> і <code>height</code> дозволяють браузеру зарезервувати місце до завантаження файлу, тож текст не стрибає. CSS потім може змінити розмір — пропорції збережуться.</p>
+<pre data-lang="html"><code>&lt;img src="covers/code.jpg" alt="Обкладинка: чашка кави біля клавіатури"
+     width="400" height="600" loading="lazy"&gt;</code></pre>
+</article>
+
+<article class="ap bp">
+<h3 class="tagged" data-tag="<h3>">Таблиця з <code>caption</code> і <code>th scope</code></h3>
+<p>Назва таблиці й позначені заголовкові клітинки дозволяють скрінрідеру оголошувати «Ціна, 450» замість голого «450».</p>
+<pre data-lang="html"><code>&lt;table&gt;
+  &lt;caption&gt;Ціни на книжки&lt;/caption&gt;
+  &lt;tr&gt;&lt;th scope="col"&gt;Назва&lt;/th&gt;&lt;th scope="col"&gt;Ціна, грн&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th scope="row"&gt;Код без поспіху&lt;/th&gt;&lt;td&gt;450&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+</article>
+
+</div>
+</div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="block" id="quiz" aria-labelledby="quiz-title">
+<div class="wrap doc">
+<h2 id="quiz-title" class="tagged" data-tag="<h2>">Квіз для самоперевірки</h2>
+<div class="prose">
+<p>12 запитань на розуміння механізмів, частина — «що відобразиться». Після кожної відповіді ви побачите пояснення і пастки інших варіантів. Прогрес зберігається в цьому браузері.</p>
+</div>
+<div class="quiz" id="quiz-app" aria-live="polite">
+  <noscript><p>Квіз працює з увімкненим JavaScript.</p></noscript>
+</div>
+</div>
+</section>
+
+<!-- ================= LINKS ================= -->
+<section class="block" id="docs" aria-labelledby="docs-title">
+<div class="wrap doc">
+<h2 id="docs-title" class="tagged" data-tag="<h2>">Корисні посилання</h2>
+<div class="prose">
+<ul class="links-list">
+  <li><a href="https://html.spec.whatwg.org/multipage/">HTML Living Standard (WHATWG)</a> — чинна специфікація HTML.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content">MDN: Structuring content with HTML</a> — навчальний модуль з основ розмітки.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements">MDN: HTML elements reference</a> — довідник усіх елементів.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements">MDN: &lt;h1&gt;–&lt;h6&gt;</a> — заголовки та їхня доступність.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img">MDN: &lt;img&gt;</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture">MDN: &lt;picture&gt;</a> — зображення, alt, srcset, формати.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Viewport_meta_element">MDN: Viewport meta element</a> — як працює viewport на мобільних.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Quirks_mode_and_standards_mode">MDN: Quirks mode and standards mode</a> — навіщо doctype.</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Guides/Landmark_roles">MDN: ARIA landmark roles</a> — орієнтири та відповідні HTML-елементи.</li>
+  <li><a href="https://www.w3.org/WAI/tutorials/images/decision-tree/">W3C WAI: An alt Decision Tree</a> — як обрати текст alt.</li>
+  <li><a href="https://www.w3.org/WAI/tutorials/tables/">W3C WAI: Tables Tutorial</a> — доступні таблиці даних.</li>
+  <li><a href="https://validator.w3.org/nu/">W3C Nu HTML Checker</a> — валідатор розмітки.</li>
+  <li><a href="https://developer.chrome.com/docs/devtools/accessibility/reference">Chrome DevTools: Accessibility features reference</a> — дерево доступності в DevTools.</li>
+</ul>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Лекція 2 · Клієнтські технології вебпрограмування. Приклади вигадані й не пов'язані з реальними проєктами.</p>
+    <p><a href="../index.html">На головну</a></p>
+  </div>
+</footer>
+
+<!-- ================= SANDBOX PRESETS (plain text) ================= -->
+<script type="text/plain" id="preset-semantic"><!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Каталог книжок — Книгарня «Сторінка»</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.5; color: #16213a; }
+    header, footer { background: #1b2a4a; color: #fff; padding: 10px 16px; }
+    header p { margin: 0; font-weight: 700; }
+    nav ul { display: flex; gap: 14px; list-style: none; padding: 0; margin: 6px 0 0; }
+    nav a { color: #ffc79a; }
+    main { padding: 4px 16px; }
+    h1 { font-size: 1.6rem; margin: 10px 0; }
+    h2 { font-size: 1.2rem; margin: 10px 0 6px; }
+    h3 { font-size: 1rem; margin: 0 0 4px; }
+    article { border: 1px solid #ccd3e0; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    article img { float: left; margin-right: 10px; font-size: .75rem; color: #666; }
+    article p { margin: 0 0 4px; }
+    article::after { content: ""; display: block; clear: both; }
+    aside { margin: 0 16px 10px; padding: 8px 12px; background: #fff1e4; border-radius: 8px; }
+    footer p { margin: 0; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <p>Книгарня «Сторінка»</p>
+    <nav aria-label="Головне меню">
+      <ul>
+        <li><a href="/">Головна</a></li>
+        <li><a href="/catalog/">Каталог</a></li>
+        <li><a href="/contacts.html">Контакти</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Каталог книжок</h1>
+    <section aria-labelledby="new-books">
+      <h2 id="new-books">Нові надходження</h2>
+      <article>
+        <img src="covers/quiet-library.jpg" alt="Обкладинка: вікно бібліотеки вночі" width="60" height="90">
+        <h3>Тиха бібліотека</h3>
+        <p>Олена Коваль · 320 грн</p>
+        <a href="/books/quiet-library.html">Детальніше про «Тиху бібліотеку»</a>
+      </article>
+      <article>
+        <img src="covers/code.jpg" alt="Обкладинка: чашка кави біля клавіатури" width="60" height="90">
+        <h3>Код без поспіху</h3>
+        <p>Андрій Мельник · 450 грн</p>
+        <a href="/books/code.html">Детальніше про «Код без поспіху»</a>
+      </article>
+    </section>
+  </main>
+
+  <aside aria-label="Порада тижня">
+    <h2>Порада тижня</h2>
+    <p>Читайте по 20 сторінок щовечора.</p>
+  </aside>
+
+  <footer>
+    <p>© 2026 Книгарня «Сторінка»</p>
+  </footer>
+</body>
+</html></script>
+
+<script type="text/plain" id="preset-soup"><html>
+<head>
+  <meta charset="utf-8">
+  <title>Сторінка</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.5; color: #16213a; }
+    .header, .footer { background: #1b2a4a; color: #fff; padding: 10px 16px; }
+    .logo { font-weight: 700; }
+    .menu { display: flex; gap: 14px; margin: 6px 0 0; }
+    .menu a { color: #ffc79a; }
+    .content { padding: 4px 16px; }
+    .title { font-size: 1.6rem; font-weight: 700; margin: 10px 0; }
+    .subtitle { font-size: 1.2rem; font-weight: 700; margin: 10px 0 6px; }
+    .card-title { font-weight: 700; margin: 0 0 4px; }
+    .card { border: 1px solid #ccd3e0; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    .card img { float: left; margin-right: 10px; width: 60px; height: 90px; }
+    .card::after { content: ""; display: block; clear: both; }
+    .tip { margin: 0 16px 10px; padding: 8px 12px; background: #fff1e4; border-radius: 8px; }
+    .footer { font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Книгарня «Сторінка»</div>
+    <div class="menu">
+      <div><a href="/">Головна</a></div>
+      <div><a href="/catalog/">Каталог</a></div>
+      <div><a href="/contacts.html">Контакти</a></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="title">Каталог книжок</div>
+    <div class="subtitle">Нові надходження</div>
+    <div class="card">
+      <img src="covers/quiet-library.jpg">
+      <div class="card-title">Тиха бібліотека</div>
+      <div>Олена Коваль · 320 грн</div>
+      <a href="/books/quiet-library.html">тут</a>
+    </div>
+    <div class="card">
+      <img src="covers/code.jpg" alt="image">
+      <div class="card-title">Код без поспіху</div>
+      <div>Андрій Мельник · 450 грн</div>
+      <a href="/books/code.html">тут</a>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="subtitle">Порада тижня</div>
+    Читайте по 20 сторінок щовечора.
+  </div>
+
+  <div class="footer">© 2026 Книгарня «Сторінка»</div>
+</body>
+</html></script>
+
+<script type="text/plain" id="preset-broken"><!DOCTYPE html>
+<html>
+<head>
+  <title>Каталог</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0 16px; line-height: 1.5; color: #16213a; }
+    td { vertical-align: top; padding: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Книгарня «Сторінка»</h1>
+  <main>
+    <h1>Каталог книжок</h1>
+    <h4>Нові надходження</h4>
+    <table>
+      <tr>
+        <td><img src="covers/quiet-library.jpg" alt="фото" width="60" height="90"></td>
+        <td>
+          <h2>Тиха бібліотека</h2>
+          Олена Коваль<br><br>320 грн<br><br>
+          Опис книжки — <a href="/books/quiet-library.html">тут</a>
+        </td>
+      </tr>
+    </table>
+  </main>
+  <main>
+    <h3>Порада тижня</h3>
+    <p>Читайте по 20 сторінок щовечора.</p>
+  </main>
+</body>
+</html></script>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Syntax highlighting (pure functions: string in, HTML out)
+   ========================================================= */
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function highlightAttributes(attrText) {
+  const attrPattern = /(\s+)([^\s=\/>]+)(?:(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+))?/g;
+  let result = "";
+  let lastIndex = 0;
+  let match;
+  while ((match = attrPattern.exec(attrText)) !== null) {
+    result += escapeHtml(attrText.slice(lastIndex, match.index));
+    result += match[1] + '<span class="t-attr">' + escapeHtml(match[2]) + "</span>";
+    if (match[3]) {
+      result += '<span class="t-punct">' + escapeHtml(match[3]) + "</span>";
+      result += '<span class="t-val">' + escapeHtml(match[4]) + "</span>";
+    }
+    lastIndex = attrPattern.lastIndex;
+  }
+  return result + escapeHtml(attrText.slice(lastIndex));
+}
+
+function highlightCss(source) {
+  return source.split("\n").map(function (line) {
+    const decl = line.match(/^(\s*)([\w-]+)(\s*:\s*)([^;]*)(;?)(.*)$/);
+    if (decl && !/\{\s*$/.test(line)) {
+      return decl[1] + '<span class="t-prop">' + escapeHtml(decl[2]) + "</span>" + escapeHtml(decl[3]) +
+        '<span class="t-val">' + escapeHtml(decl[4]) + "</span>" + escapeHtml(decl[5] + decl[6]);
+    }
+    const rule = line.match(/^(\s*)([^{]+)(\{.*)$/);
+    if (rule) {
+      return rule[1] + '<span class="t-sel">' + escapeHtml(rule[2]) + "</span>" + escapeHtml(rule[3]);
+    }
+    return escapeHtml(line);
+  }).join("\n");
+}
+
+function highlightHtml(source) {
+  const pattern = /(<!--[\s\S]*?-->)|(<!DOCTYPE[^>]*>)|(<\/?)([a-zA-Z][\w-]*)((?:\s+[^\s=\/>]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?)*)(\s*\/?>)/gi;
+  let result = "";
+  let lastIndex = 0;
+  let match;
+  let insideStyle = false;
+  while ((match = pattern.exec(source)) !== null) {
+    const between = source.slice(lastIndex, match.index);
+    result += insideStyle ? highlightCss(between) : escapeHtml(between);
+    if (match[1]) {
+      result += '<span class="t-com">' + escapeHtml(match[1]) + "</span>";
+    } else if (match[2]) {
+      result += '<span class="t-doctype">' + escapeHtml(match[2]) + "</span>";
+    } else {
+      const tagName = match[4].toLowerCase();
+      insideStyle = tagName === "style" && match[3] === "<";
+      result += '<span class="t-punct">' + escapeHtml(match[3]) + '</span><span class="t-tag">' + escapeHtml(match[4]) + "</span>" +
+        highlightAttributes(match[5]) + '<span class="t-punct">' + escapeHtml(match[6]) + "</span>";
+    }
+    lastIndex = pattern.lastIndex;
+  }
+  return result + escapeHtml(source.slice(lastIndex));
+}
+
+function highlightCode(source, language) {
+  if (language === "html") return highlightHtml(source);
+  if (language === "css") return highlightCss(source);
+  return escapeHtml(source);
+}
+
+/* =========================================================
+   Code blocks: toolbar + copy button
+   ========================================================= */
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function selectElementText(element) {
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function createCodeBlock(pre) {
+  const language = pre.dataset.lang || "text";
+  const codeElement = pre.querySelector("code") || pre;
+  const source = codeElement.textContent;
+  codeElement.innerHTML = highlightCode(source, language);
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "code";
+  if (pre.dataset.kind === "bad") wrapper.classList.add("code-bad");
+  if (pre.dataset.kind === "good") wrapper.classList.add("code-good");
+
+  const bar = document.createElement("div");
+  bar.className = "code-bar";
+  const label = document.createElement("span");
+  label.className = "code-lang";
+  label.textContent = language.toUpperCase();
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "copy-btn";
+  button.textContent = "Копіювати";
+  button.setAttribute("aria-label", "Копіювати код " + language.toUpperCase());
+  button.addEventListener("click", async function () {
+    const copied = await copyText(source);
+    if (!copied) selectElementText(codeElement);
+    button.textContent = copied ? "Скопійовано" : "Виділено — натисніть Ctrl+C";
+    setTimeout(function () { button.textContent = "Копіювати"; }, 1800);
+  });
+  bar.append(label, button);
+
+  pre.replaceWith(wrapper);
+  pre.tabIndex = 0;
+  pre.setAttribute("aria-label", "Код " + language.toUpperCase());
+  wrapper.append(bar, pre);
+}
+
+function enhanceCodeBlocks(root) {
+  root.querySelectorAll("pre[data-lang]").forEach(createCodeBlock);
+}
+
+/* =========================================================
+   Document analysis (pure: markup in, data out)
+   ========================================================= */
+const ROLE_NAMES = {
+  banner: "banner — шапка",
+  navigation: "navigation — навігація",
+  main: "main — основний вміст",
+  complementary: "complementary — додатковий",
+  contentinfo: "contentinfo — підвал",
+  region: "region — іменований розділ",
+  search: "search — пошук",
+  form: "form — іменована форма"
+};
+const EXPLICIT_LANDMARK_ROLES = Object.keys(ROLE_NAMES);
+const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"]);
+const VAGUE_LINK_TEXTS = ["тут", "сюди", "детальніше", "читати далі", "натисніть", "клік", "here", "click here", "read more", "more", "посилання"];
+const USELESS_ALT_WORDS = ["image", "img", "picture", "photo", "зображення", "картинка", "фото", "фотографія", "іконка"];
+
+function parseMarkup(source) {
+  return new DOMParser().parseFromString(source, "text/html");
+}
+
+function getAccessibleName(element, doc) {
+  const label = element.getAttribute("aria-label");
+  if (label && label.trim()) return label.trim();
+  const labelledBy = element.getAttribute("aria-labelledby");
+  if (labelledBy) {
+    const text = labelledBy.split(/\s+/)
+      .map(function (id) { const target = doc.getElementById(id); return target ? target.textContent.trim() : ""; })
+      .join(" ").trim();
+    if (text) return text;
+  }
+  return "";
+}
+
+function isInsideSectioningContent(element) {
+  return Boolean(element.parentElement && element.parentElement.closest("article, aside, main, nav, section"));
+}
+
+function getLandmarkRole(element, doc) {
+  const explicitRole = (element.getAttribute("role") || "").trim().toLowerCase();
+  if (EXPLICIT_LANDMARK_ROLES.includes(explicitRole)) return explicitRole;
+  const hasName = getAccessibleName(element, doc) !== "";
+  switch (element.tagName) {
+    case "NAV": return "navigation";
+    case "MAIN": return "main";
+    case "ASIDE": return "complementary";
+    case "SEARCH": return "search";
+    case "HEADER": return isInsideSectioningContent(element) ? null : "banner";
+    case "FOOTER": return isInsideSectioningContent(element) ? null : "contentinfo";
+    case "SECTION": return hasName ? "region" : null;
+    case "FORM": return hasName ? "form" : null;
+    default: return null;
+  }
+}
+
+function getHeadingLevel(element) {
+  const match = element.tagName.match(/^H([1-6])$/);
+  return match ? Number(match[1]) : 0;
+}
+
+function describeStructuralElement(element) {
+  const tag = element.tagName.toLowerCase();
+  if (tag === "article") return "article";
+  if (tag === "section") return "section (без імені — не орієнтир)";
+  if (tag === "header") return "header усередині розділу — не орієнтир";
+  if (tag === "footer") return "footer усередині розділу — не орієнтир";
+  return null;
+}
+
+function buildOutline(doc) {
+  const tracker = { previousLevel: 0 };
+
+  function visit(element) {
+    if (SKIPPED_TAGS.has(element.tagName) || element.hasAttribute("hidden")) return [];
+    const level = getHeadingLevel(element);
+    if (level) {
+      const skipped = level > tracker.previousLevel + 1;
+      tracker.previousLevel = level;
+      return [{ kind: "heading", level: level, text: element.textContent.replace(/\s+/g, " ").trim() || "(порожній заголовок)", skipped: skipped }];
+    }
+    const children = Array.from(element.children).flatMap(visit);
+    const role = getLandmarkRole(element, doc);
+    if (role) {
+      return [{ kind: "landmark", role: role, tag: element.tagName.toLowerCase(), name: getAccessibleName(element, doc), children: children }];
+    }
+    const structural = describeStructuralElement(element);
+    if (structural) {
+      return [{ kind: "structure", label: structural, children: children }];
+    }
+    return children;
+  }
+
+  return doc.body ? visit(doc.body) : [];
+}
+
+function countOutline(nodes) {
+  return nodes.reduce(function (totals, node) {
+    if (node.kind === "heading") totals.headings += 1;
+    if (node.kind === "landmark") totals.landmarks += 1;
+    if (node.children) {
+      const nested = countOutline(node.children);
+      totals.headings += nested.headings;
+      totals.landmarks += nested.landmarks;
+    }
+    return totals;
+  }, { headings: 0, landmarks: 0 });
+}
+
+function findSkippedHeadings(nodes) {
+  return nodes.flatMap(function (node) {
+    if (node.kind === "heading") return node.skipped ? [node] : [];
+    return node.children ? findSkippedHeadings(node.children) : [];
+  });
+}
+
+function auditDocument(source, doc) {
+  const issues = [];
+  const add = function (severity, message) { issues.push({ severity: severity, message: message }); };
+
+  if (!/^\s*<!doctype html>/i.test(source)) add("error", "Немає <!DOCTYPE html> першим рядком — браузер рендерить сторінку в режимі сумісності.");
+  const lang = (doc.documentElement.getAttribute("lang") || "").trim();
+  if (!lang) add("error", "У <html> немає атрибута lang — скрінрідер може обрати неправильну вимову.");
+  if (!doc.querySelector("meta[charset]")) add("error", "Немає <meta charset=\"utf-8\"> — кирилиця може відобразитися «кракозябрами».");
+  if (!doc.querySelector('meta[name="viewport"]')) add("warn", "Немає <meta name=\"viewport\"> — на телефоні сторінка буде зменшеною копією десктопної.");
+  const title = doc.querySelector("title");
+  if (!title || !title.textContent.trim()) add("error", "Немає <title> або він порожній.");
+
+  const h1Count = doc.querySelectorAll("h1").length;
+  if (h1Count === 0) add("error", "Немає жодного <h1> — сторінка без теми для скрінрідера й пошуковика.");
+  if (h1Count > 1) add("warn", "Знайдено " + h1Count + " заголовки <h1>. Рекомендовано один — тема сторінки.");
+
+  findSkippedHeadings(buildOutline(doc)).forEach(function (heading) {
+    add("warn", "Пропущено рівень: <h" + heading.level + "> «" + heading.text + "» стоїть без батьківського заголовка рівня " + (heading.level - 1) + ".");
+  });
+
+  const visibleMains = Array.from(doc.querySelectorAll("main")).filter(function (el) { return !el.hasAttribute("hidden"); });
+  if (visibleMains.length === 0) add("error", "Немає <main> — нікуди перейти командою «до основного вмісту».");
+  if (visibleMains.length > 1) add("error", "Видимих <main> — " + visibleMains.length + ". Має бути один.");
+
+  doc.querySelectorAll("img").forEach(function (img) {
+    const src = img.getAttribute("src") || "(без src)";
+    if (!img.hasAttribute("alt")) {
+      add("error", "Зображення " + src + " без alt — скрінрідер прочитає назву файлу.");
+      return;
+    }
+    const alt = img.getAttribute("alt").trim().toLowerCase();
+    if (alt && USELESS_ALT_WORDS.includes(alt)) add("error", "alt=\"" + img.getAttribute("alt") + "\" у " + src + " нічого не описує.");
+    if (!img.hasAttribute("width") || !img.hasAttribute("height")) add("warn", "У " + src + " немає width/height — макет стрибатиме під час завантаження.");
+  });
+
+  doc.querySelectorAll("a").forEach(function (link) {
+    const text = link.textContent.replace(/\s+/g, " ").trim().toLowerCase();
+    if (!link.getAttribute("aria-label") && VAGUE_LINK_TEXTS.includes(text)) {
+      add("warn", "Посилання «" + link.textContent.trim() + "» незрозуміле поза контекстом.");
+    }
+  });
+
+  if (/<br\s*\/?>\s*<br\s*\/?>/i.test(source)) add("warn", "Кілька <br> поспіль — схоже на відступи через розмітку. Відступи задає CSS (margin).");
+
+  doc.querySelectorAll("table").forEach(function (table) {
+    if (!table.querySelector("th")) add("warn", "Таблиця без <th> — схоже на таблицю для верстки або дані без заголовків.");
+    else if (!table.querySelector("caption")) add("warn", "Таблиця без <caption> — скрінрідер не оголосить її назву.");
+  });
+
+  const totals = countOutline(buildOutline(doc));
+  const divCount = doc.querySelectorAll("div").length;
+  if (totals.landmarks === 0 && divCount > 3) add("error", "Div-суп: " + divCount + " елементів <div> і жодного орієнтира.");
+
+  return issues;
+}
+
+function summarizeDocument(doc) {
+  const totals = countOutline(buildOutline(doc));
+  return { landmarks: totals.landmarks, headings: totals.headings, divs: doc.querySelectorAll("div").length };
+}
+
+function buildPreviewDocument(source) {
+  return source + "\n<style>a{pointer-events:none}</style>";
+}
+
+/* =========================================================
+   Rendering helpers (data in, DOM out)
+   ========================================================= */
+function createNodeElement(node) {
+  const item = document.createElement("li");
+  const line = document.createElement("span");
+  line.className = "node";
+  const badge = document.createElement("span");
+
+  if (node.kind === "heading") {
+    badge.className = "badge badge-heading";
+    badge.textContent = "h" + node.level;
+    const text = document.createElement("span");
+    text.textContent = node.text;
+    line.append(badge, text);
+    if (node.skipped) {
+      const warn = document.createElement("span");
+      warn.className = "node-skip";
+      warn.textContent = "пропущено рівень";
+      line.append(warn);
+    }
+    item.style.marginLeft = Math.max(0, node.level - 1) * 10 + "px";
+  } else if (node.kind === "landmark") {
+    badge.className = "badge badge-landmark";
+    badge.textContent = "<" + node.tag + ">";
+    const text = document.createElement("span");
+    text.textContent = ROLE_NAMES[node.role] + (node.name ? " «" + node.name + "»" : "");
+    line.append(badge, text);
+  } else {
+    badge.className = "badge badge-struct";
+    badge.textContent = node.label;
+    line.append(badge);
+  }
+  item.append(line);
+
+  if (node.children && node.children.length) item.append(renderOutlineList(node.children));
+  return item;
+}
+
+function renderOutlineList(nodes) {
+  const list = document.createElement("ul");
+  list.className = "outline";
+  nodes.forEach(function (node) { list.append(createNodeElement(node)); });
+  return list;
+}
+
+function renderOutline(nodes) {
+  if (!nodes.length) {
+    const note = document.createElement("p");
+    note.className = "empty-note";
+    note.textContent = "Жодного орієнтира чи заголовка — для скрінрідера сторінка суцільний текст.";
+    return note;
+  }
+  const list = renderOutlineList(nodes);
+  return list;
+}
+
+const SEVERITY_LABELS = { error: "Помилка", warn: "Увага", ok: "Гаразд" };
+
+function renderIssues(issues) {
+  const list = document.createElement("ul");
+  list.className = "issues";
+  const items = issues.length ? issues : [{ severity: "ok", message: "Зауважень немає: скелет, заголовки, орієнтири, alt і посилання в порядку." }];
+  items.forEach(function (issue) {
+    const item = document.createElement("li");
+    const badge = document.createElement("span");
+    badge.className = "sev sev-" + issue.severity;
+    badge.textContent = SEVERITY_LABELS[issue.severity];
+    const text = document.createElement("span");
+    text.textContent = issue.message;
+    item.append(badge, text);
+    list.append(item);
+  });
+  return list;
+}
+
+function renderStats(summary) {
+  const list = document.createElement("ul");
+  list.className = "stats";
+  [["Орієнтирів", summary.landmarks], ["Заголовків", summary.headings], ["div", summary.divs]].forEach(function (pair) {
+    const item = document.createElement("li");
+    item.textContent = pair[0] + ": " + pair[1];
+    list.append(item);
+  });
+  return list;
+}
+
+/* =========================================================
+   Sandbox controller
+   ========================================================= */
+function getPresetSource(name) {
+  const holder = document.getElementById("preset-" + name);
+  return holder ? holder.textContent : "";
+}
+
+function updateSandbox() {
+  const source = document.getElementById("sandbox-code").value;
+  const doc = parseMarkup(source);
+  document.getElementById("sandbox-frame").srcdoc = buildPreviewDocument(source);
+  document.getElementById("sandbox-outline").replaceChildren(renderOutline(buildOutline(doc)));
+  document.getElementById("sandbox-issues").replaceChildren(renderIssues(auditDocument(source, doc)));
+}
+
+function loadPreset(name) {
+  document.getElementById("sandbox-code").value = getPresetSource(name);
+  updateSandbox();
+}
+
+function debounce(callback, delay) {
+  let timer = null;
+  return function () {
+    clearTimeout(timer);
+    timer = setTimeout(callback, delay);
+  };
+}
+
+function initSandbox() {
+  const presetSelect = document.getElementById("preset");
+  presetSelect.addEventListener("change", function () { loadPreset(presetSelect.value); });
+  document.getElementById("reset-sandbox").addEventListener("click", function () { loadPreset(presetSelect.value); });
+  document.getElementById("sandbox-code").addEventListener("input", debounce(updateSandbox, 350));
+  loadPreset(presetSelect.value);
+}
+
+/* =========================================================
+   Comparison: div soup vs semantics
+   ========================================================= */
+function createComparePane(title, presetName) {
+  const source = getPresetSource(presetName);
+  const doc = parseMarkup(source);
+  const pane = document.createElement("div");
+  pane.className = "pane";
+
+  const heading = document.createElement("h4");
+  heading.className = "pane-title";
+  heading.textContent = title;
+
+  const frame = document.createElement("iframe");
+  frame.setAttribute("sandbox", "");
+  frame.title = title + ": вигляд сторінки";
+  frame.srcdoc = buildPreviewDocument(source);
+  frame.style.height = "340px";
+
+  const body = document.createElement("div");
+  body.className = "pane-body";
+  const caption = document.createElement("p");
+  caption.style.margin = "0 0 6px";
+  caption.style.fontWeight = "600";
+  caption.textContent = "Що отримує скрінрідер";
+  body.append(renderStats(summarizeDocument(doc)), caption, renderOutline(buildOutline(doc)));
+
+  const details = document.createElement("details");
+  details.className = "src";
+  const summary = document.createElement("summary");
+  summary.textContent = "Показати розмітку";
+  const pre = document.createElement("pre");
+  pre.dataset.lang = "html";
+  const code = document.createElement("code");
+  code.textContent = source.replace(/<style>[\s\S]*?<\/style>/, "<style>/* same look, see sandbox */</style>");
+  pre.append(code);
+  details.append(summary, pre);
+  body.append(details);
+
+  pane.append(heading, frame, body);
+  enhanceCodeBlocks(details);
+  return pane;
+}
+
+function initComparison() {
+  const container = document.getElementById("compare");
+  container.append(
+    createComparePane("Div-суп", "soup"),
+    createComparePane("Семантична розмітка", "semantic")
+  );
+}
+
+/* =========================================================
+   Cheatsheet printing
+   ========================================================= */
+function printCheatsheet() {
+  document.body.classList.add("printing-cheatsheet");
+  const cleanup = function () { document.body.classList.remove("printing-cheatsheet"); };
+  window.addEventListener("afterprint", cleanup, { once: true });
+  window.print();
+  setTimeout(cleanup, 1000);
+}
+
+/* =========================================================
+   Quiz: data
+   ========================================================= */
+const QUIZ_STORAGE_KEY = "ctw-lecture02-quiz-v1";
+const TOPICS = {
+  skeleton: { title: "Скелет документа: doctype і lang", anchor: "#skeleton" },
+  head: { title: "Head і meta: charset, viewport", anchor: "#head" },
+  text: { title: "Текстові елементи і згортання пробілів", anchor: "#text" },
+  headings: { title: "Ієрархія заголовків", anchor: "#headings" },
+  links: { title: "Посилання: абсолютні й відносні", anchor: "#links" },
+  images: { title: "Зображення, alt і picture", anchor: "#images" },
+  lists: { title: "Списки", anchor: "#lists" },
+  tables: { title: "Таблиці для табличних даних", anchor: "#tables" },
+  semantics: { title: "Семантичні елементи й орієнтири", anchor: "#semantics" }
+};
+
+const QUESTIONS = [
+  {
+    id: "q-doctype", topic: "skeleton",
+    prompt: "Що станеться, якщо з документа прибрати перший рядок <!DOCTYPE html>?",
+    options: [
+      { id: "a", text: "Браузер перейде в режим сумісності (quirks mode), і частина CSS рахуватиметься за старими правилами", correct: true },
+      { id: "b", text: "Браузер не покаже сторінку й видасть помилку розбору", trap: "HTML-парсер ніколи не відмовляється показувати сторінку — він має правила відновлення після будь-яких помилок." },
+      { id: "c", text: "Браузер розбиратиме документ як XML", trap: "Тип розбору (HTML чи XML) визначає MIME-тип відповіді сервера, а не doctype." },
+      { id: "d", text: "Нічого не зміниться — doctype потрібен лише валідатору", trap: "Doctype — саме той перемикач, що вмикає стандартний режим рендерингу; валідатор лише повідомить про його відсутність." }
+    ],
+    explanation: "Без doctype браузер вважає документ старим і вмикає quirks mode, що імітує поведінку браузерів 1990-х. Сторінка відобразиться, але розміри блоків і деякі властивості поводитимуться інакше."
+  },
+  {
+    id: "q-charset", topic: "head",
+    prompt: "Студент відкрив свій HTML-файл з диска, і замість «Каталог» побачив «ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³». Найімовірніша причина?",
+    options: [
+      { id: "a", text: "У head немає <meta charset=\"utf-8\"> (або він стоїть занадто далеко від початку), тож браузер вгадав неправильне кодування", correct: true },
+      { id: "b", text: "Не вказано lang=\"uk\" у <html>", trap: "lang впливає на вимову, переноси й переклад, але не на те, як байти перетворюються на символи." },
+      { id: "c", text: "Браузер не має кириличного шрифту", trap: "Без шрифту з'явилися б порожні квадрати, а не латинські символи з діакритикою — це типова ознака UTF-8, прочитаного як однобайтове кодування." },
+      { id: "d", text: "Файл треба зберегти з розширенням .htm", trap: "Розширення визначає лише тип файлу, кодування воно не повідомляє." }
+    ],
+    explanation: "Файл — це байти. Кожна кирилична літера в UTF-8 займає два байти, і браузер, що вгадав однобайтове кодування, показує кожен байт окремим символом. meta charset у перших 1024 байтах прибирає вгадування."
+  },
+  {
+    id: "q-viewport", topic: "head",
+    prompt: "Сторінку без <meta name=\"viewport\"> відкрили на смартфоні. Що побачить користувач?",
+    options: [
+      { id: "a", text: "Сторінку, зверстану під віртуальну ширину близько 980px і зменшену до ширини екрана — з дрібним текстом", correct: true },
+      { id: "b", text: "Сторінка автоматично адаптується, бо сучасні браузери не потребують viewport", trap: "Поведінка з віртуальним полотном ~980px залишається за замовчуванням, щоб старі десктопні сайти відображалися цілком." },
+      { id: "c", text: "Звичайний розмір тексту і горизонтальну прокрутку", trap: "Браузер не залишає масштаб 1:1 — він зменшує все полотно, щоб воно вмістилося по ширині." },
+      { id: "d", text: "Порожній екран, доки користувач не змінить масштаб", trap: "Сторінка відображається, просто в зменшеному масштабі." }
+    ],
+    explanation: "Мобільні браузери за замовчуванням вважають, що сайт зроблений для монітора. width=device-width повідомляє, що сторінка адаптивна, і медіазапити CSS отримують справжню ширину екрана."
+  },
+  {
+    id: "q-heading-skip", topic: "headings",
+    prompt: "Що не так із такою послідовністю заголовків?",
+    code: "<h1>Каталог книжок</h1>\n<h3>Нові надходження</h3>\n<h3>Бестселери</h3>\n<h2>Контакти</h2>",
+    options: [
+      { id: "a", text: "Після h1 пропущено рівень h2: для скрінрідера h3 не має батьківського розділу", correct: true },
+      { id: "b", text: "Нічого — рівень обирають за потрібним розміром шрифту", trap: "Розмір шрифту змінюється в CSS; рівень заголовка — це місце розділу в змісті сторінки." },
+      { id: "c", text: "h2 не може стояти після h3", trap: "Повертатися на вищий рівень можна будь-коли — це початок нового розділу." },
+      { id: "d", text: "На сторінці має бути кілька h1", trap: "Рекомендовано один h1 — тему сторінки." }
+    ],
+    explanation: "Заголовки мають спускатися на один рівень за раз. Пропуск h2 змушує користувача, що навігує заголовками, думати, ніби він щось пропустив, а валідатор видає попередження."
+  },
+  {
+    id: "q-outline", topic: "headings",
+    prompt: "На сторінці вже є <h1>. Нижче — фрагмент. Якого рівня заголовок «Нові надходження» для скрінрідера?",
+    code: "<section>\n  <h1>Нові надходження</h1>\n</section>",
+    options: [
+      { id: "a", text: "Рівень 1: рівень визначає лише цифра в тегу, алгоритм outline вилучено зі специфікації", correct: true },
+      { id: "b", text: "Рівень 2, бо section автоматично знижує рівень вкладеного h1", trap: "Так описував алгоритм outline, але його не реалізували ні браузери, ні скрінрідери, і в 2022 році він зник зі специфікації." },
+      { id: "c", text: "Скрінрідер проігнорує заголовок усередині section", trap: "Заголовки всередині section — звичайні заголовки, section їх не приховує." },
+      { id: "d", text: "Залежить від розміру шрифту в CSS", trap: "CSS не змінює рівня заголовка в дереві доступності." }
+    ],
+    explanation: "Це буде другий заголовок рівня 1 на сторінці. Щоб зробити підрозділ, пишуть h2 — ієрархію будує розробник, а не браузер."
+  },
+  {
+    id: "q-relative", topic: "links",
+    prompt: "Поточна сторінка: https://books.example/catalog/fiction/index.html. Куди веде посилання?",
+    code: "<a href=\"../authors.html\">Усі автори</a>",
+    options: [
+      { id: "a", text: "https://books.example/catalog/authors.html", correct: true },
+      { id: "b", text: "https://books.example/catalog/fiction/authors.html", trap: "Це результат для authors.html або ./authors.html — тієї ж папки." },
+      { id: "c", text: "https://books.example/authors.html", trap: "Так працював би шлях від кореня /authors.html або ../../authors.html." },
+      { id: "d", text: "https://authors.html", trap: "Відносний шлях ніколи не замінює домен." }
+    ],
+    explanation: "Відносний шлях розв'язується від папки поточного документа (/catalog/fiction/). «..» піднімає на рівень вище — у /catalog/."
+  },
+  {
+    id: "q-alt-empty", topic: "images",
+    prompt: "Що зробить скрінрідер із цим зображенням?",
+    code: "<img src=\"decor/ornament.svg\" alt=\"\">",
+    options: [
+      { id: "a", text: "Пропустить його як декоративне", correct: true },
+      { id: "b", text: "Прочитає назву файлу «ornament.svg»", trap: "Так буває, коли атрибута alt немає зовсім. Порожній alt — явний сигнал «пропусти»." },
+      { id: "c", text: "Оголосить «зображення без опису»", trap: "Для alt=\"\" зображення прибирається з дерева доступності повністю." },
+      { id: "d", text: "Валідатор видасть помилку, бо alt не може бути порожнім", trap: "Порожній alt допустимий і рекомендований для декоративних зображень." }
+    ],
+    explanation: "alt=\"\" і відсутній alt — різні речі. Порожнє значення означає «зображення нічого не додає до змісту», і допоміжні технології його не оголошують."
+  },
+  {
+    id: "q-picture", topic: "images",
+    prompt: "Браузер підтримує і AVIF, і WebP. Який файл він завантажить і звідки візьме alt?",
+    code: "<picture>\n  <source srcset=\"cover.avif\" type=\"image/avif\">\n  <source srcset=\"cover.webp\" type=\"image/webp\">\n  <img src=\"cover.jpg\" alt=\"Обкладинка книжки\" width=\"400\" height=\"600\">\n</picture>",
+    options: [
+      { id: "a", text: "cover.avif; alt — з <img>, бо відображає картинку саме він", correct: true },
+      { id: "b", text: "cover.webp, бо браузер обирає найменший файл", trap: "Браузер не порівнює розміри — бере перший <source>, що підходить за type і media." },
+      { id: "c", text: "cover.jpg, бо src в <img> має пріоритет", trap: "src в <img> — запасний варіант, коли жоден <source> не підійшов." },
+      { id: "d", text: "Усі три файли, а покаже найкращий", trap: "Завантажується лише один обраний варіант — у цьому і сенс picture." }
+    ],
+    explanation: "<source> лише пропонує <img> іншу адресу. Порядок має значення: перший підхожий виграє. Тому alt, width і height завжди пишуть на <img>."
+  },
+  {
+    id: "q-whitespace", topic: "text",
+    prompt: "Що відобразить браузер?",
+    code: "<p>Автор:        Олена\n      Коваль</p>",
+    options: [
+      { id: "a", text: "Автор: Олена Коваль — в один рядок з одинарними пробілами", correct: true },
+      { id: "b", text: "Автор, багато пробілів, Олена, а «Коваль» — з нового рядка з відступом", trap: "Перенос рядка й відступи в коді браузер вважає пробільними символами і згортає." },
+      { id: "c", text: "Автор:Олена Коваль — пробіли після двокрапки видаляються", trap: "Послідовність пробілів згортається до одного пробілу, а не до нуля." },
+      { id: "d", text: "Залежить від шрифту", trap: "Згортання пробілів — правило обробки тексту (CSS white-space за замовчуванням), шрифт тут ні до чого." }
+    ],
+    explanation: "Будь-яка послідовність пробілів, табуляцій і переносів у звичайному тексті згортається в один пробіл. Змістовний перенос робить <br>, відступи — CSS."
+  },
+  {
+    id: "q-ol", topic: "lists",
+    prompt: "Що відобразиться?",
+    code: "<ol reversed start=\"3\">\n  <li>HTML</li>\n  <li>CSS</li>\n</ol>",
+    options: [
+      { id: "a", text: "3. HTML, 2. CSS", correct: true },
+      { id: "b", text: "3. HTML, 4. CSS", trap: "Це було б без reversed: start задає лише перше число." },
+      { id: "c", text: "2. HTML, 1. CSS", trap: "reversed не перераховує start — перший пункт отримує саме значення start." },
+      { id: "d", text: "1. CSS, 2. HTML", trap: "reversed змінює напрямок нумерації, а не порядок пунктів." }
+    ],
+    explanation: "Нумерацію генерує браузер: start задає перше число, reversed — лічбу вниз. Порядок пунктів у DOM не змінюється."
+  },
+  {
+    id: "q-table", topic: "tables",
+    prompt: "Як зробити так, щоб скрінрідер при переході по клітинках стовпця оголошував «Ціна, 320»?",
+    options: [
+      { id: "a", text: "Розмітити клітинку заголовка як <th scope=\"col\">Ціна</th>", correct: true },
+      { id: "b", text: "Написати <td><b>Ціна</b></td>", trap: "Жирний шрифт — це вигляд. Для скрінрідера це звичайна клітинка даних." },
+      { id: "c", text: "Додати <caption>Ціна</caption>", trap: "caption — назва всієї таблиці, а не заголовок стовпця." },
+      { id: "d", text: "Обгорнути перший рядок у <header>", trap: "header — орієнтир сторінки або розділу, він не працює як заголовок стовпця таблиці." }
+    ],
+    explanation: "Скрінрідер пов'язує клітинки даних із заголовками через <th>, а scope уточнює напрямок: col — для стовпця, row — для рядка."
+  },
+  {
+    id: "q-main", topic: "semantics",
+    prompt: "Користувач скрінрідера натискає команду «перейти до основного вмісту». Звідки скрінрідер знає, куди перейти?",
+    options: [
+      { id: "a", text: "З елемента <main> — він має неявну роль-орієнтир main", correct: true },
+      { id: "b", text: "З першого <h1> на сторінці", trap: "До заголовків ведуть інші команди; «основний вміст» — це орієнтир main." },
+      { id: "c", text: "З <div id=\"content\">", trap: "id і класи не мають семантики для допоміжних технологій." },
+      { id: "d", text: "З найбільшого за площею блоку сторінки", trap: "Скрінрідер працює з деревом доступності, а не з геометрією макета." }
+    ],
+    explanation: "Семантичні елементи мають неявні ролі в дереві доступності. <main> стає орієнтиром main, і саме тому видимий <main> має бути один."
+  }
+];
+
+/* =========================================================
+   Quiz: state (pure functions)
+   ========================================================= */
+function shuffle(items) {
+  const copy = items.slice();
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = temp;
+  }
+  return copy;
+}
+
+function createQuizState() {
+  const optionOrder = {};
+  QUESTIONS.forEach(function (question) {
+    optionOrder[question.id] = shuffle(question.options.map(function (option) { return option.id; }));
+  });
+  return {
+    order: shuffle(QUESTIONS.map(function (question) { return question.id; })),
+    optionOrder: optionOrder,
+    answers: {},
+    index: 0
+  };
+}
+
+function isValidQuizState(state) {
+  if (!state || !Array.isArray(state.order) || state.order.length !== QUESTIONS.length) return false;
+  return QUESTIONS.every(function (question) {
+    return state.order.includes(question.id) && Array.isArray(state.optionOrder && state.optionOrder[question.id]);
+  });
+}
+
+function loadQuizState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(QUIZ_STORAGE_KEY));
+    return isValidQuizState(saved) ? saved : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function saveQuizState(state) {
+  try {
+    localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    /* storage unavailable: the quiz keeps working in memory */
+  }
+}
+
+function findQuestion(questionId) {
+  return QUESTIONS.find(function (question) { return question.id === questionId; });
+}
+
+function isAnswerCorrect(question, optionId) {
+  const option = question.options.find(function (item) { return item.id === optionId; });
+  return Boolean(option && option.correct);
+}
+
+function computeResult(state) {
+  const wrongTopics = [];
+  let score = 0;
+  state.order.forEach(function (questionId) {
+    const question = findQuestion(questionId);
+    if (isAnswerCorrect(question, state.answers[questionId])) score += 1;
+    else if (!wrongTopics.includes(question.topic)) wrongTopics.push(question.topic);
+  });
+  return { score: score, total: QUESTIONS.length, wrongTopics: wrongTopics };
+}
+
+function getResultMessage(result) {
+  const ratio = result.score / result.total;
+  if (ratio === 1) return "Усі відповіді правильні — механізми зрозумілі.";
+  if (ratio >= 0.75) return "Добрий результат. Перечитайте теми нижче, щоб закрити прогалини.";
+  if (ratio >= 0.5) return "Основу засвоєно, але кілька механізмів варто повторити.";
+  return "Варто повернутися до теорії та пісочниці, а потім пройти квіз ще раз.";
+}
+
+/* =========================================================
+   Quiz: UI
+   ========================================================= */
+let quizState = null;
+
+function createElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+  return element;
+}
+
+function createQuizCode(source) {
+  const pre = createElement("pre");
+  pre.dataset.lang = "html";
+  const code = createElement("code", "", source);
+  pre.append(code);
+  const holder = createElement("div");
+  holder.append(pre);
+  enhanceCodeBlocks(holder);
+  return holder;
+}
+
+function createFeedback(question, chosenId) {
+  const correct = isAnswerCorrect(question, chosenId);
+  const box = createElement("div", "feedback " + (correct ? "good" : "bad"));
+  box.append(createElement("h3", "", correct ? "Правильно" : "Неправильно"));
+  box.append(createElement("p", "", question.explanation));
+  const traps = question.options.filter(function (option) { return !option.correct; });
+  const title = createElement("p", "", "Пастки інших варіантів:");
+  title.style.margin = "8px 0 0";
+  title.style.fontWeight = "600";
+  const list = createElement("ul");
+  traps.forEach(function (option) {
+    const item = createElement("li");
+    const strong = createElement("strong", "", option.text + ". ");
+    item.append(strong, document.createTextNode(option.trap));
+    if (option.id === chosenId) item.prepend(createElement("span", "", "Ваш вибір → "));
+    list.append(item);
+  });
+  box.append(title, list);
+  return box;
+}
+
+function createOption(question, optionId, index, answeredId) {
+  const option = question.options.find(function (item) { return item.id === optionId; });
+  const inputId = question.id + "-" + option.id;
+  const label = createElement("label", "opt");
+  label.setAttribute("for", inputId);
+  const input = createElement("input");
+  input.type = "radio";
+  input.name = question.id;
+  input.id = inputId;
+  input.value = option.id;
+  input.disabled = Boolean(answeredId);
+  input.checked = answeredId === option.id;
+  const text = createElement("span", "opt-text", String.fromCharCode(65 + index) + ". " + option.text);
+  label.append(input, text);
+  if (answeredId) {
+    if (option.correct) { label.classList.add("is-correct"); label.append(createElement("span", "mark", "✓ правильна")); }
+    else if (option.id === answeredId) { label.classList.add("is-wrong"); label.append(createElement("span", "mark", "✕ ваш вибір")); }
+  }
+  return label;
+}
+
+function renderQuizQuestion(app) {
+  const questionId = quizState.order[quizState.index];
+  const question = findQuestion(questionId);
+  const answeredId = quizState.answers[questionId];
+
+  const top = createElement("div", "quiz-top");
+  top.append(createElement("span", "", "Запитання " + (quizState.index + 1) + " з " + QUESTIONS.length));
+  top.append(createElement("span", "", "Тема: " + TOPICS[question.topic].title));
+  const progress = createElement("div", "progress");
+  progress.setAttribute("role", "progressbar");
+  progress.setAttribute("aria-label", "Прогрес квізу");
+  progress.setAttribute("aria-valuemin", "0");
+  progress.setAttribute("aria-valuemax", String(QUESTIONS.length));
+  progress.setAttribute("aria-valuenow", String(Object.keys(quizState.answers).length));
+  const bar = createElement("span");
+  bar.style.width = (Object.keys(quizState.answers).length / QUESTIONS.length) * 100 + "%";
+  progress.append(bar);
+
+  const form = createElement("form");
+  form.noValidate = true;
+  const fieldset = createElement("fieldset");
+  const legend = createElement("legend", "", question.prompt);
+  fieldset.append(legend);
+  if (question.code) fieldset.append(createQuizCode(question.code));
+  quizState.optionOrder[questionId].forEach(function (optionId, index) {
+    fieldset.append(createOption(question, optionId, index, answeredId));
+  });
+  form.append(fieldset);
+
+  const actions = createElement("div", "quiz-actions");
+  if (!answeredId) {
+    const submit = createElement("button", "btn btn-primary", "Відповісти");
+    submit.type = "submit";
+    submit.disabled = true;
+    form.addEventListener("change", function () { submit.disabled = false; });
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const chosen = form.querySelector("input:checked");
+      if (!chosen) return;
+      quizState.answers[questionId] = chosen.value;
+      saveQuizState(quizState);
+      renderQuiz({ focus: "feedback" });
+    });
+    actions.append(submit);
+  } else {
+    form.append(createFeedback(question, answeredId));
+    const isLast = quizState.index === QUESTIONS.length - 1;
+    const next = createElement("button", "btn btn-accent", isLast ? "Показати результат" : "Наступне запитання");
+    next.type = "button";
+    next.dataset.focusTarget = "next";
+    next.addEventListener("click", function () {
+      quizState.index += 1;
+      saveQuizState(quizState);
+      renderQuiz({ focus: "question" });
+    });
+    actions.append(next);
+  }
+  if (quizState.index > 0) {
+    const back = createElement("button", "btn", "Попереднє");
+    back.type = "button";
+    back.addEventListener("click", function () {
+      quizState.index -= 1;
+      saveQuizState(quizState);
+      renderQuiz({ focus: "question" });
+    });
+    actions.append(back);
+  }
+  form.append(actions);
+  app.replaceChildren(top, progress, form);
+}
+
+function renderQuizResult(app) {
+  const result = computeResult(quizState);
+  const heading = createElement("h3", "", "Результат");
+  heading.style.margin = "0 0 6px";
+  heading.tabIndex = -1;
+  heading.dataset.focusTarget = "result";
+  const score = createElement("p", "score", result.score + " / " + result.total);
+  const message = createElement("p", "", getResultMessage(result));
+  const nodes = [heading, score, message];
+  if (result.wrongTopics.length) {
+    nodes.push(createElement("p", "", "Теми, які варто повторити:"));
+    const list = createElement("ul", "links-list");
+    result.wrongTopics.forEach(function (topicId) {
+      const item = createElement("li");
+      const link = createElement("a", "", TOPICS[topicId].title);
+      link.href = TOPICS[topicId].anchor;
+      item.append(link);
+      list.append(item);
+    });
+    nodes.push(list);
+  }
+  const actions = createElement("div", "quiz-actions");
+  const retry = createElement("button", "btn btn-accent", "Пройти ще раз");
+  retry.type = "button";
+  retry.addEventListener("click", function () {
+    quizState = createQuizState();
+    saveQuizState(quizState);
+    renderQuiz({ focus: "question" });
+  });
+  actions.append(retry);
+  nodes.push(actions);
+  app.replaceChildren.apply(app, nodes);
+}
+
+function renderQuiz(options) {
+  const app = document.getElementById("quiz-app");
+  if (quizState.index >= QUESTIONS.length) renderQuizResult(app);
+  else renderQuizQuestion(app);
+
+  const focus = options && options.focus;
+  if (focus === "feedback") {
+    const next = app.querySelector('[data-focus-target="next"]');
+    if (next) next.focus();
+  } else if (focus === "question") {
+    const target = app.querySelector("legend") ? app.querySelector("input:not(:disabled)") || app.querySelector("button") : app.querySelector('[data-focus-target="result"]');
+    if (target) target.focus();
+  }
+}
+
+function initQuiz() {
+  quizState = loadQuizState() || createQuizState();
+  renderQuiz();
+}
+
+/* =========================================================
+   Bootstrap
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+  enhanceCodeBlocks(document);
+  initSandbox();
+  initComparison();
+  initQuiz();
+  document.getElementById("print-cs").addEventListener("click", printCheatsheet);
+  bindThemeToggle();
+});
+
+function bindThemeToggle() {
+  var button = document.getElementById("theme-toggle");
+  if (!button) return;
+  function saved() {
+    try {
+      var value = localStorage.getItem("ctw-theme");
+      return value === "dark" || value === "light" ? value : "";
+    } catch (error) {
+      return "";
+    }
+  }
+  function current() {
+    var value = saved();
+    if (value) return value;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function paint(theme) {
+    button.textContent = theme === "dark" ? "Світла тема" : "Темна тема";
+    button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  }
+  var theme = current();
+  paint(theme);
+  button.addEventListener("click", function () {
+    theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("ctw-theme", theme); } catch (error) {}
+    paint(theme);
+  });
+}
+</script>
+</body>
+</html>
