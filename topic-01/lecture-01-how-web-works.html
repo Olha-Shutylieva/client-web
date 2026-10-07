@@ -3,11 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+try {
+  var savedTheme = localStorage.getItem("ctw-theme");
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+} catch (error) {}
+</script>
 <title>Лекція 1. Вступ до клієнтських технологій</title>
-<meta name="description" content="Клієнтські технології вебпрограмування. Лекція 1: клієнт–сервер, HTTP/HTTPS, життєвий цикл запиту, побудова сторінки, стандарти W3C/WHATWG/ECMAScript, VS Code і WebStorm, Node.js LTS і npm, DevTools, Git.">
+<meta name="description" content="Клієнтські технології вебпрограмування.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../styles/course.css">
 <style>
 /* ---------- Tokens ---------- */
 :root {
@@ -657,10 +664,14 @@ footer { border-top: 1px solid var(--line); padding: 1.5rem 1.25rem 2.5rem; colo
 </head>
 <body>
 <a class="skip-link" href="#content">Перейти до змісту лекції</a>
+<div class="course-bar">
+  <a class="course-bar__home" href="../index.html">На головну</a>
+  <button type="button" class="course-bar__theme" id="theme-toggle" aria-pressed="false">Темна тема</button>
+</div>
 
 <header class="hero">
   <div class="hero-inner">
-    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 1, денна форма навчання</p>
+    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 1</p>
     <h1>Вступ до клієнтських технологій</h1>
     <p class="hero-lead">Як браузер і сервер обмінюються даними, як із байтів HTML з'являється сторінка, хто пише правила для всіх браузерів і з якими інструментами ви працюватимете весь курс.</p>
 
@@ -1630,7 +1641,8 @@ F12 → Console → filter: Errors</code></pre>
 </div>
 
 <footer>
-  Клієнтські технології вебпрограмування. Лекція 1: вступ до клієнтських технологій.
+  <p>Клієнтські технології вебпрограмування. Лекція 1: вступ до клієнтських технологій.</p>
+  <p><a href="../index.html">На головну</a></p>
 </footer>
 
 <script>
@@ -2292,5 +2304,6 @@ initJourney();
 initPrint();
 initQuiz();
 </script>
+<script src="../styles/course-theme.js"></script>
 </body>
 </html>

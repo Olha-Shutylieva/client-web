@@ -1,0 +1,88 @@
+/* Shared lecture chrome: return home and theme control.
+   Lecture-specific layout, demos, and code samples stay in each page. */
+
+.course-bar {
+  --bar-bg: #f4f6fa;
+  --bar-ink: #16213a;
+  --bar-line: #d3dbe8;
+  --bar-surface: #ffffff;
+  --bar-focus: #e8772e;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  min-height: 3.25rem;
+  padding: 0.45rem 1.25rem;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 0.45rem);
+  background: color-mix(in srgb, var(--bar-bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bar-line);
+  font-family: Commissioner, "Segoe UI", system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .course-bar {
+    --bar-bg: #0d1526;
+    --bar-ink: #e7ecf5;
+    --bar-line: #2b3a5c;
+    --bar-surface: #141f36;
+    --bar-focus: #ffae6b;
+  }
+}
+
+:root[data-theme="dark"] .course-bar {
+  --bar-bg: #0d1526;
+  --bar-ink: #e7ecf5;
+  --bar-line: #2b3a5c;
+  --bar-surface: #141f36;
+  --bar-focus: #ffae6b;
+}
+
+.course-bar__home,
+.course-bar__theme {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.35rem 0.95rem;
+  border-radius: 999px;
+  border: 2px solid var(--bar-line);
+  background: var(--bar-surface);
+  color: var(--bar-ink);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.course-bar__home::before {
+  content: "← ";
+}
+
+.course-bar__home:hover,
+.course-bar__theme:hover {
+  border-color: var(--bar-ink);
+}
+
+.course-bar :focus-visible {
+  outline: 3px solid var(--bar-focus);
+  outline-offset: 3px;
+}
+
+html:has(.course-bar) {
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+}
+
+html:has(.course-bar) .toc {
+  top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+}
+
+@media print {
+  .course-bar {
+    display: none !important;
+  }
+}

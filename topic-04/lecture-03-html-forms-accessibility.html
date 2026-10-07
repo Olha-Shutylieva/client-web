@@ -9,10 +9,11 @@ try {
 } catch (error) {}
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Лекція 3. HTML-форми та доступність</title>
+<title>Лекція 4. HTML-форми та доступність</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Onest:wght@400;500;700&family=Unbounded:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap">
+<link rel="stylesheet" href="../styles/course.css">
 <style>
 :root {
   color-scheme: light;
@@ -36,7 +37,7 @@ try {
   --code-bg: #0f1a2e;
   --code-ink: #e4e8f0;
   --font-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Onest", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --font-body: "Commissioner", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
@@ -362,16 +363,16 @@ footer a { font-weight: 700; }
 </head>
 <body>
 <a class="skip-link" href="#main">Перейти до змісту лекції</a>
-<div class="page-tools">
-  <a href="../index.html">← На головну</a>
-  <button type="button" id="theme-toggle" aria-pressed="false">Темна тема</button>
+<div class="course-bar">
+  <a class="course-bar__home" href="../index.html">На головну</a>
+  <button type="button" class="course-bar__theme" id="theme-toggle" aria-pressed="false">Темна тема</button>
 </div>
 <div id="sr-status" class="visually-hidden" aria-live="polite"></div>
 
 <header class="hero">
   <div class="hero__inner">
     <div class="hero-field">
-      <span class="hero-field__label">Лекція 3</span>
+      <span class="hero-field__label">Лекція 4</span>
       <div class="hero-field__box">
         <h1>HTML-форми та доступність<span class="caret" aria-hidden="true"></span></h1>
       </div>
@@ -1114,7 +1115,7 @@ footer a { font-weight: 700; }
 </div>
 
 <footer>
-  <p>Клієнтські технології вебпрограмування. Лекція 3 з 16: HTML-форми та доступність.</p>
+  <p>Клієнтські технології вебпрограмування. Лекція 4 з 16: HTML-форми та доступність.</p>
   <p><a href="../index.html">На головну</a></p>
 </footer>
 

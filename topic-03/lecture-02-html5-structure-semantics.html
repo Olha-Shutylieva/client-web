@@ -9,11 +9,12 @@ try {
   if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
 } catch (error) {}
 </script>
-<title>Лекція 2. HTML5: структура документа і семантика</title>
+<title>Лекція 3. HTML5: структура документа і семантика</title>
 <meta name="description" content="Лекція дисципліни «Клієнтські технології вебпрограмування»: doctype, head і meta, текстові елементи, заголовки, посилання, зображення, списки, таблиці, семантичні елементи, валідація.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/course.css">
 <style>
 :root {
   --bg: #F3F5F9;
@@ -38,8 +39,8 @@ try {
   --code-val: #B9E48C;
   --code-comment: #8391AD;
   --code-punct: #9FB0D4;
-  --font-body: "IBM Plex Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Unbounded", "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --font-body: "Commissioner", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Unbounded", "Commissioner", "Segoe UI", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
   --gutter: 0px;
   color-scheme: light;
@@ -368,16 +369,16 @@ details.src summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
 </head>
 <body>
 <a class="skip-link" href="#main">Перейти до змісту лекції</a>
-<div class="page-tools">
-  <a href="../index.html">← На головну</a>
-  <button type="button" id="theme-toggle" aria-pressed="false">Темна тема</button>
+<div class="course-bar">
+  <a class="course-bar__home" href="../index.html">На головну</a>
+  <button type="button" class="course-bar__theme" id="theme-toggle" aria-pressed="false">Темна тема</button>
 </div>
 
 <header class="site-header">
   <div class="wrap">
     <p class="course">Клієнтські технології вебпрограмування · 122 «Комп'ютерні науки»</p>
     <div class="doc">
-      <h1 class="tagged" data-tag="<h1>"><span class="lecture-no">Лекція 2</span>HTML5: структура документа і семантика</h1>
+      <h1 class="tagged" data-tag="<h1>"><span class="lecture-no">Лекція 3</span>HTML5: структура документа і семантика</h1>
     </div>
     <div class="hero-grid">
       <nav class="hero-card" aria-labelledby="plan-title">
@@ -1070,7 +1071,7 @@ details.src summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
 
 <footer class="site-footer">
   <div class="wrap">
-    <p>Лекція 2 · Клієнтські технології вебпрограмування. Приклади вигадані й не пов'язані з реальними проєктами.</p>
+    <p>Лекція 3 · Клієнтські технології вебпрограмування. Приклади вигадані й не пов'язані з реальними проєктами.</p>
     <p><a href="../index.html">На головну</a></p>
   </div>
 </footer>

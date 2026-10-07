@@ -1,0 +1,2786 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+try {
+  var savedTheme = localStorage.getItem("ctw-theme");
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+} catch (error) {}
+</script>
+<title>Лекція 2. Протокол HTTP і браузер як клієнт</title>
+<meta name="description" content="Клієнтські технології вебпрограмування. Лекція 2: структура HTTP-повідомлень, методи, коди стану, заголовки, кешування, браузер як клієнт, аналіз мережі в DevTools, вебстандарти та розвиток ECMAScript.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../styles/course.css">
+<style>
+/* ---------- Tokens ---------- */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --surface-2: #e9eef7;
+  --ink: #16213a;
+  --ink-soft: #4a5876;
+  --line: #d3dbe8;
+  --navy: #1c2e5a;
+  --navy-ink: #ffffff;
+  --accent: #e8772e;
+  --accent-text: #b04e0f;
+  --accent-soft: #fff0e4;
+  --bad: #b42318;
+  --bad-soft: #fdecea;
+  --good: #1e7b4b;
+  --good-soft: #e5f5ec;
+  --focus: #e8772e;
+  --code-bg: #0f1b33;
+  --code-ink: #e3e9f5;
+  --code-line: #24345a;
+  --seg-protocol: #fde2cc;
+  --seg-cred: #e2e8f0;
+  --seg-host: #d6e4ff;
+  --seg-port: #e9ddff;
+  --seg-path: #d5f2e0;
+  --seg-query: #fff1c2;
+  --seg-hash: #ffd6de;
+  --seg-protocol-line: #d9661c;
+  --seg-cred-line: #64748b;
+  --seg-host-line: #2f5fd0;
+  --seg-port-line: #7a4fd6;
+  --seg-path-line: #1e8a52;
+  --seg-query-line: #b58a00;
+  --seg-hash-line: #c8334f;
+  --radius-lg: 14px;
+  --radius-sm: 6px;
+  --font-body: "Commissioner", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Unbounded", "Commissioner", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1526;
+    --surface: #141f36;
+    --surface-2: #1b2842;
+    --ink: #e7ecf5;
+    --ink-soft: #a8b4cc;
+    --line: #2b3a5c;
+    --navy: #111d38;
+    --navy-ink: #e7ecf5;
+    --accent: #ff9a4d;
+    --accent-text: #ffae6b;
+    --accent-soft: #3a2616;
+    --bad: #ff8a80;
+    --bad-soft: #3a1c1f;
+    --good: #6fd69b;
+    --good-soft: #15332a;
+    --focus: #ffae6b;
+    --code-bg: #0a1224;
+    --code-ink: #e3e9f5;
+    --code-line: #22314f;
+    --seg-protocol: #5a3212;
+    --seg-cred: #334155;
+    --seg-host: #1e3767;
+    --seg-port: #3b2a66;
+    --seg-path: #1b4a31;
+    --seg-query: #574514;
+    --seg-hash: #5e2230;
+    --seg-protocol-line: #ff9a4d;
+    --seg-cred-line: #94a3b8;
+    --seg-host-line: #7fa8ff;
+    --seg-port-line: #b89cff;
+    --seg-path-line: #6fd69b;
+    --seg-query-line: #f5c84b;
+    --seg-hash-line: #ff7f98;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1526;
+  --surface: #141f36;
+  --surface-2: #1b2842;
+  --ink: #e7ecf5;
+  --ink-soft: #a8b4cc;
+  --line: #2b3a5c;
+  --navy: #111d38;
+  --navy-ink: #e7ecf5;
+  --accent: #ff9a4d;
+  --accent-text: #ffae6b;
+  --accent-soft: #3a2616;
+  --bad: #ff8a80;
+  --bad-soft: #3a1c1f;
+  --good: #6fd69b;
+  --good-soft: #15332a;
+  --focus: #ffae6b;
+  --code-bg: #0a1224;
+  --code-ink: #e3e9f5;
+  --code-line: #22314f;
+  --seg-protocol: #5a3212;
+  --seg-cred: #334155;
+  --seg-host: #1e3767;
+  --seg-port: #3b2a66;
+  --seg-path: #1b4a31;
+  --seg-query: #574514;
+  --seg-hash: #5e2230;
+  --seg-protocol-line: #ff9a4d;
+  --seg-cred-line: #94a3b8;
+  --seg-host-line: #7fa8ff;
+  --seg-port-line: #b89cff;
+  --seg-path-line: #6fd69b;
+  --seg-query-line: #f5c84b;
+  --seg-hash-line: #ff7f98;
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 16px); scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+img, svg { max-width: 100%; }
+a { color: var(--accent-text); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code, kbd, pre { font-family: var(--font-mono); }
+:not(pre) > code {
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+kbd {
+  font-size: 0.85em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  background: var(--surface);
+  padding: 0.05em 0.4em;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.6em; }
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 1.1rem + 1.4vw, 2rem);
+  color: var(--ink);
+}
+h3 { font-size: 1.28rem; font-weight: 700; margin-top: 1.8em; }
+h4 { font-size: 1.08rem; font-weight: 700; }
+p { margin: 0 0 1em; }
+.skip-link {
+  position: absolute; left: 12px; top: -60px;
+  background: var(--accent); color: #1a1a1a; padding: 8px 14px; border-radius: 6px; z-index: 10;
+  font-weight: 600;
+}
+.skip-link:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 0.4em;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 0.45em 1em;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn:hover:not(:disabled) { background: var(--accent-text); border-color: var(--accent-text); color: var(--bg); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Hero ---------- */
+.hero {
+  background: var(--navy);
+  color: #fff;
+  padding: clamp(2rem, 5vw, 4rem) 1.25rem clamp(2rem, 4vw, 3rem);
+}
+:root[data-theme="dark"] .hero { color: var(--navy-ink); }
+.hero-inner { max-width: 1180px; margin: 0 auto; }
+.hero-course { margin: 0 0 0.75rem; color: #c9d4ee; font-weight: 500; }
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 1.2rem + 3.2vw, 3.4rem);
+  line-height: 1.12;
+  max-width: 20ch;
+  margin-bottom: 0.5em;
+}
+.hero-lead { max-width: 60ch; color: #dce4f5; font-size: 1.1rem; }
+.hero-url {
+  margin: 2rem 0 0;
+  padding: 1.25rem 1.25rem 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+.hero-url figcaption { font-size: 0.92rem; color: #c9d4ee; margin-top: 0.75rem; }
+.anatomy { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0; font-family: var(--font-mono); }
+.anatomy-part { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.anatomy-part > span:first-child {
+  font-size: clamp(1rem, 0.7rem + 1.5vw, 1.6rem);
+  padding: 0.1em 0.12em;
+  border-bottom: 3px solid currentColor;
+  white-space: nowrap;
+}
+.anatomy-part > small {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  color: #c9d4ee;
+  padding-left: 0.12em;
+}
+.anatomy .sep > span:first-child { border-bottom-color: transparent; color: #8fa0c6; }
+.a-protocol { color: #ffb27a; }
+.a-host { color: #9dc0ff; }
+.a-port { color: #cdb6ff; }
+.a-path { color: #8fe3b3; }
+.a-query { color: #ffd66b; }
+.a-hash { color: #ff9fb1; }
+.hero-outcomes { margin-top: 2rem; max-width: 70ch; }
+.hero-outcomes h2 { font-size: 1.15rem; color: #fff; margin-bottom: 0.5em; font-family: var(--font-body); }
+.hero-outcomes ul { margin: 0; padding-left: 1.2em; color: #dce4f5; }
+.hero-outcomes li { margin-bottom: 0.35em; }
+.hero-outcomes li::marker { color: #ffb27a; }
+
+/* ---------- Layout ---------- */
+.layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+@media (min-width: 1080px) {
+  .layout { grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; }
+  .toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.25rem); align-self: start; max-height: calc(100vh - 2.5rem); overflow-y: auto; }
+}
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.1rem 0.9rem;
+}
+.toc h2 { font-family: var(--font-body); font-size: 1rem; margin-bottom: 0.6rem; }
+.toc ol { margin: 0; padding-left: 1.4em; font-size: 0.95rem; }
+.toc li { margin-bottom: 0.3em; }
+.toc li::marker { color: var(--accent-text); font-weight: 700; }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--accent-text); text-decoration: underline; }
+.toc ol ol { margin-top: 0.3em; list-style: none; padding-left: 0.2em; font-size: 0.9rem; }
+.toc ol ol a { color: var(--ink-soft); }
+main { min-width: 0; }
+main > section { margin-bottom: 4rem; }
+.prose { max-width: 74ch; }
+.section-lead { color: var(--ink-soft); font-size: 1.05rem; max-width: 68ch; }
+.concept { border-top: 1px solid var(--line); padding-top: 1.6rem; margin-top: 2.2rem; }
+.concept:first-of-type { border-top: 0; padding-top: 0; margin-top: 1rem; }
+.concept > h3 { margin-top: 0; }
+.callout {
+  border-left: 5px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.85rem 1.1rem;
+  margin: 1.2rem 0;
+  max-width: 74ch;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout strong:first-child { color: var(--accent-text); }
+.callout-navy { border-left-color: var(--navy); background: var(--surface-2); }
+:root .callout-navy { border-left-color: var(--ink-soft); }
+.callout-navy strong:first-child { color: var(--ink); }
+
+/* ---------- Code blocks ---------- */
+.code-wrap {
+  position: relative;
+  margin: 1.1rem 0 1.4rem;
+  background: var(--code-bg);
+  border-radius: 10px;
+  border: 1px solid var(--code-line);
+  max-width: 100%;
+}
+.code-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
+  border-bottom: 1px solid var(--code-line);
+  color: #9fb0d4;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+.copy-btn {
+  background: transparent;
+  color: #dbe4f7;
+  border: 1px solid #3a4d78;
+  border-radius: 6px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+}
+.copy-btn:hover { background: #22345d; }
+pre.code {
+  margin: 0;
+  padding: 0.9rem 1rem 1rem;
+  overflow-x: auto;
+  color: var(--code-ink);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+pre.code code { font-family: inherit; background: none; padding: 0; }
+.tok-comment { color: #7e8ba8; font-style: italic; }
+.tok-string { color: #a5e3ad; }
+.tok-keyword { color: #ffa45c; }
+.tok-number { color: #f5c26b; }
+.tok-fn { color: #8cc4ff; }
+.tok-tag { color: #7fb8ff; }
+.tok-attr { color: #d3b2ff; }
+.tok-prop { color: #8cc4ff; }
+.tok-flag { color: #d3b2ff; }
+.tok-at { color: #ffa45c; }
+
+/* ---------- Demo ---------- */
+.demo {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  margin: 1.5rem 0 2.5rem;
+}
+.demo h3 { margin-top: 0; }
+.field-label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+.url-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.url-row input {
+  flex: 1 1 260px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.url-row input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0.2rem; align-items: center; }
+.presets span { font-size: 0.9rem; color: var(--ink-soft); margin-right: 0.2rem; }
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+.chip:hover { border-color: var(--accent); }
+.url-line {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 0.8rem + 0.6vw, 1.2rem);
+  line-height: 2.1;
+  margin: 1.25rem 0 1rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.seg { padding: 0.12em 0.1em; border-bottom: 3px solid; border-radius: 3px 3px 0 0; }
+.seg-protocol { background: var(--seg-protocol); border-color: var(--seg-protocol-line); }
+.seg-cred { background: var(--seg-cred); border-color: var(--seg-cred-line); }
+.seg-host { background: var(--seg-host); border-color: var(--seg-host-line); }
+.seg-port { background: var(--seg-port); border-color: var(--seg-port-line); }
+.seg-path { background: var(--seg-path); border-color: var(--seg-path-line); }
+.seg-query { background: var(--seg-query); border-color: var(--seg-query-line); }
+.seg-hash { background: var(--seg-hash); border-color: var(--seg-hash-line); }
+.seg-sep { color: var(--ink-soft); }
+.url-parts { display: grid; gap: 0.6rem; margin: 0 0 1rem; }
+.url-part {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--line);
+  background: var(--bg);
+  border-radius: 0 8px 8px 0;
+}
+@media (min-width: 640px) { .url-part { grid-template-columns: 11rem minmax(0, 1fr); } }
+.url-part dt { font-weight: 700; }
+.url-part dd { margin: 0; overflow-wrap: anywhere; }
+.url-part dd code { font-size: 0.92em; }
+.url-part .hint { display: block; color: var(--ink-soft); font-size: 0.92rem; }
+.url-part.k-protocol { border-left-color: var(--seg-protocol-line); }
+.url-part.k-cred { border-left-color: var(--seg-cred-line); }
+.url-part.k-host { border-left-color: var(--seg-host-line); }
+.url-part.k-port { border-left-color: var(--seg-port-line); }
+.url-part.k-path { border-left-color: var(--seg-path-line); }
+.url-part.k-query { border-left-color: var(--seg-query-line); }
+.url-part.k-hash { border-left-color: var(--seg-hash-line); }
+.url-error {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--bad);
+  background: var(--bad-soft);
+  border-radius: 0 8px 8px 0;
+}
+.params { margin: 0.3rem 0 0; padding-left: 1.1em; }
+
+/* Journey */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  padding: 0.5rem 0 2.6rem;
+}
+.actor {
+  text-align: center;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0.8rem 0.3rem;
+  font-weight: 600;
+  font-size: clamp(0.82rem, 0.7rem + 0.5vw, 1rem);
+  transition: border-color 0.25s, background-color 0.25s, transform 0.25s;
+}
+.actor small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8em; }
+.actor.is-active { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+.track {
+  position: absolute; left: 16.66%; right: 16.66%; bottom: 1.1rem;
+  height: 2px; background: var(--line);
+}
+.packet {
+  position: absolute;
+  bottom: calc(1.1rem - 11px);
+  left: 16.66%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #1a1a1a;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: left 1.1s cubic-bezier(.45,.05,.3,1), opacity 0.2s;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.packet.no-anim { transition: none; }
+.packet.is-hidden { opacity: 0; }
+.pipeline {
+  list-style: none; padding: 0; margin: 0 0 1rem;
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.pipeline li {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px dashed var(--line);
+  color: var(--ink-soft);
+}
+.pipeline li.is-done { border-style: solid; border-color: var(--good); color: var(--good); }
+.pipeline li.is-done::before { content: "✓ "; }
+.pipeline li.is-current { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.step-panel {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  min-height: 9.5rem;
+}
+.step-count { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 0.2rem; }
+.step-panel h4 { margin-bottom: 0.35rem; }
+.step-panel p:last-child { margin-bottom: 0; }
+.step-progress { height: 4px; background: var(--line); border-radius: 4px; margin: 0.9rem 0; overflow: hidden; }
+.step-progress span { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.3s; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* ---------- Cheatsheet ---------- */
+.cheat-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.cheat-head h2 { margin: 0; }
+.cheat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+}
+.cheat-card {
+  background: var(--surface);
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  break-inside: avoid;
+}
+.cheat-card h3 { margin: 0 0 0.6rem; font-size: 1.02rem; color: var(--accent-text); }
+.cheat-card dl { margin: 0; }
+.cheat-card dt { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 600; margin-top: 0.45rem; overflow-wrap: anywhere; }
+.cheat-card dd { margin: 0; color: var(--ink-soft); }
+.cheat-card .code-wrap { margin: 0.6rem 0 0; }
+.cheat-card pre.code { font-size: 0.8rem; padding: 0.6rem 0.75rem; }
+
+/* ---------- Antipatterns / best practices ---------- */
+.pattern {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.6rem);
+  margin: 1.25rem 0;
+}
+.pattern > h3 { margin-top: 0; }
+.verdict {
+  display: inline-flex; align-items: center; gap: 0.35em;
+  font-weight: 700; font-size: 0.9rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin: 0.4rem 0 -0.3rem;
+}
+.verdict.bad { color: var(--bad); background: var(--bad-soft); }
+.verdict.good { color: var(--good); background: var(--good-soft); }
+.bad-block .code-wrap { border-left: 5px solid var(--bad); }
+.good-block .code-wrap { border-left: 5px solid var(--good); }
+.why { max-width: 74ch; }
+.why strong { color: var(--ink); }
+.practice-list { counter-reset: none; }
+
+/* ---------- Quiz ---------- */
+.quiz-top {
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center;
+  margin-bottom: 1.25rem;
+}
+.quiz-top progress { width: min(320px, 100%); height: 10px; accent-color: var(--accent); }
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin: 0 0 1.1rem;
+  min-width: 0;
+}
+.q-card legend {
+  float: left; width: 100%;
+  padding: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.q-card legend + * { clear: both; }
+.q-num { display: block; font-size: 0.85rem; font-weight: 500; color: var(--ink-soft); margin-bottom: 0.25rem; }
+.q-options { display: grid; gap: 0.5rem; margin-top: 0.8rem; clear: both; }
+.q-option {
+  text-align: left;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  line-height: 1.45;
+  display: flex; gap: 0.6rem; align-items: flex-start;
+}
+.q-option:hover:not(:disabled) { border-color: var(--accent); }
+.q-option:disabled { cursor: default; }
+.q-option .mark {
+  flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  font-size: 0.85rem; font-weight: 700;
+  background: var(--surface-2); color: var(--ink-soft);
+}
+.q-option.is-correct { border-color: var(--good); background: var(--good-soft); }
+.q-option.is-correct .mark { background: var(--good); color: var(--surface); }
+.q-option.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.q-option.is-wrong .mark { background: var(--bad); color: var(--surface); }
+.q-option.is-dim { opacity: 0.6; }
+.q-feedback:empty { display: none; }
+.q-feedback { margin-top: 0.9rem; padding: 0.8rem 1rem; border-radius: 10px; background: var(--surface-2); }
+.q-feedback .verdict-line { font-weight: 700; margin-bottom: 0.35rem; }
+.q-feedback.ok .verdict-line { color: var(--good); }
+.q-feedback.fail .verdict-line { color: var(--bad); }
+.q-feedback p:last-child { margin-bottom: 0; }
+.quiz-summary {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+.quiz-summary h3 { margin-top: 0; }
+.score { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin: 0 0 0.4rem; }
+
+/* ---------- Links / footer ---------- */
+.links-group { margin-bottom: 1.4rem; }
+.links-group h3 { margin: 1.2rem 0 0.4rem; font-size: 1.05rem; }
+.links-group ul { margin: 0; padding-left: 1.2em; }
+.links-group li { margin-bottom: 0.3em; }
+footer { border-top: 1px solid var(--line); padding: 1.5rem 1.25rem 2.5rem; color: var(--ink-soft); font-size: 0.9rem; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .packet, .actor, .step-progress span { transition: none !important; }
+}
+
+/* ---------- Lecture 2 additions ---------- */
+:root { --wf-pre: #9aa6bd; --wf-wait: #2fa36b; --wf-dl: #3b7be0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.dim { color: var(--ink-soft); }
+.exchange { display: grid; gap: 1rem; margin-top: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .exchange { grid-template-columns: 1fr 1fr; } }
+.msg {
+  margin: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+.msg figcaption { font-size: 0.92rem; color: #c9d4ee; margin-bottom: 0.6rem; font-weight: 600; }
+.msg-lines { font-family: var(--font-mono); font-size: clamp(0.82rem, 0.72rem + 0.4vw, 1rem); line-height: 1.8; min-width: max-content; }
+.ln { display: flex; gap: 1.5rem; justify-content: space-between; align-items: baseline; border-left: 3px solid transparent; padding-left: 0.7rem; white-space: nowrap; }
+.ln small { font-family: var(--font-body); font-size: 0.75rem; color: #c9d4ee; }
+.ln-start { border-color: #ffb27a; color: #ffd2ad; }
+.ln-head { border-color: #7fa8ff; color: #cddcff; }
+.ln-blank { border-left-style: dashed; border-color: #8fa0c6; min-height: 1.8em; }
+.ln-body { border-color: #6fd69b; color: #c4f2d8; }
+
+.form-grid { display: grid; gap: 0.5rem 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 720px) { .form-grid { grid-template-columns: 11rem minmax(0, 1fr); } .form-grid > .field-label { padding-top: 0.55rem; } }
+.control {
+  font: inherit; font-size: 0.95rem;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink);
+  width: 100%; min-width: 0;
+}
+.control:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+.control:disabled { opacity: 0.55; }
+textarea.control { font-family: var(--font-mono); min-height: 7.5rem; resize: vertical; font-size: 0.88rem; }
+.check { display: flex; gap: 0.55rem; align-items: flex-start; font-size: 0.95rem; }
+.check input { margin-top: 0.3rem; accent-color: var(--accent); width: 1.05rem; height: 1.05rem; flex: none; }
+.check input:disabled + span { opacity: 0.6; }
+.two-col { display: grid; gap: 0 1.25rem; grid-template-columns: minmax(0, 1fr); margin-top: 1.25rem; }
+@media (min-width: 960px) { .two-col { grid-template-columns: 1fr 1fr; } }
+.two-col h4 { margin: 0.4rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.explain { background: var(--bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-top: 0.75rem; }
+.status-pill { display: inline-block; font-family: var(--font-mono); font-weight: 600; padding: 0.05rem 0.55rem; border-radius: 999px; font-size: 0.82rem; }
+.s1, .s3 { background: var(--surface-2); color: var(--ink); }
+.s2 { background: var(--good-soft); color: var(--good); }
+.s4, .s5 { background: var(--bad-soft); color: var(--bad); }
+.table-wrap { overflow-x: auto; margin-top: 0.8rem; border: 1px solid var(--line); border-radius: 10px; }
+.net-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; font-family: var(--font-mono); }
+.net-table th, .net-table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+.net-table th { font-family: var(--font-body); font-weight: 600; background: var(--surface-2); }
+#net-table tbody tr { cursor: pointer; }
+#net-table tbody tr:hover { background: var(--accent-soft); }
+#net-table tbody tr.is-selected { background: var(--surface-2); box-shadow: inset 4px 0 0 var(--accent); }
+.net-table tr.err .name-cell .row-btn, .net-table tr.err .status-cell { color: var(--bad); font-weight: 700; }
+.row-btn { background: none; border: 0; padding: 0; color: var(--ink); font: inherit; text-align: left; text-decoration: underline dotted; text-underline-offset: 3px; }
+.wf { position: relative; height: 10px; width: 200px; }
+.wf span { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+.net-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.net-toolbar .control { font-family: var(--font-mono); font-size: 0.88rem; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.net-summary { font-size: 0.8rem; color: var(--ink-soft); padding: 0.5rem 0.6rem; margin: 0; font-family: var(--font-mono); }
+.tabs { display: flex; gap: 0.2rem; border-bottom: 1px solid var(--line); margin-top: 1.2rem; flex-wrap: wrap; }
+.tab { border: 0; background: none; color: var(--ink-soft); padding: 0.45rem 0.85rem; border-bottom: 3px solid transparent; font-weight: 600; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab-panel { padding: 0.9rem 0.1rem 0; }
+.tab-panel h4 { margin: 0 0 0.4rem; font-size: 0.98rem; }
+.kv { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: 0.2rem 1rem; font-family: var(--font-mono); font-size: 0.83rem; margin: 0; }
+.kv dt { color: var(--ink-soft); overflow-wrap: anywhere; }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .kv { grid-template-columns: minmax(0, 1fr); } .kv dd { margin-bottom: 0.35rem; } }
+.timing-row { display: grid; grid-template-columns: 14rem minmax(0, 1fr) 4.5rem; gap: 0.6rem; align-items: center; font-size: 0.86rem; margin-bottom: 0.3rem; }
+.timing-ms { text-align: right; font-family: var(--font-mono); }
+@media (max-width: 600px) { .timing-row { grid-template-columns: minmax(0, 1fr) 4.5rem; } .timing-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+.bar-track { height: 10px; background: var(--surface-2); border-radius: 5px; position: relative; overflow: hidden; }
+.bar-track span { position: absolute; top: 0; height: 100%; background: var(--accent); border-radius: 5px; }
+.task-box { background: var(--accent-soft); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+.sim-steps { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: 0.5rem; counter-reset: step; }
+.sim-steps li { counter-increment: step; background: var(--bg); border-radius: 8px; padding: 0.6rem 0.8rem 0.6rem 2.8rem; position: relative; }
+.sim-steps li::before {
+  content: counter(step); position: absolute; left: 0.75rem; top: 0.62rem;
+  width: 1.45rem; height: 1.45rem; border-radius: 50%;
+  background: var(--ink); color: var(--bg); font-size: 0.8rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+.sim-steps li.warn { box-shadow: inset 4px 0 0 var(--bad); background: var(--bad-soft); }
+.sim-result { margin: 1rem 0 0; font-weight: 600; padding: 0.7rem 1rem; border-radius: 8px; background: var(--surface-2); }
+.sim-result.tone-good { background: var(--good-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--good); }
+.sim-result.tone-bad { background: var(--bad-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--bad); }
+.edition-chips { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.2rem 0.1rem 0.5rem; }
+.edition-chips .chip { white-space: nowrap; flex: none; }
+.edition-card { margin-top: 1rem; }
+.support { display: inline-flex; gap: 0.35em; align-items: center; font-weight: 600; font-size: 0.9rem; padding: 0.2rem 0.7rem; border-radius: 999px; }
+.support.yes { background: var(--good-soft); color: var(--good); }
+.support.no { background: var(--bad-soft); color: var(--bad); }
+
+/* ---------- Print ---------- */
+@media print {
+  :root { padding: 0; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .skip-link, .toc, .copy-btn, .controls, .btn, #quiz, .demo { display: none !important; }
+  .hero { background: #fff; color: #000; padding: 0 0 1rem; }
+  .hero * { color: #000 !important; }
+  .code-wrap { background: #f3f5f9; border: 1px solid #ccc; }
+  pre.code { color: #111; white-space: pre-wrap; }
+  pre.code span { color: #111 !important; }
+  .code-bar { color: #555; }
+  a { color: #000; }
+  section, .pattern, .cheat-card { break-inside: avoid-page; }
+  body.print-cheatsheet .hero,
+  body.print-cheatsheet footer,
+  body.print-cheatsheet main > section:not(#cheatsheet) { display: none !important; }
+  body.print-cheatsheet .layout { display: block; padding: 0; }
+  body.print-cheatsheet #cheatsheet { margin: 0; }
+  body.print-cheatsheet .cheat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  body.print-cheatsheet .cheat-card { border: 1px dashed #777; padding: 8px 10px; font-size: 8.5pt; background: #fff; }
+  body.print-cheatsheet .cheat-card h3 { color: #000; font-size: 10pt; }
+  body.print-cheatsheet .cheat-card dd { color: #333; }
+  body.print-cheatsheet .cheat-card pre.code { font-size: 7.5pt; padding: 4px 6px; }
+  body.print-cheatsheet .cheat-head h2 { font-size: 14pt; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">Перейти до змісту лекції</a>
+<div class="course-bar">
+  <a class="course-bar__home" href="../index.html">На головну</a>
+  <button type="button" class="course-bar__theme" id="theme-toggle" aria-pressed="false">Темна тема</button>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 2</p>
+    <h1>Протокол HTTP і браузер як клієнт</h1>
+    <p class="hero-lead">Що саме браузер пише серверу і що читає у відповідь, як кеш заощаджує мережу, як побачити все це в DevTools — і хто домовляється про правила, за якими працюють усі браузери.</p>
+
+    <div class="exchange" aria-label="Будова HTTP-запиту і HTTP-відповіді">
+      <figure class="msg">
+        <figcaption>Запит: браузер → сервер</figcaption>
+        <div class="msg-lines">
+          <div class="ln ln-start"><span>GET /api/books?genre=css HTTP/1.1</span><small>рядок запиту</small></div>
+          <div class="ln ln-head"><span>Host: books.example.com</span><small>заголовки</small></div>
+          <div class="ln ln-head"><span>Accept: application/json</span></div>
+          <div class="ln ln-head"><span>If-None-Match: "v7"</span></div>
+          <div class="ln ln-blank"><span></span><small>порожній рядок</small></div>
+        </div>
+      </figure>
+      <figure class="msg">
+        <figcaption>Відповідь: сервер → браузер</figcaption>
+        <div class="msg-lines">
+          <div class="ln ln-start"><span>HTTP/1.1 200 OK</span><small>рядок статусу</small></div>
+          <div class="ln ln-head"><span>Content-Type: application/json</span><small>заголовки</small></div>
+          <div class="ln ln-head"><span>Cache-Control: no-cache</span></div>
+          <div class="ln ln-head"><span>ETag: "v8"</span></div>
+          <div class="ln ln-blank"><span></span><small>порожній рядок</small></div>
+          <div class="ln ln-body"><span>[{"id":1,"title":"CSS in Depth"}]</span><small>тіло</small></div>
+        </div>
+      </figure>
+    </div>
+
+    <div class="hero-outcomes">
+      <h2>Після лекції ви зможете</h2>
+      <ul>
+        <li>прочитати й скласти HTTP-повідомлення: рядок запиту чи статусу, заголовки, порожній рядок, тіло;</li>
+        <li>обрати метод і код стану за їхньою семантикою, розуміючи безпечність та ідемпотентність;</li>
+        <li>пояснити, які заголовки браузер додає сам і які обмеження накладає на запити зі сторінки;</li>
+        <li>налаштувати кешування через <code>Cache-Control</code>, валідатори й версіоновані імена файлів і перевірити його в DevTools;</li>
+        <li>аналізувати мережу в панелі Network: фільтри, колонки, Initiator, Timing, throttling, HAR;</li>
+        <li>пояснити, як народжуються вебстандарти в IETF, W3C, WHATWG і TC39 та шлях нової можливості в ECMAScript.</li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">План лекції</h2>
+    <ol>
+      <li><a href="#theory">Теорія</a>
+        <ol>
+          <li><a href="#messages">Структура HTTP-повідомлень</a></li>
+          <li><a href="#methods">Методи</a></li>
+          <li><a href="#status">Коди стану</a></li>
+          <li><a href="#headers">Заголовки</a></li>
+          <li><a href="#browser-client">Браузер як HTTP-клієнт</a></li>
+          <li><a href="#caching">Кешування</a></li>
+          <li><a href="#network">Аналіз мережі в DevTools</a></li>
+          <li><a href="#standards-bodies">Хто творить вебстандарти</a></li>
+          <li><a href="#ecmascript">Як розвивається ECMAScript</a></li>
+        </ol>
+      </li>
+      <li><a href="#demo">Інтерактивне демо</a>
+        <ol>
+          <li><a href="#request-demo">HTTP-клієнт і тестовий сервер</a></li>
+          <li><a href="#cache-demo">Симулятор кешу</a></li>
+          <li><a href="#network-demo">Тренажер панелі Network</a></li>
+          <li><a href="#es-demo">Хронологія ECMAScript</a></li>
+        </ol>
+      </li>
+      <li><a href="#cheatsheet">Шпаргалка</a></li>
+      <li><a href="#antipatterns">Антипатерни</a></li>
+      <li><a href="#best-practices">Бест практики</a></li>
+      <li><a href="#quiz">Квіз для самоперевірки</a></li>
+      <li><a href="#links">Корисні посилання</a></li>
+    </ol>
+  </nav>
+
+  <main id="content">
+
+    <section id="theory" aria-labelledby="theory-title">
+      <h2 id="theory-title">Теорія</h2>
+      <p class="section-lead">Продовжуємо з каталогом книжок, але тепер він має API: <code>/api/books</code> повертає список книжок у JSON, <code>/api/books/2</code> — одну книжку. На ньому розберемо кожну частину розмови браузера з сервером.</p>
+
+      <!-- Messages -->
+      <article class="concept prose" id="messages">
+        <h3>Структура HTTP-повідомлень</h3>
+        <p>Браузер написаний на C++, сервер — на JavaScript, Java чи Go, і створювали їх люди, які ніколи не бачили коду одне одного. Щоб такі програми розуміли одна одну, формат повідомлення має бути однозначним для машини, розширюваним без зміни самого протоколу і, бажано, читабельним для людини, яка налагоджує проблему.</p>
+        <p>HTTP/1.1 вирішує це текстовим форматом із чотирьох частин. Перша — <strong>стартовий рядок</strong>. У запиті це метод, ціль запиту (шлях із рядком запиту) та версія протоколу, у відповіді — версія, тризначний код стану й текстова фраза. Друга частина — <strong>поля заголовків</strong>, по одному на рядок у форматі <code>Name: value</code>; регістр імені не важливий, тож <code>content-type</code> і <code>Content-Type</code> — те саме поле. Третя — <strong>порожній рядок</strong>, єдиний сигнал, що заголовки скінчилися. Четверта — необов'язкове <strong>тіло</strong>. Його довжину отримувач дізнається із заголовка <code>Content-Length</code> або з передачі частинами (<code>Transfer-Encoding: chunked</code>), коли розмір заздалегідь невідомий.</p>
+        <pre class="code" data-lang="http"><code>POST /api/books HTTP/1.1
+Host: books.example.com
+Content-Type: application/json
+Content-Length: 71
+Accept: application/json
+
+{"title":"Learning Web Design","author":"Jennifer Robbins","year":2018}</code></pre>
+        <pre class="code" data-lang="http"><code>HTTP/1.1 201 Created
+Location: /api/books/4
+Content-Type: application/json
+Content-Length: 78
+
+{"id":4,"title":"Learning Web Design","author":"Jennifer Robbins","year":2018}</code></pre>
+        <p>З 2022 року HTTP описано набором документів IETF, у якому <strong>семантика</strong> відокремлена від <strong>транспорту</strong>. RFC 9110 визначає методи, коди стану й заголовки, спільні для всіх версій, а RFC 9112, 9113 і 9114 описують, як ці повідомлення передаються в HTTP/1.1, HTTP/2 і HTTP/3. HTTP/2 і HTTP/3 — бінарні протоколи: стартовий рядок перетворюється на псевдозаголовки <code>:method</code>, <code>:path</code>, <code>:scheme</code>, <code>:authority</code> у запиті та <code>:status</code> у відповіді, імена заголовків записуються малими літерами й стискаються, а текстової фрази на кшталт «OK» немає зовсім. Зміст розмови при цьому той самий, тому все, що ви вивчите на прикладах HTTP/1.1, працює й у новіших версіях.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У DevTools перемикач Raw у вкладці Headers показує заголовки майже в такому вигляді. Розуміння структури потрібне, коли ви налагоджуєте запит, формуєте тіло для <code>fetch</code> чи пояснюєте, чому сервер «не бачить» тіло без правильного <code>Content-Type</code>.</p>
+        </div>
+      </article>
+
+      <!-- Methods -->
+      <article class="concept prose" id="methods">
+        <h3>Методи</h3>
+        <p>Та сама адреса <code>/api/books/2</code> може означати «покажи книжку», «заміни її», «зміни рік видання» чи «видали». Самої адреси замало, причому не лише серверу. Кешу треба знати, чи можна зберегти відповідь. Браузеру — чи можна повторити запит після обриву з'єднання і чи треба попередити користувача, що він відправить форму вдруге. Пошуковому роботу — чи безпечно переходити за посиланням.</p>
+        <p>Тому кожен запит містить <strong>метод</strong>, який описує намір. <code>GET</code> отримує поточне представлення ресурсу. <code>HEAD</code> робить те саме, але без тіла: так перевіряють наявність ресурсу, розмір чи дату зміни. <code>POST</code> передає дані на обробку за правилами самого ресурсу — створити запис, надіслати форму, запустити дію. <code>PUT</code> повністю замінює стан ресурсу за вказаною адресою або створює його. <code>PATCH</code> (RFC 5789) змінює лише частину ресурсу. <code>DELETE</code> видаляє. <code>OPTIONS</code> питає, що дозволено з ресурсом, і браузер використовує його для попередньої перевірки CORS.</p>
+        <pre class="code" data-lang="text"><code>GET     /api/books      read the list of books
+GET     /api/books/2    read one book
+HEAD    /api/books/2    same headers as GET, no body
+POST    /api/books      create a book, the server chooses the id
+PUT     /api/books/2    replace book 2 with the full new version
+PATCH   /api/books/2    change some fields of book 2
+DELETE  /api/books/2    delete book 2
+OPTIONS /api/books      ask which methods are allowed</code></pre>
+        <p>Важливіші за назви методів — три їхні властивості. <strong>Безпечний</strong> метод за задумом нічого не змінює на сервері; такі методи — <code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code> і <code>TRACE</code>. Саме тому браузер може попередньо завантажувати сторінки за посиланнями, а роботи — обходити сайт. <strong>Ідемпотентний</strong> метод при повторенні призводить до того самого стану сервера, що й одноразовий виклик. Це всі безпечні методи, а також <code>PUT</code> і <code>DELETE</code>. Тож другий <code>DELETE /api/books/2</code> не видалить «ще щось», хоча його відповідь буде вже <code>404</code>: ідемпотентність стосується стану, а не відповіді. Ідемпотентні запити клієнт може автоматично повторити після обриву з'єднання. <code>POST</code> і <code>PATCH</code> ідемпотентності не гарантують, тому браузер перед повторною відправкою форми питає користувача. <strong>Кешованими</strong> на практиці є відповіді на <code>GET</code> і <code>HEAD</code>.</p>
+        <p>HTML-форми вміють лише два методи: <code>method="get"</code> додає поля до адреси як рядок запиту, а <code>method="post"</code> кладе їх у тіло. Решту методів сторінка надсилає через JavaScript.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щоразу, коли ви проєктуєте адреси й дії в застосунку або читаєте документацію API. Неправильно обраний метод не дає помилки одразу, але ламає кешування, повторні запити й безпеку, і проявляється це пізніше та непередбачувано.</p>
+        </div>
+      </article>
+
+      <!-- Status codes -->
+      <article class="concept prose" id="status">
+        <h3>Коди стану</h3>
+        <p>Отримавши відповідь, клієнт має автоматично вирішити, що робити: показати сторінку, перейти за новою адресою, взяти копію з кешу, попросити користувача увійти чи показати помилку. Текст «Сторінку не знайдено» програма зрозуміти не може, потрібен короткий машинозчитуваний результат. Ним і є тризначний <strong>код стану</strong>. Перша цифра задає клас, і клієнт, отримавши незнайомий код, поводиться з ним як із загальним кодом класу: невідомий <code>418</code> він трактує як <code>400</code>.</p>
+        <p><strong>1xx — інформаційні.</strong> Їх майже не видно в повсякденній роботі. <code>101 Switching Protocols</code> з'являється при переході на WebSocket, а <code>103 Early Hints</code> дає змогу серверу підказати браузеру, які ресурси підвантажувати, ще до готовності основної відповіді.</p>
+        <p><strong>2xx — успіх.</strong> <code>200 OK</code> — звичайна успішна відповідь з тілом. <code>201 Created</code> означає, що створено новий ресурс, а його адреса — в заголовку <code>Location</code>. <code>204 No Content</code> — успіх без тіла, типовий для <code>DELETE</code>. <code>206 Partial Content</code> віддає частину файлу на запит із заголовком <code>Range</code>; так перемотують відео.</p>
+        <p><strong>3xx — перенаправлення.</strong> <code>301 Moved Permanently</code> і <code>308 Permanent Redirect</code> повідомляють про постійний переїзд ресурсу, <code>302 Found</code> і <code>307 Temporary Redirect</code> — про тимчасовий. Різниця всередині пар історична: після <code>301</code> і <code>302</code> браузери перетворюють <code>POST</code> на <code>GET</code>, а <code>307</code> і <code>308</code> гарантують збереження методу й тіла. <code>303 See Other</code> явно наказує зробити <code>GET</code> на іншу адресу; це основа шаблону Post/Redirect/Get, завдяки якому оновлення сторінки після відправки форми не надсилає її вдруге. <code>304 Not Modified</code> — не перенаправлення, а відповідь на умовний запит: «твоя копія актуальна».</p>
+        <p><strong>4xx — помилка клієнта</strong>, тобто проблема в запиті, і повторювати його без змін марно. <code>400 Bad Request</code> — запит некоректний, наприклад зламаний JSON. <code>401 Unauthorized</code>, попри назву, означає «не автентифіковано»: сервер не знає, хто ви, і в заголовку <code>WWW-Authenticate</code> пояснює, як представитися. <code>403 Forbidden</code> — сервер знає, хто ви, але дії не дозволяє. <code>404 Not Found</code> — ресурсу немає. <code>405 Method Not Allowed</code> супроводжується заголовком <code>Allow</code> зі списком дозволених методів. <code>406 Not Acceptable</code> — сервер не може віддати жоден із форматів з <code>Accept</code>. <code>409 Conflict</code> — конфлікт із поточним станом ресурсу. <code>413 Content Too Large</code> — тіло завелике. <code>415 Unsupported Media Type</code> — сервер не приймає такий <code>Content-Type</code>. <code>422 Unprocessable Content</code> — формат правильний, але дані не проходять перевірку. <code>429 Too Many Requests</code> — перевищено ліміт запитів; заголовок <code>Retry-After</code> підказує, коли пробувати знову.</p>
+        <p><strong>5xx — помилка сервера</strong>: запит, можливо, коректний, але сервер його не виконав. <code>500 Internal Server Error</code> — загальна помилка. <code>502 Bad Gateway</code> і <code>504 Gateway Timeout</code> повертає проміжний сервер, коли сервер за ним відповів некоректно або не відповів вчасно. <code>503 Service Unavailable</code> — тимчасове перевантаження чи обслуговування.</p>
+        <p>Важлива деталь для JavaScript: <code>fetch</code> завершується помилкою лише тоді, коли відповіді немає взагалі — мережа недоступна чи запит заблоковано. Відповідь <code>404</code> чи <code>500</code> з погляду <code>fetch</code> успішна, бо сервер відповів. Перевіряти результат має ваш код, через властивості <code>response.ok</code> (true для 200–299) і <code>response.status</code>. Детально <code>fetch</code> розглянемо в лекціях про роботу з API.</p>
+        <pre class="code" data-lang="js"><code>async function loadBook(id) {
+  const response = await fetch(`/api/books/${id}`);
+  if (!response.ok) {
+    throw new Error(`Book ${id} was not loaded: HTTP ${response.status}`);
+  }
+  return response.json();
+}
+
+function describeStatus(status) {
+  if (status >= 500) return "server error";
+  if (status >= 400) return "client error";
+  if (status >= 300) return "redirect or not modified";
+  if (status >= 200) return "success";
+  return "informational";
+}
+
+console.log(describeStatus(404)); // "client error"</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Код стану — перше, на що дивитися в колонці Status панелі Network. За ним одразу видно, з якого боку шукати проблему: 4xx — у запиті чи правах клієнта, 5xx — на сервері.</p>
+        </div>
+      </article>
+
+      <!-- Headers -->
+      <article class="concept prose" id="headers">
+        <h3>Заголовки</h3>
+        <p>Метод, шлях і код стану не кажуть, у якому форматі дані, якою мовою, чи стиснуті вони, скільки їх можна кешувати, хто їх запитує і чи має на це право. Розширювати стартовий рядок під кожну таку потребу неможливо. Тому HTTP має відкритий механізм <strong>заголовків</strong>: нове поле можна додати, не змінюючи протоколу, а клієнти, які його не знають, просто ігнорують. Корисно групувати заголовки за призначенням.</p>
+        <p><strong>Про представлення</strong> — що саме лежить у тілі. <code>Content-Type</code> задає медіатип і кодування: <code>text/html; charset=utf-8</code>, <code>text/css</code>, <code>text/javascript</code> (саме цей тип RFC 9239 закріпив для JavaScript), <code>application/json</code>, <code>image/avif</code>, <code>font/woff2</code>. <code>Content-Length</code> — розмір тіла в байтах. <code>Content-Encoding</code> — яким алгоритмом тіло стиснуто: <code>gzip</code>, <code>br</code> (Brotli) чи <code>zstd</code>.</p>
+        <p><strong>Узгодження вмісту.</strong> Клієнт описує, що вміє прийняти: <code>Accept</code> (формати), <code>Accept-Language</code> (мови), <code>Accept-Encoding</code> (стиснення). Сервер обирає найкращий варіант і заголовком <code>Vary</code> повідомляє кешам, від яких заголовків запиту залежала відповідь, щоб українська версія не віддалася англомовному користувачу з кешу.</p>
+        <p><strong>Контекст і автентифікація.</strong> <code>Host</code> — ім'я сайту. <code>User-Agent</code> — опис клієнта. <code>Referer</code> (саме так, з історичною помилкою в написанні) — адреса сторінки, з якої йде запит. <code>Origin</code> — походження сторінки для міжсайтових запитів. <code>Authorization</code> передає облікові дані, наприклад <code>Bearer</code>-токен.</p>
+        <p><strong>Стан.</strong> HTTP не пам'ятає попередніх запитів, тому сервер видає <code>Set-Cookie</code>, а браузер повертає значення в <code>Cookie</code> з кожним наступним запитом до цього сайту. Атрибути керують безпекою: <code>HttpOnly</code> ховає cookie від JavaScript, <code>Secure</code> дозволяє лише HTTPS, <code>SameSite</code> обмежує надсилання з інших сайтів.</p>
+        <p><strong>Кешування, перенаправлення, безпека.</strong> <code>Cache-Control</code>, <code>ETag</code>, <code>Last-Modified</code>, <code>If-None-Match</code>, <code>Age</code> розберемо в розділі про кеш. <code>Location</code> вказує нову адресу, <code>Allow</code> — дозволені методи, <code>Retry-After</code> — коли повторити. <code>Strict-Transport-Security</code>, <code>Content-Security-Policy</code> і <code>X-Content-Type-Options: nosniff</code> вмикають захисні механізми браузера. Власні заголовки застосунку колись позначали префіксом <code>X-</code>, але RFC 6648 цю домовленість скасував: нове поле просто отримує зрозуміле ім'я.</p>
+        <pre class="code" data-lang="http"><code>GET /api/books HTTP/1.1
+Host: books.example.com
+Accept: application/json
+Accept-Language: uk,en;q=0.8
+Accept-Encoding: gzip, deflate, br, zstd
+Authorization: Bearer eyJhbGciOi...
+Cookie: theme=dark
+
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Encoding: br
+Content-Language: uk
+Vary: Accept-Language, Accept-Encoding
+Cache-Control: private, no-cache
+ETag: "v8"
+X-Content-Type-Options: nosniff</code></pre>
+        <p>Параметр <code>q</code> в <code>Accept-Language</code> — це вага переваги від 0 до 1: запис <code>uk,en;q=0.8</code> означає «найкраще українська, англійська теж підійде».</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли файл приходить, але браузер його не застосовує (неправильний <code>Content-Type</code> разом із <code>nosniff</code>), коли сервер не розуміє тіло запиту, коли cookie «не зберігається», коли потрібно перевірити, чи стиснуто ресурс.</p>
+        </div>
+      </article>
+
+      <!-- Browser as a client -->
+      <article class="concept prose" id="browser-client">
+        <h3>Браузер як HTTP-клієнт</h3>
+        <p>Розробник пише лише <code>&lt;img src="cover.avif"></code> чи <code>fetch("/api/books")</code>, а запит виходить з десятком заголовків, через вже відкрите з'єднання, з cookie і правильним форматом. Хто це вирішує? Браузер — дуже «самостійний» клієнт. Він діє від імені користувача, тож має не лише виконувати бажання сторінки, а й захищати користувача від неї, бо сторінка може бути зловмисною.</p>
+        <p>Браузер робить три види запитів. <strong>Навігація</strong> — введена адреса, перехід за посиланням, відправлення форми; її результат замінює поточний документ. <strong>Підресурси</strong> — стилі, скрипти, шрифти, зображення, які знаходить парсер. <strong>Програмні запити</strong> — <code>fetch</code> із JavaScript, результат яких отримує код, а не вікно. Для кожного виду браузер сам підставляє доречний <code>Accept</code>: для навігації першим іде <code>text/html</code>, для <code>&lt;img></code> — формати зображень, які він уміє декодувати.</p>
+        <p>Також браузер <strong>автоматично додає</strong> кілька груп заголовків. Це <code>Host</code> і <code>User-Agent</code>; <code>Accept-Encoding</code> зі списком підтримуваних стиснень, причому розпаковує відповідь він теж сам, і ваш код отримує вже розпаковані дані; <code>Accept-Language</code> з налаштувань мови. Далі <code>Cookie</code> для відповідного сайту з урахуванням <code>SameSite</code> і <code>Referer</code> за політикою <code>Referrer-Policy</code> (типово <code>strict-origin-when-cross-origin</code>: на інші сайти йде лише походження, без шляху). Окремо йдуть заголовки метаданих <code>Sec-Fetch-Site</code>, <code>Sec-Fetch-Mode</code> і <code>Sec-Fetch-Dest</code>, з яких сервер дізнається контекст запиту, а також умовні заголовки на основі кешу. Крім того, браузер керує з'єднаннями й пріоритетами: CSS, що блокує рендеринг, завантажується раніше за зображення в кінці сторінки.</p>
+        <p>Водночас браузер <strong>обмежує</strong> сторінку. Частину заголовків JavaScript встановити не може взагалі: <code>Host</code>, <code>Cookie</code>, <code>Content-Length</code>, <code>Origin</code>, <code>Referer</code>, <code>Connection</code>, усі <code>Sec-*</code> тощо. Специфікація Fetch називає їх забороненими (forbidden request headers), і спроба їх задати мовчки ігнорується. Інакше скрипт на чужому сайті міг би підробити, від чийого імені й звідки йде запит.</p>
+        <p>Головне обмеження — <strong>політика того самого походження</strong> (same-origin policy). Сторінка може надіслати запит на інше походження, але <em>прочитати відповідь</em> її код зможе лише тоді, коли сервер явно дозволить це заголовком <code>Access-Control-Allow-Origin</code>. Цей механізм називається CORS. Для «непростих» запитів — з методами на кшталт <code>PUT</code> чи <code>DELETE</code> або з <code>Content-Type: application/json</code> — браузер спершу надсилає попередній запит <code>OPTIONS</code> (preflight) і відправляє основний лише після дозволу. Зверніть увагу: CORS виконує браузер, а не сервер. Утиліта на кшталт <code>curl</code> отримає ту саму відповідь без жодних обмежень, бо вона не захищає користувача від сторінок.</p>
+        <pre class="code" data-lang="http"><code>OPTIONS /api/books/2 HTTP/1.1
+Host: api.example.com
+Origin: https://books.example.com
+Access-Control-Request-Method: PUT
+Access-Control-Request-Headers: content-type
+
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://books.example.com
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: content-type
+Access-Control-Max-Age: 600</code></pre>
+        <p>Форми показують, як браузер сам будує запит з розмітки.</p>
+        <pre class="code" data-lang="html"><code>&lt;!-- GET: fields go to the query string → GET /search?q=css -->
+&lt;form action="/search" method="get">
+  &lt;label>Title &lt;input name="q">&lt;/label>
+  &lt;button>Search&lt;/button>
+&lt;/form>
+
+&lt;!-- POST: fields go to the body, Content-Type: application/x-www-form-urlencoded
+     → email=reader%40example.com -->
+&lt;form action="/subscriptions" method="post">
+  &lt;label>Email &lt;input type="email" name="email">&lt;/label>
+  &lt;button>Subscribe&lt;/button>
+&lt;/form></code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли в консолі з'являється помилка CORS, коли заголовок, заданий у <code>fetch</code>, «не доходить» до сервера, коли сервер бачить у запиті заголовки, яких ви не писали. І щоразу, коли треба пояснити, чому той самий запит працює в терміналі, але не зі сторінки.</p>
+        </div>
+      </article>
+      <!-- Caching -->
+      <article class="concept prose" id="caching">
+        <h3>Кешування</h3>
+        <p>Сторінка каталогу — це документ, кілька стилів і скриптів, шрифти й десятки обкладинок. Якщо щоразу завантажувати все заново, марно витрачаються час користувача, мобільний трафік і ресурси сервера. Але й кешувати навмання не можна. Якщо браузер вперто показує торішній CSS після оновлення сайту, користувач бачить зламану сторінку, а розробник — «у мене все працює».</p>
+        <p>Кешування HTTP тримається на двох запитаннях. Перше — <strong>свіжість</strong>: чи можна використати збережену копію, нічого не питаючи в сервера? Друге — <strong>валідація</strong>: копія вже не свіжа, але, може, вона досі збігається з оригіналом? Відповіді задає сервер заголовками, а виконують кеші. Буває <strong>приватний</strong> кеш, тобто кеш браузера одного користувача, і <strong>спільний</strong> — проксі чи CDN, що обслуговує багатьох.</p>
+        <p>Головний заголовок — <code>Cache-Control</code> з набором директив. <code>max-age=600</code> означає, що відповідь свіжа 600 секунд від моменту створення; спільні кеші додають заголовок <code>Age</code>, щоб браузер знав, скільки часу копія вже пролежала в них. <code>no-cache</code> часто розуміють неправильно: він не забороняє кешувати, а дозволяє зберегти копію з умовою перевіряти її на сервері <em>перед кожним</em> використанням. Заборону зберігати взагалі задає <code>no-store</code>, і саме вона потрібна для чутливих даних. <code>private</code> дозволяє зберігати лише браузеру, <code>public</code> — і спільним кешам, а <code>s-maxage</code> задає окремий термін для спільних кешів. <code>must-revalidate</code> забороняє використовувати прострочену копію без перевірки. <code>immutable</code> обіцяє, що за час свіжості вміст не зміниться, тож браузер не перевіряє його навіть під час перезавантаження. <code>stale-while-revalidate=60</code> дозволяє ще хвилину віддавати прострочену копію, поки у фоні оновлюється нова.</p>
+        <p>Для валідації сервер видає <strong>валідатор</strong>. <code>ETag</code> — непрозорий ідентифікатор версії, наприклад хеш вмісту. Наступного разу браузер надсилає його в <code>If-None-Match</code>, і, якщо версія та сама, сервер відповідає <code>304 Not Modified</code> без тіла: кілька сотень байтів замість усього файлу. Старіший валідатор — дата <code>Last-Modified</code> з умовним заголовком <code>If-Modified-Since</code>. Якщо сервер не вказав ні <code>Cache-Control</code>, ні <code>Expires</code>, але надіслав <code>Last-Modified</code>, браузер застосовує <em>евристичне</em> кешування і сам вирішує, скільки вважати копію свіжою; найчастіше це близько 10% часу, що минув від останньої зміни файлу. Тому явний <code>Cache-Control</code> потрібен завжди: без нього поведінкою кешу керує здогадка браузера.</p>
+        <p>На практиці стратегію будують за типом ресурсу. HTML-документ отримує <code>no-cache</code> з <code>ETag</code>: він завжди актуальний, а 304 робить перевірку дешевою. Статичні файли збирають з <strong>хешем вмісту в імені</strong> (<code>main.3f9a2c.css</code>) і віддають з <code>max-age=31536000, immutable</code>. Коли вміст змінюється, змінюється й ім'я, HTML посилається на новий файл, і користувачі отримують оновлення одразу, а старий файл у кеші більше просто ніхто не запитує. Персональні відповіді API отримують <code>private</code> і <code>no-cache</code> або короткий <code>max-age</code>, а дані, які взагалі не повинні опинитися на диску, — <code>no-store</code>.</p>
+        <pre class="code" data-lang="http"><code># index.html — always revalidate, cheap 304 if unchanged
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Cache-Control: no-cache
+ETag: "page-41"
+
+# css/main.3f9a2c.css — content hash in the name, cache for a year
+HTTP/1.1 200 OK
+Content-Type: text/css
+Cache-Control: max-age=31536000, immutable
+
+# /api/profile — personal data, never store
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store</code></pre>
+        <p>Користувач теж впливає на кеш. Звичайне перезавантаження змушує браузер перевірити документ на сервері, а жорстке (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>, на macOS <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) завантажує ресурси заново, оминаючи кеш. Під час розробки зручніше ввімкнути Disable cache у DevTools. Крім HTTP-кешу, у браузера є кеш у пам'яті для ресурсів поточної сесії, кеш «назад/вперед» для миттєвого повернення на попередню сторінку і програмований кеш Service Worker, але всі вони спираються на ті самі принципи.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли після оновлення сайту користувачі бачать стару версію, коли повторне відвідування повільне, хоча нічого не змінилося, і коли треба впевнитися, що особисті дані не потраплять у спільний кеш. Як поводяться різні директиви, можна перевірити в <a href="#cache-demo">симуляторі кешу</a>.</p>
+        </div>
+      </article>
+
+      <!-- Network panel -->
+      <article class="concept prose" id="network">
+        <h3>Аналіз мережі в DevTools</h3>
+        <p>«Сайт гальмує», «дані не з'являються», «стилі старі» — це симптоми, а не діагнози. Гадати можна безкінечно, але браузер записує кожен запит з усіма деталями. Панель Network у DevTools перетворює здогадки на факти, якщо знати, куди дивитися. Запис іде, лише поки DevTools відкриті, тому типовий початок — відкрити панель і перезавантажити сторінку.</p>
+        <p><strong>Панель інструментів.</strong> Кнопка запису і кнопка очищення списку. <em>Preserve log</em> зберігає список запитів між переходами, без нього запит, що зробив перенаправлення, зникає разом зі сторінкою. <em>Disable cache</em> вимикає HTTP-кеш, поки DevTools відкриті. Список <em>Throttling</em> імітує повільну мережу (Fast 4G, Slow 4G, 3G) або її відсутність (Offline); налаштування застосовуються лише до цієї вкладки. Також тут кнопки імпорту й експорту HAR.</p>
+        <p><strong>Фільтри.</strong> Кнопки типів (Fetch/XHR, Doc, CSS, JS, Font, Img, Media, WS та інші) звужують список за видом ресурсу. Поле фільтра приймає не лише фрагмент адреси, а й властивості: <code>status-code:404</code>, <code>method:POST</code>, <code>larger-than:100k</code>, <code>domain:books.example.com</code>, <code>mime-type:image/avif</code>, <code>is:from-cache</code>, <code>has-response-header:cache-control</code>. Мінус перед властивістю інвертує умову: <code>-method:OPTIONS</code> ховає попередні запити CORS. Кілька умов через пробіл поєднуються.</p>
+        <p><strong>Колонки.</strong> <em>Name</em> і <em>Status</em> — що й з яким результатом. <em>Type</em> — тип ресурсу. <em>Initiator</em> — хто запит спричинив: парсер HTML (з номером рядка), CSS-файл (шрифти й фонові зображення) чи скрипт (зі стеком викликів). <em>Size</em> показує передано мережею і, сірим, фактичний розмір ресурсу; різниця між ними — це стиснення. Замість числа тут може стояти <code>(memory cache)</code> чи <code>(disk cache)</code>, якщо ресурс узято з кешу без мережі. <em>Time</em> — загальна тривалість. <em>Waterfall</em> — смуга запиту на часовій шкалі; синя й червона вертикальні лінії позначають події <code>DOMContentLoaded</code> і <code>load</code>. Правий клік по заголовку таблиці додає колонки: <em>Method</em>, <em>Protocol</em>, <em>Remote Address</em>, <em>Priority</em>, будь-який заголовок відповіді.</p>
+        <p><strong>Деталі запиту</strong> відкриваються кліком. <em>Headers</em> показує загальні відомості (URL, метод, статус, адресу сервера, Referrer Policy), заголовки відповіді й запиту з перемикачем Raw. <em>Payload</em> — параметри рядка запиту й тіло. <em>Preview</em> і <em>Response</em> — тіло відповіді у форматованому й сирому вигляді. <em>Initiator</em> — ланцюжок причин. <em>Cookies</em> — надіслані й отримані cookie. <em>Timing</em> розкладає час запиту на фази: Queueing і Stalled (очікування в черзі браузера), DNS Lookup, Initial connection, SSL, Request sent, Waiting for server response (час до першого байта відповіді) і Content Download.</p>
+        <p><strong>Алгоритм діагностики</strong> зазвичай такий. Спершу знайдіть червоні рядки, тобто статуси 4xx і 5xx, і через Initiator з'ясуйте, хто їх запитав. Далі шукайте найдовші смуги в Waterfall і відкривайте їхній Timing. Довге <em>Waiting for server response</em> означає, що повільно працює сервер, і фронтенд тут не допоможе. Довге <em>Content Download</em> вказує на завеликий файл: перевірте <code>Content-Encoding</code> і розмір. Довгі <em>Queueing</em> чи <em>Stalled</em> свідчать, що запитів забагато або важливі ресурси мають низький пріоритет. Нарешті, повторіть завантаження й переконайтеся, що статичні файли беруться з кешу або повертають 304.</p>
+        <p>Контекстне меню запиту дає ще кілька інструментів. <em>Copy → Copy as fetch</em> чи <em>Copy as cURL</em> копіює запит як код, щоб відтворити його в консолі чи терміналі. <em>Block request URL</em> блокує ресурс, щоб перевірити, як сторінка переживе його відсутність. Експорт у HAR зберігає весь запис для колеги. Chrome типово експортує «очищений» HAR без cookie й заголовків авторизації, бо повний файл містить облікові дані, і пересилати його не можна.</p>
+        <pre class="code" data-lang="js"><code>// Result of "Copy as fetch" (shortened): the request can be replayed in Console
+fetch("https://books.example.com/api/books?genre=css", {
+  headers: { accept: "application/json" },
+  method: "GET",
+});</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У кожній лабораторній, де щось завантажується. Потренуватися знаходити типові проблеми можна в <a href="#network-demo">тренажері панелі Network</a>, а потім повторити те саме на справжньому сайті.</p>
+        </div>
+      </article>
+
+      <!-- Standards bodies -->
+      <article class="concept prose" id="standards-bodies">
+        <h3>Хто творить вебстандарти</h3>
+        <p>Вебом не володіє жодна компанія, а сайтом, зробленим двадцять років тому, мають змогу користуватися й сьогодні. Звідси три вимоги до правил: вони мають бути відкритими й безкоштовними для реалізації, однаково працювати в різних рушіях і не ламати наявні сайти. Принцип «не зламай веб» (don't break the web) — найсуворіше обмеження всіх вебстандартів. Тому їх пишуть кілька організацій, і кожна відповідає за свій шар.</p>
+        <p><strong>IETF</strong> (Internet Engineering Task Force) розробляє протоколи інтернету: HTTP (RFC 9110–9114), TLS 1.3 (RFC 8446), QUIC (RFC 9000), cookie (RFC 6265 і його оновлення). Участь відкрита для всіх: робочі групи, як-от HTTP Working Group, працюють через публічні розсилки й репозиторії. Документ проходить шлях від чернетки Internet-Draft до RFC, а рішення ухвалюються за принципом «грубий консенсус і працюючий код».</p>
+        <p><strong>W3C</strong> — консорціум, членами якого є компанії, університети й організації. Документ рухається за процесом W3C: робоча чернетка (Working Draft), кандидат у рекомендації (Candidate Recommendation), коли специфікація стабільна й чекає реалізацій, і рекомендація (Recommendation) після широкого обговорення та підтвердженого досвіду реалізації. Так розвиваються CSS, настанови доступності WCAG і багато Web API. Нові ідеї спершу інкубують у групах спільноти, зокрема WICG.</p>
+        <p><strong>WHATWG</strong> веде Living Standards: HTML, DOM, Fetch, URL, Streams, Encoding, Console. Керівний комітет утворюють Apple, Google, Microsoft і Mozilla, але обговорення відкриті на GitHub. Зміна потрапляє в стандарт, коли її готові реалізувати щонайменше два рушії і немає вагомих заперечень, а супроводжують її тести. Двічі на рік WHATWG фіксує «знімок» стандарту (Review Draft) для юридичних патентних зобов'язань.</p>
+        <p><strong>Ecma International, комітет TC39</strong>, розвиває ECMAScript (ECMA-262), а також API інтернаціоналізації ECMA-402. Формат JSON описано окремим стандартом Ecma — ECMA-404.</p>
+        <p>Хто ухвалює рішення насправді? Офіційно — консенсус учасників, але фактичне право вето мають ті, хто реалізує: специфікація, яку не реалізував жоден браузер, нічого не варта. Тому важливу роль відіграє спільна інфраструктура. <strong>web-platform-tests</strong> — спільний набір тестів для всіх рушіїв, результати якого публікує сайт wpt.fyi. <strong>test262</strong> — набір тестів відповідності ECMAScript. Щорічний проєкт <strong>Interop</strong> — домовленість виробників браузерів разом виправити несумісності в обраних напрямах. А проєкт web-features групи W3C WebDX формує статус Baseline, який ви бачите на MDN.</p>
+        <p>Типовий шлях нової можливості такий. Спершу пишуть пояснювальний документ (explainer) з описом проблеми. Далі йде інкубація й обговорення, потім текст специфікації та реалізація «за прапорцем» або в обмеженому випробуванні. Після цього пишуть тести, можливість з'являється в кількох рушіях і нарешті отримує статус Baseline. Кожен може долучитися: відкрити issue в репозиторії специфікації, повідомити про баг у браузері чи прокоментувати пропозицію.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щоб знати, де шукати відповідь «як це має працювати». Поведінка <code>fetch</code> описана у WHATWG Fetch, а не в ECMAScript; кешування — в RFC 9111; властивість CSS — у модулі специфікації CSS. А розбіжність між браузерами — привід перевірити wpt.fyi і трекер помилок, а не переписувати код навмання.</p>
+        </div>
+      </article>
+
+      <!-- ECMAScript -->
+      <article class="concept prose" id="ecmascript">
+        <h3>Як розвивається ECMAScript</h3>
+        <p>Мові, якою пишуть мільярди сторінок, потрібно розвиватися, не ламаючи жодної з них, і однаково працювати в рушіях V8, SpiderMonkey і JavaScriptCore. Так було не завжди. JavaScript створив Брендан Айк у Netscape 1995 року за лічені тижні. 1996 року Netscape передав мову до Ecma, і 1997 року вийшов перший стандарт ECMAScript. Назва «JavaScript» є торговою маркою (нині її власник — Oracle), тож стандарт довелося назвати інакше.</p>
+        <p>Перші роки розвиток був ривками. ES3 (1999) додав регулярні вирази й <code>try/catch</code>. Амбітний ES4 обговорювали майже десятиліття й 2008 року відмовилися від нього через розбіжності. ES5 (2009) приніс суворий режим, вбудований <code>JSON</code> і методи масивів <code>map</code>, <code>filter</code>, <code>reduce</code>. Потім ES2015 (ES6) змінив мову сильніше, ніж усі попередні видання разом: <code>let</code> і <code>const</code>, стрілкові функції, класи, модулі, проміси, шаблонні рядки, деструктуризація. Готували його шість років. Висновок був очевидним, тож з 2016 року видання виходять <strong>щороку</strong>: усе, що готове на момент «зрізу» на початку року, Генеральна асамблея Ecma затверджує в червні. ECMAScript 2026, 17-те видання, затверджено 30 червня 2026 року.</p>
+        <p>Кожна можливість проходить <strong>процес TC39</strong> стадіями. У кожної пропозиції є «чемпіон» — делегат, який її веде, а рішення про перехід ухвалюють консенсусом на пленарних зустрічах комітету, що відбуваються кілька разів на рік.</p>
+        <p><strong>Stage 0</strong> — ідея, ще не прийнята до розгляду. <strong>Stage 1</strong> — комітет погоджується, що проблема варта розв'язання; є пояснення й приклади. <strong>Stage 2</strong> — обрано бажаний підхід, з'явився чорновий текст специфікації. <strong>Stage 2.7</strong> (введено 2024 року) — специфікацію завершено й схвалено в принципі, пишуть тести. <strong>Stage 3</strong> — тести в test262 готові, рушії реалізують можливість, змінити її може лише досвід реалізації. <strong>Stage 4</strong> — є щонайменше дві сумісні реалізації, які проходять тести, і текст вливається в чернетку специфікації, тобто можливість увійде до наступного щорічного видання.</p>
+        <p>Принцип «не зламай веб» тут видно особливо добре. 2018 року метод для «сплющування» масивів мав називатися <code>flatten</code>, але виявилося, що популярна колись бібліотека MooTools додає власний несумісний <code>Array.prototype.flatten</code>, і старі сайти зламалися б. Метод перейменували на <code>flat</code>. Із тієї самої причини вже ніколи не виправлять <code>typeof null === "object"</code>: помилку 1995 року збережено, бо від неї залежить наявний код.</p>
+        <p>Для розробника з цього випливають прості правила. Те, що можливість є в стандарті, ще не означає підтримку в браузерах користувачів, тож перевірте MDN і Baseline. Stage 3 означає «скоро, але ще не всюди», Stage 2 і нижче — експеримент, який може змінитися до невпізнання. Новий синтаксис можна писати й для старіших браузерів: компілятор (наприклад, TypeScript, з яким ви працюватимете в цьому курсі) перетворить його на старіший еквівалент. Нові вбудовані функції він не додасть, тому їх перевіряють наявністю.</p>
+        <pre class="code" data-lang="js"><code>function canSumPrecisely() {
+  return typeof Math.sumPrecise === "function"; // ES2026
+}
+
+function sumPrices(prices) {
+  if (canSumPrecisely()) {
+    return Math.sumPrecise(prices);
+  }
+  return prices.reduce((total, price) => total + price, 0);
+}
+
+console.log(sumPrices([0.1, 0.2, 0.3])); // 0.6 with ES2026 support, otherwise 0.6000000000000001</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли стаття пропонує «новий метод», а в браузері його немає. Коли треба зрозуміти, чи безпечно брати можливість у проєкт. Коли читаєте код і бачите синтаксис, якого не було в підручнику. Що з'являлося в кожному виданні, показує <a href="#es-demo">інтерактивна хронологія</a>.</p>
+        </div>
+      </article>
+    </section>
+    <!-- ================= DEMO ================= -->
+    <section id="demo" aria-labelledby="demo-title">
+      <h2 id="demo-title">Інтерактивне демо</h2>
+      <p class="section-lead">Чотири тренажери працюють без мережі: сервер, кеш і панель Network змодельовано прямо на сторінці, тож експериментувати можна скільки завгодно.</p>
+
+      <!-- Request builder -->
+      <div class="demo" id="request-demo">
+        <h3>HTTP-клієнт і тестовий сервер</h3>
+        <p style="color:var(--ink-soft)">Складіть запит до API каталогу й подивіться, що поверне сервер. Сервер зберігає зміни, поки сторінку відкрито. Спробуйте створити книжку без авторизації, видалити ту саму книжку двічі, надіслати зламаний JSON або повторити <code>GET</code> з <code>If-None-Match</code>.</p>
+        <div class="form-grid">
+          <label class="field-label" for="req-method">Метод</label>
+          <select class="control" id="req-method">
+            <option>GET</option><option>HEAD</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option><option>OPTIONS</option>
+          </select>
+          <label class="field-label" for="req-path">Шлях</label>
+          <div>
+            <input class="control" id="req-path" type="text" value="/api/books" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="req-path-hint">
+            <div class="presets" role="group" aria-label="Приклади шляхів" style="margin-top:0.5rem">
+              <button class="chip" type="button" data-path="/api/books">/api/books</button>
+              <button class="chip" type="button" data-path="/api/books/1">/api/books/1</button>
+              <button class="chip" type="button" data-path="/api/books/2">/api/books/2</button>
+              <button class="chip" type="button" data-path="/api/books/42">/api/books/42</button>
+              <button class="chip" type="button" data-path="/api/authors">/api/authors</button>
+            </div>
+            <p id="req-path-hint" style="font-size:0.88rem;color:var(--ink-soft);margin:0.3rem 0 0">Сервер знає маршрути <code>/api/books</code> і <code>/api/books/{id}</code>.</p>
+          </div>
+          <label class="field-label" for="req-accept">Accept</label>
+          <select class="control" id="req-accept">
+            <option>application/json</option><option>*/*</option><option>text/html</option><option>application/xml</option>
+          </select>
+          <span class="field-label">Заголовки</span>
+          <div style="display:grid;gap:0.4rem">
+            <label class="check"><input type="checkbox" id="req-auth"> <span>Authorization: Bearer demo-token (потрібен для змін)</span></label>
+            <label class="check"><input type="checkbox" id="req-inm"> <span>If-None-Match з останнім отриманим ETag: <code id="req-inm-value">ще немає</code></span></label>
+          </div>
+          <label class="field-label" for="req-body">Тіло (JSON)</label>
+          <textarea class="control" id="req-body" spellcheck="false" aria-describedby="req-body-hint"></textarea>
+        </div>
+        <p id="req-body-hint" style="font-size:0.88rem;color:var(--ink-soft);margin:0.3rem 0 0">Тіло надсилається лише з POST, PUT і PATCH. Для них підставляється приклад, коли ви змінюєте метод.</p>
+        <div class="controls" style="margin-top:1rem">
+          <button class="btn" type="button" id="req-send">Надіслати запит</button>
+          <button class="btn btn-ghost" type="button" id="req-reset">Скинути дані сервера</button>
+        </div>
+        <div id="req-output" aria-live="polite"></div>
+        <h4 style="margin-top:1.5rem">Журнал запитів</h4>
+        <div class="table-wrap">
+          <table class="net-table" aria-describedby="req-log-caption">
+            <caption id="req-log-caption" class="sr-only">Журнал надісланих запитів</caption>
+            <thead><tr><th scope="col">Метод</th><th scope="col">Шлях</th><th scope="col">Статус</th><th scope="col">Розмір тіла</th></tr></thead>
+            <tbody id="req-log"><tr><td colspan="4" style="color:var(--ink-soft)">Запитів ще не було.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cache simulator -->
+      <div class="demo" id="cache-demo">
+        <h3>Симулятор кешу</h3>
+        <p style="color:var(--ink-soft)">Браузер уже має в кеші <code>main.css</code> (48 kB, <code>ETag: "v1"</code>), завантажений раніше. Оберіть, які заголовки кешування надіслав сервер, скільки часу минуло й чи змінився файл, і подивіться, що зробить браузер.</p>
+        <div class="form-grid">
+          <label class="field-label" for="cache-policy">Відповідь сервера</label>
+          <select class="control" id="cache-policy">
+            <option value="max-age">Cache-Control: max-age=600 · ETag</option>
+            <option value="no-cache">Cache-Control: no-cache · ETag</option>
+            <option value="no-store">Cache-Control: no-store</option>
+            <option value="immutable">Cache-Control: max-age=31536000, immutable (ім'я main.3f9a2c.css)</option>
+            <option value="heuristic">Без Cache-Control, лише Last-Modified (10 днів тому)</option>
+          </select>
+          <label class="field-label" for="cache-time">Минуло часу</label>
+          <div>
+            <input id="cache-time" type="range" min="0" max="7" step="1" value="1" style="width:100%;accent-color:var(--accent)" aria-describedby="cache-time-value">
+            <output id="cache-time-value" for="cache-time" style="font-weight:600"></output>
+          </div>
+          <span class="field-label">Сервер</span>
+          <label class="check"><input type="checkbox" id="cache-changed"> <span>Файл на сервері змінився з моменту завантаження</span></label>
+          <label class="field-label" for="cache-action">Дія користувача</label>
+          <select class="control" id="cache-action">
+            <option value="open">Звичайне відкриття сторінки</option>
+            <option value="hard">Жорстке перезавантаження (Ctrl+Shift+R)</option>
+          </select>
+        </div>
+        <ol class="sim-steps" id="cache-steps" aria-live="polite"></ol>
+        <p class="sim-result" id="cache-result"></p>
+      </div>
+
+      <!-- Network trainer -->
+      <div class="demo" id="network-demo">
+        <h3>Тренажер панелі Network</h3>
+        <p style="color:var(--ink-soft)">Це запис повторного відкриття сторінки каталогу, де щось пішло не так. Оберіть завдання, знайдіть потрібний запит у таблиці (фільтри працюють так само, як у DevTools), виділіть його й перевірте відповідь.</p>
+        <div class="task-box">
+          <label class="field-label" for="net-task">Завдання</label>
+          <select class="control" id="net-task"></select>
+          <p id="net-task-text" style="margin:0.6rem 0 0"></p>
+        </div>
+        <div class="net-toolbar">
+          <label class="sr-only" for="net-filter">Фільтр запитів</label>
+          <input class="control" id="net-filter" type="text" placeholder="Filter: status-code:404, method:POST, larger-than:100k, is:from-cache" spellcheck="false" autocomplete="off" autocapitalize="off">
+        </div>
+        <div class="presets" role="group" aria-label="Фільтр за типом" id="net-types"></div>
+        <div class="table-wrap">
+          <table class="net-table" id="net-table">
+            <caption class="sr-only">Записані мережеві запити. Виберіть рядок, щоб побачити деталі.</caption>
+            <thead><tr><th scope="col">Name</th><th scope="col">Status</th><th scope="col">Type</th><th scope="col">Initiator</th><th scope="col">Size</th><th scope="col">Time</th><th scope="col">Waterfall</th></tr></thead>
+            <tbody id="net-rows"></tbody>
+          </table>
+          <p class="net-summary" id="net-summary"></p>
+        </div>
+        <div class="controls" style="margin-top:0.8rem">
+          <button class="btn" type="button" id="net-check">Перевірити відповідь</button>
+        </div>
+        <div id="net-feedback" aria-live="polite"></div>
+        <div id="net-details"></div>
+      </div>
+
+      <!-- ES timeline -->
+      <div class="demo" id="es-demo">
+        <h3>Хронологія ECMAScript</h3>
+        <p style="color:var(--ink-soft)">Оберіть видання: ви побачите ключові можливості, приклад коду і чи підтримує цю можливість браузер, у якому зараз відкрито сторінку. Стандарт і підтримка — різні речі.</p>
+        <div class="edition-chips" role="group" aria-label="Видання ECMAScript" id="es-chips"></div>
+        <div id="es-card" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= CHEATSHEET ================= -->
+    <section id="cheatsheet" aria-labelledby="cheat-title">
+      <div class="cheat-head">
+        <h2 id="cheat-title">Шпаргалка</h2>
+        <button class="btn" type="button" id="print-cheatsheet">Друкувати шпаргалку</button>
+      </div>
+      <div class="cheat-grid">
+        <article class="cheat-card">
+          <h3>Повідомлення</h3>
+          <dl>
+            <dt>METHOD /path?query HTTP/1.1</dt><dd>рядок запиту</dd>
+            <dt>HTTP/1.1 200 OK</dt><dd>рядок статусу</dd>
+            <dt>Name: value</dt><dd>заголовок, регістр імені не важливий</dd>
+            <dt>порожній рядок</dt><dd>кінець заголовків, далі тіло</dd>
+            <dt>Content-Length / chunked</dt><dd>як визначити кінець тіла</dd>
+            <dt>:method :path :status</dt><dd>псевдозаголовки HTTP/2 і HTTP/3</dd>
+            <dt>RFC 9110 / 9111</dt><dd>семантика / кешування</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Методи</h3>
+          <dl>
+            <dt>GET · HEAD</dt><dd>прочитати / лише заголовки</dd>
+            <dt>POST</dt><dd>обробити дані, створити; не ідемпотентний</dd>
+            <dt>PUT</dt><dd>замінити повністю; ідемпотентний</dd>
+            <dt>PATCH</dt><dd>змінити частину; не гарантує ідемпотентність</dd>
+            <dt>DELETE</dt><dd>видалити; ідемпотентний</dd>
+            <dt>OPTIONS</dt><dd>що дозволено; preflight CORS</dd>
+            <dt>безпечні</dt><dd>GET, HEAD, OPTIONS, TRACE</dd>
+            <dt>ідемпотентні</dt><dd>безпечні + PUT, DELETE</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Коди стану</h3>
+          <dl>
+            <dt>200 · 201 · 204 · 206</dt><dd>OK, створено (+Location), без тіла, частина</dd>
+            <dt>301 · 308 / 302 · 307</dt><dd>постійно / тимчасово; 307, 308 зберігають метод</dd>
+            <dt>303 · 304</dt><dd>іди GET-ом (PRG) · копія актуальна</dd>
+            <dt>400 · 401 · 403 · 404</dt><dd>некоректно, не автентифіковано, заборонено, немає</dd>
+            <dt>405 · 406 · 409 · 415</dt><dd>метод (+Allow), формат, конфлікт, тип тіла</dd>
+            <dt>422 · 429</dt><dd>дані не пройшли перевірку · забагато запитів</dd>
+            <dt>500 · 502 · 503 · 504</dt><dd>збій, поганий шлюз, недоступно, тайм-аут шлюзу</dd>
+            <dt>response.ok</dt><dd>true лише для 200–299; fetch не кидає на 404</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Заголовки</h3>
+          <dl>
+            <dt>Content-Type · Content-Length · Content-Encoding</dt><dd>що в тілі, скільки, чим стиснуто</dd>
+            <dt>Accept · Accept-Language · Accept-Encoding</dt><dd>що клієнт уміє прийняти</dd>
+            <dt>Vary</dt><dd>від чого залежить відповідь для кешу</dd>
+            <dt>Authorization · WWW-Authenticate</dt><dd>облікові дані · як представитися</dd>
+            <dt>Set-Cookie · Cookie</dt><dd>HttpOnly, Secure, SameSite</dd>
+            <dt>Location · Allow · Retry-After</dt><dd>куди, що дозволено, коли повторити</dd>
+            <dt>X-Content-Type-Options: nosniff</dt><dd>довіряти лише Content-Type</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Кешування</h3>
+          <dl>
+            <dt>max-age=N</dt><dd>свіжа N секунд, без запиту</dd>
+            <dt>no-cache</dt><dd>зберігати можна, перевіряти щоразу</dd>
+            <dt>no-store</dt><dd>не зберігати взагалі</dd>
+            <dt>private · public · s-maxage</dt><dd>лише браузер · і спільні кеші · строк для спільних</dd>
+            <dt>immutable</dt><dd>не перевіряти навіть при перезавантаженні</dd>
+            <dt>ETag → If-None-Match → 304</dt><dd>умовний запит без тіла</dd>
+            <dt>main.3f9a2c.css + immutable</dt><dd>статика з хешем; HTML — no-cache</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Браузер як клієнт</h3>
+          <dl>
+            <dt>навігація · підресурс · fetch</dt><dd>три види запитів</dd>
+            <dt>Host, User-Agent, Accept-*, Cookie, Referer, Sec-Fetch-*</dt><dd>додає сам</dd>
+            <dt>forbidden headers</dt><dd>Host, Cookie, Origin, Referer, Content-Length, Sec-* — не задати з JS</dd>
+            <dt>same-origin policy + CORS</dt><dd>прочитати чужу відповідь — лише з Access-Control-Allow-Origin</dd>
+            <dt>preflight OPTIONS</dt><dd>для PUT, DELETE, JSON та інших «непростих» запитів</dd>
+            <dt>form get / post</dt><dd>поля в URL / у тілі</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>DevTools · Network</h3>
+          <dl>
+            <dt>Preserve log · Disable cache · Throttling</dt><dd>зберегти, без кешу, повільна мережа</dd>
+            <dt>status-code:404 method:POST larger-than:100k</dt><dd>фільтри; «-» інвертує</dd>
+            <dt>is:from-cache · domain: · mime-type:</dt><dd>ще фільтри</dd>
+            <dt>Size: передано / ресурс</dt><dd>різниця = стиснення; (disk cache)</dd>
+            <dt>Initiator</dt><dd>хто спричинив запит</dd>
+            <dt>Timing</dt><dd>Queueing, Stalled, DNS, Connection, SSL, Waiting, Download</dd>
+            <dt>Copy as fetch / cURL · Block request URL · HAR</dt><dd>відтворити, заблокувати, експортувати</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Стандарти й ECMAScript</h3>
+          <dl>
+            <dt>IETF</dt><dd>HTTP, TLS, QUIC, cookie — RFC</dd>
+            <dt>W3C</dt><dd>CSS, WCAG; WD → CR → REC</dd>
+            <dt>WHATWG</dt><dd>HTML, DOM, Fetch, URL — Living Standard</dd>
+            <dt>Ecma TC39</dt><dd>ECMA-262, щорічно в червні; ES2026 — 17-те</dd>
+            <dt>Stage 0 · 1 · 2 · 2.7 · 3 · 4</dt><dd>ідея → проблема → чернетка → тести → реалізації → стандарт</dd>
+            <dt>WPT · test262 · Interop · Baseline</dt><dd>сумісність на практиці</dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+    <!-- ================= ANTIPATTERNS ================= -->
+    <section id="antipatterns" aria-labelledby="ap-title">
+      <h2 id="ap-title">Антипатерни</h2>
+      <p class="section-lead">Більшість цих помилок не дає явного збою на вашому комп'ютері. Вони проявляються пізніше: у кеші, у пошукового робота, на повільному з'єднанні або в іншого користувача.</p>
+
+      <article class="pattern">
+        <h3>Змінювати дані запитом GET</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="html"><code>&lt;a href="/api/books/2/delete">Delete book&lt;/a></code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>GET</code> за специфікацією безпечний, і на це покладається вся інфраструктура. Пошуковий робот обійде посилання й видалить книжки. Браузер чи розширення можуть попередньо завантажити адресу, месенджер — запитати її для прев'ю. Проміжний кеш може зберегти відповідь «видалено». До того ж адреса з дією осідає в історії браузера й журналах сервера.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>async function deleteBook(id) {
+  const response = await fetch(`/api/books/${id}`, { method: "DELETE" });
+  return response.status === 204;
+}</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Повертати 200 OK з помилкою в тілі</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="http"><code>HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"error": "Book not found"}</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Для всієї інфраструктури це успіх. Кеш збереже «помилку» як звичайну відповідь, <code>response.ok</code> дорівнюватиме <code>true</code>, панель Network не підсвітить рядок червоним, а моніторинг не помітить, що половина запитів невдала. Кожен клієнт мусить розбирати тіло, щоб зрозуміти, що сталося.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="http"><code>HTTP/1.1 404 Not Found
+Content-Type: application/problem+json
+
+{"type": "about:blank", "title": "Not Found", "status": 404,
+ "detail": "Book 42 does not exist"}</code></pre>
+          <p class="why">Формат <code>application/problem+json</code> описано в RFC 9457: машинозчитуваний код стану плюс зрозумілі людині деталі.</p>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Неправильний Content-Type</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="http"><code>GET /js/app.js
+HTTP/1.1 200 OK
+Content-Type: text/plain
+X-Content-Type-Options: nosniff</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Браузер вирішує, що робити з тілом, за <code>Content-Type</code>, а не за розширенням файлу. Із <code>nosniff</code> він відмовиться виконувати «текстовий» скрипт, і застосунок не запуститься. Без <code>nosniff</code> браузер почне вгадувати тип, а це вже вразливість: завантажений користувачем «текстовий» файл може бути виконано як скрипт.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="http"><code>HTTP/1.1 200 OK
+Content-Type: text/javascript; charset=utf-8
+X-Content-Type-Options: nosniff</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Довгий max-age для файлу під незмінним ім'ям</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="http"><code>GET /css/main.css
+HTTP/1.1 200 OK
+Cache-Control: max-age=2592000</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Поки копія свіжа, браузер узагалі не звертається до сервера, тож про новий файл не дізнається. Після оновлення сайту відвідувачі ще до 30 днів бачать новий HTML зі старими стилями, і верстка ламається. Виправити це з сервера неможливо: відкликати копію з чужого кешу не можна.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="html"><code>&lt;!-- index.html: Cache-Control: no-cache -->
+&lt;link rel="stylesheet" href="/css/main.3f9a2c.css">
+&lt;!-- main.3f9a2c.css: Cache-Control: max-age=31536000, immutable --></code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Вважати, що no-cache забороняє кешування</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="http"><code>GET /api/profile
+HTTP/1.1 200 OK
+Cache-Control: no-cache
+
+{"name": "Reader", "email": "reader@example.com", "card": "**** 4417"}</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>no-cache</code> дозволяє зберегти відповідь на диск і лише вимагає перевіряти її перед використанням. Персональні дані лишаються в кеші браузера на спільному комп'ютері, а без <code>private</code> їх може зберегти й проміжний кеш.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="http"><code>HTTP/1.1 200 OK
+Cache-Control: no-store</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Чекати, що fetch кине помилку на 404 чи 500</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>async function loadBooks() {
+  try {
+    const response = await fetch("/api/books");
+    return await response.json();
+  } catch {
+    return []; // "handles" errors
+  }
+}</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Якщо сервер відповів <code>500</code> зі сторінкою помилки в HTML, <code>fetch</code> завершиться успішно, а <code>response.json()</code> впаде на розборі HTML. <code>catch</code> поверне порожній список, і користувач побачить «книжок немає» замість повідомлення про збій. Справжня причина зникне, і налагодження перетвориться на здогадки.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>async function loadBooks() {
+  const response = await fetch("/api/books");
+  if (!response.ok) {
+    throw new Error(`Books were not loaded: HTTP ${response.status}`);
+  }
+  return response.json();
+}</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Передавати токени й персональні дані в URL</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="text"><code>GET /api/profile?token=eyJhbGciOi...&amp;email=reader@example.com</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> HTTPS шифрує адресу в дорозі, але на кінцях вона зберігається відкрито: в історії браузера, журналах сервера й проксі, закладках, скріншотах, а частина адреси може піти в <code>Referer</code> на інший сайт. Токен із журналу дає повний доступ до облікового запису.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="http"><code>GET /api/profile HTTP/1.1
+Authorization: Bearer eyJhbGciOi...</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Ділитися повним HAR-файлом</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="text"><code>Network → Export HAR (with sensitive data) → attach to a public issue / chat</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> HAR — повний запис мережевої активності разом із cookie сесії, заголовками <code>Authorization</code> і тілами запитів. Будь-хто з файлом може увійти у ваш обліковий запис, доки сесія чинна. Такі витоки траплялися навіть у великих компаніях через файли, надіслані в службу підтримки.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="text"><code>Network → Export HAR (sanitized)
+or share: request URL, status, relevant headers, Timing screenshot</code></pre>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================= BEST PRACTICES ================= -->
+    <section id="best-practices" aria-labelledby="bp-title">
+      <h2 id="bp-title">Бест практики</h2>
+      <p class="section-lead">Правила, які роблять поведінку застосунку передбачуваною для браузера, кешів, інструментів і інших розробників.</p>
+
+      <article class="pattern">
+        <h3>Обирати метод за семантикою</h3>
+        <p class="why">Ресурси називають іменниками, а дію виражає метод. Тоді кешування, повторні запити, попереднє завантаження й документація працюють «самі», бо всі учасники розуміють намір однаково.</p>
+        <pre class="code" data-lang="text"><code>GET    /api/books        not  GET /api/getBooks
+POST   /api/books        not  POST /api/books/create
+DELETE /api/books/2      not  GET /api/books/2/delete</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Точні коди стану й зрозуміле тіло помилки</h3>
+        <p class="why">Клієнтський код розгалужується за кодом стану, а людина читає деталі. <code>201</code> з <code>Location</code> після створення, <code>204</code> після видалення, <code>422</code> з переліком полів, що не пройшли перевірку, <code>401</code> чи <code>403</code> залежно від того, чи знає сервер користувача.</p>
+        <pre class="code" data-lang="js"><code>function getErrorMessage(status) {
+  const messages = {
+    401: "Увійдіть, щоб продовжити",
+    403: "Недостатньо прав для цієї дії",
+    404: "Книжку не знайдено",
+    422: "Перевірте заповнені поля",
+  };
+  return messages[status] ?? `Сталася помилка (HTTP ${status})`;
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Явна стратегія кешування для кожного типу ресурсу</h3>
+        <p class="why">Без <code>Cache-Control</code> браузер вмикає евристику, і поведінка стає непередбачуваною. Явні правила за типом ресурсу дають і швидкість, і миттєві оновлення після деплою.</p>
+        <pre class="code" data-lang="text"><code>HTML documents         Cache-Control: no-cache            + ETag
+Hashed static files    Cache-Control: max-age=31536000, immutable
+Public API lists       Cache-Control: max-age=60          + ETag
+Personal API data      Cache-Control: private, no-cache   + ETag
+Sensitive data         Cache-Control: no-store</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Валідатори для дешевих повторних перевірок</h3>
+        <p class="why"><code>ETag</code> перетворює перевірку актуальності на відповідь <code>304</code> у кількасот байтів замість повного файлу. Це особливо помітно на мобільних мережах, де дорогий кожен кілобайт, а не лише кожна секунда.</p>
+        <pre class="code" data-lang="http"><code>GET /api/books HTTP/1.1
+If-None-Match: "v8"
+
+HTTP/1.1 304 Not Modified
+ETag: "v8"</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Стиснення і правильні типи для текстових ресурсів</h3>
+        <p class="why">HTML, CSS, JavaScript, JSON і SVG добре стискаються: Brotli чи gzip зменшують їх у кілька разів. Браузер сам оголошує підтримувані алгоритми в <code>Accept-Encoding</code> і сам розпаковує відповідь. У Network це видно за різницею двох чисел у колонці Size. Правильний <code>Content-Type</code> разом із <code>nosniff</code> гарантує, що браузер не вгадуватиме тип.</p>
+        <pre class="code" data-lang="http"><code>HTTP/1.1 200 OK
+Content-Type: text/css; charset=utf-8
+Content-Encoding: br
+Vary: Accept-Encoding
+X-Content-Type-Options: nosniff</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Розрізняти помилку мережі й помилку HTTP</h3>
+        <p class="why">Це різні ситуації з різною реакцією. Немає мережі — варто запропонувати повторити спробу. 401 — попросити увійти. 500 — повідомити про збій. Окрема перевірка <code>response.ok</code> і окремий <code>catch</code> роблять цю різницю явною.</p>
+        <pre class="code" data-lang="js"><code>async function requestBooks() {
+  try {
+    const response = await fetch("/api/books");
+    return { ok: response.ok, status: response.status, data: response.ok ? await response.json() : null };
+  } catch {
+    return { ok: false, status: 0, data: null }; // network error: no response at all
+  }
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Діагностувати мережу за алгоритмом</h3>
+        <p class="why">Послідовність кроків захищає від хибних висновків: від «у мене швидко» (бо працює кеш і швидка мережа) до виправлення фронтенду, коли повільно відповідає сервер.</p>
+        <pre class="code" data-lang="text"><code>1. Network → Disable cache, Preserve log → reload
+2. Filter: status-code:404 / -status-code:200 → red rows → Initiator
+3. Longest Waterfall bars → Timing: Waiting (server) or Download (size)
+4. Throttling: Slow 4G → does the page stay usable?
+5. Uncheck Disable cache → reload → static files from cache or 304?</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Перевіряти нові можливості за першоджерелами</h3>
+        <p class="why">Статті застарівають, а стадія пропозиції чи підтримка в браузерах змінюється щомісяця. MDN зі статусом Baseline, специфікація й таблиці сумісності дають актуальну картину, а перевірка наявності в коді захищає користувачів старіших браузерів.</p>
+        <pre class="code" data-lang="js"><code>function supportsSetMethods() {
+  return typeof Set.prototype.union === "function"; // ES2025
+}</code></pre>
+      </article>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Квіз для самоперевірки</h2>
+      <p class="section-lead">Запитання перевіряють розуміння механізмів, а не визначення. Після кожної відповіді з'явиться пояснення; прогрес зберігається в цьому браузері.</p>
+      <div class="quiz-top">
+        <label for="quiz-progress" id="quiz-progress-label">Відповіли: 0 з 12</label>
+        <progress id="quiz-progress" max="12" value="0"></progress>
+        <button class="btn btn-ghost" type="button" id="quiz-restart-top">Пройти ще раз</button>
+      </div>
+      <div id="quiz-list"></div>
+      <div class="quiz-summary" id="quiz-summary" aria-live="polite"></div>
+    </section>
+
+    <!-- ================= LINKS ================= -->
+    <section id="links" aria-labelledby="links-title">
+      <h2 id="links-title">Корисні посилання</h2>
+      <div class="links-group">
+        <h3>HTTP: специфікації та довідка</h3>
+        <ul>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener">RFC 9110: HTTP Semantics</a> і <a href="https://www.rfc-editor.org/rfc/rfc9111" target="_blank" rel="noopener">RFC 9111: HTTP Caching</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc9457" target="_blank" rel="noopener">RFC 9457: Problem Details for HTTP APIs</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages" target="_blank" rel="noopener">MDN: HTTP messages</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods" target="_blank" rel="noopener">методи</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status" target="_blank" rel="noopener">коди стану</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener">заголовки</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" target="_blank" rel="noopener">MDN: HTTP caching</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control" target="_blank" rel="noopener">Cache-Control</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener">MDN: CORS</a> і <a href="https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_request_header" target="_blank" rel="noopener">Forbidden request header</a></li>
+          <li><a href="https://fetch.spec.whatwg.org/" target="_blank" rel="noopener">WHATWG Fetch Standard</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API" target="_blank" rel="noopener">MDN: Fetch API</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>DevTools</h3>
+        <ul>
+          <li><a href="https://developer.chrome.com/docs/devtools/network" target="_blank" rel="noopener">Chrome DevTools: Inspect network activity</a></li>
+          <li><a href="https://developer.chrome.com/docs/devtools/network/reference" target="_blank" rel="noopener">Chrome DevTools: Network features reference</a></li>
+          <li><a href="https://firefox-source-docs.mozilla.org/devtools-user/network_monitor/" target="_blank" rel="noopener">Firefox DevTools: Network Monitor</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>Вебстандарти</h3>
+        <ul>
+          <li><a href="https://www.ietf.org/" target="_blank" rel="noopener">IETF</a> і <a href="https://httpwg.org/" target="_blank" rel="noopener">HTTP Working Group</a></li>
+          <li><a href="https://www.w3.org/policies/process/" target="_blank" rel="noopener">W3C Process Document</a></li>
+          <li><a href="https://whatwg.org/faq" target="_blank" rel="noopener">WHATWG FAQ</a> і <a href="https://whatwg.org/working-mode" target="_blank" rel="noopener">Working Mode</a></li>
+          <li><a href="https://web-platform-tests.org/" target="_blank" rel="noopener">web-platform-tests</a> і <a href="https://wpt.fyi/" target="_blank" rel="noopener">wpt.fyi</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility" target="_blank" rel="noopener">MDN Glossary: Baseline</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>ECMAScript і TC39</h3>
+        <ul>
+          <li><a href="https://tc39.es/" target="_blank" rel="noopener">TC39</a> і <a href="https://tc39.es/process-document/" target="_blank" rel="noopener">процес і стадії</a></li>
+          <li><a href="https://github.com/tc39/proposals" target="_blank" rel="noopener">Активні пропозиції</a> і <a href="https://github.com/tc39/proposals/blob/main/finished-proposals.md" target="_blank" rel="noopener">завершені пропозиції за роками</a></li>
+          <li><a href="https://tc39.es/ecma262/" target="_blank" rel="noopener">ECMA-262: чинна чернетка</a> і <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener">затверджені видання</a></li>
+          <li><a href="https://github.com/tc39/test262" target="_blank" rel="noopener">test262</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p>Клієнтські технології вебпрограмування. Лекція 2: протокол HTTP і браузер як клієнт.</p>
+  <p><a href="../index.html">На головну</a></p>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Syntax highlighting
+   ========================================================= */
+const HIGHLIGHT_RULES = {
+  js: [
+    ["comment", /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+    ["string", /"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`/],
+    ["keyword", /\b(?:const|let|var|function|return|if|else|for|of|in|while|new|await|async|import|export|from|default|class|throw|try|catch|typeof|true|false|null|undefined)\b/],
+    ["number", /\b\d+(?:\.\d+)?\b/],
+    ["fn", /\b[A-Za-z_$][\w$]*(?=\s*\()/],
+  ],
+  html: [
+    ["comment", /<!--[\s\S]*?-->/],
+    ["keyword", /<!doctype[^>]*>/i],
+    ["tag", /<\/?[a-zA-Z][\w-]*|\/?>/],
+    ["string", /"[^"\n]*"|'[^'\n]*'/],
+    ["attr", /\b[a-zA-Z][\w:-]*(?==)/],
+  ],
+  json: [
+    ["comment", /\/\/[^\n]*/],
+    ["prop", /"(?:\\.|[^"\\\n])*"(?=\s*:)/],
+    ["string", /"(?:\\.|[^"\\\n])*"/],
+    ["keyword", /\b(?:true|false|null)\b/],
+    ["number", /-?\b\d+(?:\.\d+)?\b/],
+  ],
+  bash: [
+    ["comment", /(?<=^|\s)#[^\n]*/],
+    ["string", /"[^"\n]*"|'[^'\n]*'/],
+    ["keyword", /\b(?:git|npm|npx|code|cd|mkdir)\b/],
+    ["flag", /(?<=\s)--?[a-zA-Z][\w-]*/],
+  ],
+  http: [
+    ["comment", /^#[^\n]*/],
+    ["keyword", /^(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b|^HTTP\/[\d.]+/],
+    ["number", /(?<=^HTTP\/[\d.]+ )\d{3}/],
+    ["prop", /^[A-Za-z][\w-]*(?=:)/],
+  ],
+  gitignore: [
+    ["comment", /^#[^\n]*/],
+    ["keyword", /^![^\n]*/],
+  ],
+};
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function highlight(code, lang) {
+  const rules = HIGHLIGHT_RULES[lang];
+  if (!rules) return escapeHtml(code);
+  const pattern = new RegExp(rules.map(([, re]) => `(${re.source})`).join("|"), lang === "html" ? "gmi" : "gm");
+  let result = "";
+  let lastIndex = 0;
+  let match;
+  while ((match = pattern.exec(code)) !== null) {
+    if (match[0] === "") { pattern.lastIndex += 1; continue; }
+    const groupIndex = match.findIndex((group, index) => index > 0 && group !== undefined);
+    result += escapeHtml(code.slice(lastIndex, match.index));
+    result += `<span class="tok-${rules[groupIndex - 1][0]}">${escapeHtml(match[0])}</span>`;
+    lastIndex = pattern.lastIndex;
+  }
+  return result + escapeHtml(code.slice(lastIndex));
+}
+
+const LANG_LABELS = { js: "JavaScript", html: "HTML", json: "JSON", bash: "Terminal", http: "HTTP", gitignore: ".gitignore", text: "Text" };
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return copyWithSelection(text);
+  }
+}
+
+function copyWithSelection(text) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.append(area);
+  area.select();
+  let copied = false;
+  try { copied = document.execCommand("copy"); } catch { copied = false; }
+  area.remove();
+  return copied;
+}
+
+function createCodeBlock(code, lang) {
+  const wrap = document.createElement("div");
+  wrap.className = "code-wrap";
+  const bar = document.createElement("div");
+  bar.className = "code-bar";
+  const label = document.createElement("span");
+  label.textContent = LANG_LABELS[lang] || lang;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "copy-btn";
+  button.textContent = "Копіювати";
+  button.setAttribute("aria-label", `Копіювати код (${label.textContent})`);
+  button.addEventListener("click", async () => {
+    const ok = await copyText(code);
+    button.textContent = ok ? "Скопійовано" : "Не вдалося";
+    setTimeout(() => { button.textContent = "Копіювати"; }, 1600);
+  });
+  bar.append(label, button);
+  const pre = document.createElement("pre");
+  pre.className = "code";
+  pre.tabIndex = 0;
+  pre.innerHTML = `<code>${highlight(code, lang)}</code>`;
+  wrap.append(bar, pre);
+  return wrap;
+}
+
+function enhanceCodeBlocks(root) {
+  root.querySelectorAll("pre.code[data-lang]").forEach((pre) => {
+    const block = createCodeBlock(pre.textContent, pre.dataset.lang);
+    pre.replaceWith(block);
+  });
+}
+
+/* =========================================================
+   Request builder with an in-page mock server
+   ========================================================= */
+const API_HOST = "books.example.com";
+const INITIAL_BOOKS = [
+  { id: 1, title: "CSS in Depth", author: "Keith Grant", year: 2024 },
+  { id: 2, title: "Eloquent JavaScript", author: "Marijn Haverbeke", year: 2024 },
+  { id: 3, title: "HTML and CSS", author: "Jon Duckett", year: 2011 },
+];
+const STATUS_TEXT = {
+  200: "OK", 201: "Created", 204: "No Content", 304: "Not Modified", 400: "Bad Request",
+  401: "Unauthorized", 404: "Not Found", 405: "Method Not Allowed", 406: "Not Acceptable", 422: "Unprocessable Content",
+};
+const ALLOW_COLLECTION = ["GET", "HEAD", "POST", "OPTIONS"];
+const ALLOW_ITEM = ["GET", "HEAD", "PUT", "PATCH", "DELETE", "OPTIONS"];
+const WRITE_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
+const BODY_METHODS = ["POST", "PUT", "PATCH"];
+const DEFAULT_BODIES = {
+  POST: '{\n  "title": "Learning Web Design",\n  "author": "Jennifer Robbins",\n  "year": 2018\n}',
+  PUT: '{\n  "title": "Eloquent JavaScript",\n  "author": "Marijn Haverbeke",\n  "year": 2026\n}',
+  PATCH: '{\n  "year": 2026\n}',
+};
+const BOOK_FIELDS = { title: "string", author: "string", year: "number" };
+
+function createServerState() {
+  return { books: INITIAL_BOOKS.map((book) => ({ ...book, rev: 1 })), nextId: 4, listVersion: 1 };
+}
+
+function cloneServerState(state) {
+  return { ...state, books: state.books.map((book) => ({ ...book })) };
+}
+
+function byteLength(text) {
+  return new TextEncoder().encode(text).length;
+}
+
+function publicBook(book) {
+  const { rev, ...data } = book;
+  return data;
+}
+
+function bookEtag(book) {
+  return `"b${book.id}-r${book.rev}"`;
+}
+
+function listEtag(state) {
+  return `"list-v${state.listVersion}"`;
+}
+
+function normalizePath(path) {
+  return path.trim().split("?")[0].replace(/\/+$/, "") || "/";
+}
+
+function parseRoute(path) {
+  const clean = normalizePath(path);
+  if (clean === "/api/books") return { kind: "collection" };
+  const match = clean.match(/^\/api\/books\/(\d+)$/);
+  return match ? { kind: "item", id: Number(match[1]) } : { kind: "unknown" };
+}
+
+function jsonResponse(status, data, headers = {}) {
+  return { status, headers: { "Content-Type": "application/json; charset=utf-8", ...headers }, body: JSON.stringify(data, null, 2) };
+}
+
+function problemResponse(status, detail, headers = {}, extra = {}) {
+  const body = JSON.stringify({ title: STATUS_TEXT[status], status, detail, ...extra }, null, 2);
+  return { status, headers: { "Content-Type": "application/problem+json", ...headers }, body };
+}
+
+function emptyResponse(status, headers = {}) {
+  return { status, headers, body: "" };
+}
+
+function parseJsonBody(text) {
+  try {
+    return { ok: true, value: JSON.parse(text) };
+  } catch (error) {
+    return { ok: false, message: error.message };
+  }
+}
+
+function validateBook(data, partial) {
+  if (typeof data !== "object" || data === null || Array.isArray(data)) return ["Тіло має бути JSON-об'єктом"];
+  const errors = [];
+  Object.entries(BOOK_FIELDS).forEach(([field, type]) => {
+    if (!(field in data)) {
+      if (!partial) errors.push(`Поле "${field}" обов'язкове`);
+      return;
+    }
+    const value = data[field];
+    const valid = type === "string" ? typeof value === "string" && value.trim() !== "" : Number.isInteger(value);
+    if (!valid) errors.push(`Поле "${field}" має бути ${type === "string" ? "непорожнім рядком" : "цілим числом"}`);
+  });
+  if (partial && !Object.keys(data).some((key) => key in BOOK_FIELDS)) errors.push("Немає жодного поля для зміни");
+  return errors;
+}
+
+function pickBookFields(data) {
+  return Object.fromEntries(Object.keys(BOOK_FIELDS).filter((key) => key in data).map((key) => [key, data[key]]));
+}
+
+function readValidBody(request, partial) {
+  const parsed = parseJsonBody(request.body);
+  if (!parsed.ok) {
+    return { error: { response: problemResponse(400, `Malformed JSON: ${parsed.message}`), note: `400 Bad Request: тіло не є коректним JSON (${parsed.message}). Сервер навіть не почав перевіряти дані.` } };
+  }
+  const errors = validateBook(parsed.value, partial);
+  if (errors.length) {
+    const note = partial
+      ? "422 Unprocessable Content: JSON коректний, але значення полів не проходять перевірку. Порівняйте з 400, де зламаний сам формат."
+      : "422 Unprocessable Content: JSON коректний, але даних бракує або вони неправильні. POST і PUT вимагають повного представлення книжки, а змінити окремі поля дозволяє PATCH.";
+    return { error: { response: problemResponse(422, "Validation failed", {}, { errors }), note } };
+  }
+  return { data: pickBookFields(parsed.value) };
+}
+
+function handleCollection(state, request) {
+  if (request.method === "GET" || request.method === "HEAD") {
+    const etag = listEtag(state);
+    if (request.ifNoneMatch === etag) {
+      return { state, response: emptyResponse(304, { ETag: etag, "Cache-Control": "no-cache" }), note: "304 Not Modified без тіла: версія списку збігається з ETag, надісланим в If-None-Match, тож браузер використав би свою копію. Змініть дані (наприклад, через PATCH чи POST) і повторіть цей запит — прийде 200 з новим ETag." };
+    }
+    const response = jsonResponse(200, state.books.map(publicBook), { ETag: etag, "Cache-Control": "no-cache" });
+    const note = request.method === "HEAD"
+      ? "HEAD повернув ті самі заголовки, що й GET, включно з Content-Length, але без тіла. Так перевіряють наявність і розмір ресурсу, не завантажуючи його."
+      : "200 OK і список у тілі. ETag — «відбиток» поточної версії списку, а Cache-Control: no-cache дозволяє зберегти копію з умовою перевіряти її. Увімкніть If-None-Match і надішліть запит ще раз.";
+    return { state, response, note };
+  }
+  const body = readValidBody(request, false);
+  if (body.error) return { state, ...body.error };
+  const next = cloneServerState(state);
+  const book = { id: next.nextId, ...body.data, rev: 1 };
+  next.books.push(book);
+  next.nextId += 1;
+  next.listVersion += 1;
+  const response = jsonResponse(201, publicBook(book), { Location: `/api/books/${book.id}`, ETag: bookEtag(book) });
+  return { state: next, response, note: "201 Created: книжку створено, її адреса — у заголовку Location. POST не ідемпотентний: надішліть той самий запит ще раз, і з'явиться ще одна книжка з новим id." };
+}
+
+function handleItem(state, request, id) {
+  const book = state.books.find((item) => item.id === id);
+  const notFound = () => ({ state, response: problemResponse(404, `Book ${id} does not exist`), note: `404 Not Found: маршрут правильний, але книжки з id ${id} немає.` });
+
+  if (request.method === "GET" || request.method === "HEAD") {
+    if (!book) return notFound();
+    const etag = bookEtag(book);
+    if (request.ifNoneMatch === etag) {
+      return { state, response: emptyResponse(304, { ETag: etag, "Cache-Control": "max-age=60" }), note: "304 Not Modified: книжка не змінилася з моменту, коли ви отримали цей ETag. Тіла немає, браузер узяв би його з кешу." };
+    }
+    const response = jsonResponse(200, publicBook(book), { ETag: etag, "Cache-Control": "max-age=60" });
+    const note = request.method === "HEAD"
+      ? "HEAD: ті самі заголовки, що й у GET, але без тіла."
+      : "200 OK. Cache-Control: max-age=60 дозволяє браузеру хвилину використовувати копію взагалі без запиту, а ETag знадобиться для перевірки після цього.";
+    return { state, response, note };
+  }
+
+  if (request.method === "DELETE") {
+    if (!book) {
+      return { state, response: problemResponse(404, `Book ${id} does not exist`), note: "404 Not Found: книжки вже немає. DELETE ідемпотентний: стан сервера після першого й другого запиту однаковий (книжки немає), а відповіді різні. Ідемпотентність стосується стану, а не відповіді." };
+    }
+    const next = cloneServerState(state);
+    next.books = next.books.filter((item) => item.id !== id);
+    next.listVersion += 1;
+    return { state: next, response: emptyResponse(204), note: "204 No Content: книжку видалено, а тілу немає чого повідомити. Надішліть цей самий DELETE ще раз і порівняйте відповідь." };
+  }
+
+  if (request.method === "PUT") {
+    const body = readValidBody(request, false);
+    if (body.error) return { state, ...body.error };
+    const next = cloneServerState(state);
+    const existing = next.books.find((item) => item.id === id);
+    if (!existing) {
+      const created = { id, ...body.data, rev: 1 };
+      next.books.push(created);
+      next.books.sort((a, b) => a.id - b.id);
+      next.nextId = Math.max(next.nextId, id + 1);
+      next.listVersion += 1;
+      return { state: next, response: jsonResponse(201, publicBook(created), { Location: `/api/books/${id}`, ETag: bookEtag(created) }), note: "Книжки з таким id не було, тож PUT створив її саме за цією адресою: 201 Created. На відміну від POST, адресу нового ресурсу тут обирає клієнт." };
+    }
+    const changed = Object.keys(BOOK_FIELDS).some((key) => existing[key] !== body.data[key]);
+    if (changed) {
+      Object.assign(existing, body.data);
+      existing.rev += 1;
+      next.listVersion += 1;
+    }
+    const note = changed
+      ? "PUT замінив книжку повністю, і ETag змінився. PUT ідемпотентний: надішліть той самий запит ще раз — дані й ETag лишаться такими самими."
+      : "Дані вже були саме такими, тож стан не змінився, і ETag той самий. Це і є ідемпотентність PUT: повторний запит не змінює результату.";
+    return { state: changed ? next : state, response: jsonResponse(200, publicBook(existing), { ETag: bookEtag(existing) }), note };
+  }
+
+  if (!book) return notFound();
+  const body = readValidBody(request, true);
+  if (body.error) return { state, ...body.error };
+  const next = cloneServerState(state);
+  const existing = next.books.find((item) => item.id === id);
+  const changed = Object.entries(body.data).some(([key, value]) => existing[key] !== value);
+  if (changed) {
+    Object.assign(existing, body.data);
+    existing.rev += 1;
+    next.listVersion += 1;
+  }
+  return { state: changed ? next : state, response: jsonResponse(200, publicBook(existing), { ETag: bookEtag(existing) }), note: "PATCH змінив лише передані поля, решта лишилася як була. ETag змінився, тож кеш, який надішле старий ETag в If-None-Match, отримає 200 з новою версією, а не 304." };
+}
+
+function handleRequest(state, request) {
+  const route = parseRoute(request.path);
+  if (route.kind === "unknown") {
+    return { state, response: problemResponse(404, `Route ${normalizePath(request.path)} does not exist`), note: "404 Not Found: сервер не знає такого маршруту. Тут 404 стосується самої адреси, а не конкретної книжки." };
+  }
+  const allow = route.kind === "collection" ? ALLOW_COLLECTION : ALLOW_ITEM;
+  if (request.method === "OPTIONS") {
+    return { state, response: emptyResponse(204, { Allow: allow.join(", ") }), note: "OPTIONS повертає дозволені методи в заголовку Allow. Подібний запит браузер надсилає як preflight перед «непростими» запитами CORS." };
+  }
+  if (!allow.includes(request.method)) {
+    return { state, response: problemResponse(405, `${request.method} is not supported here`, { Allow: allow.join(", ") }), note: "405 Method Not Allowed: адреса існує, але цей метод для неї не передбачено. Заголовок Allow підказує, що можна." };
+  }
+  if (WRITE_METHODS.includes(request.method) && !request.auth) {
+    return { state, response: problemResponse(401, "Access token is required", { "WWW-Authenticate": 'Bearer realm="books"' }), note: "401 Unauthorized: сервер не знає, хто ви, а зміни дозволені лише автентифікованим клієнтам. Увімкніть заголовок Authorization. Код 403 сервер повернув би, якби знав користувача, але той не мав прав." };
+  }
+  if ((request.method === "GET" || request.method === "HEAD") && !["application/json", "*/*"].includes(request.accept)) {
+    return { state, response: problemResponse(406, `Only application/json is available, the client accepts ${request.accept}`), note: "406 Not Acceptable: узгодження вмісту не вдалося. Сервер уміє віддавати лише JSON, а клієнт у заголовку Accept просить інший формат." };
+  }
+  return route.kind === "collection" ? handleCollection(state, request) : handleItem(state, request, route.id);
+}
+
+function buildRawRequest(request) {
+  const lines = [`${request.method} ${request.path} HTTP/1.1`, `Host: ${API_HOST}`, `Accept: ${request.accept}`];
+  if (request.auth) lines.push("Authorization: Bearer demo-token");
+  if (request.ifNoneMatch) lines.push(`If-None-Match: ${request.ifNoneMatch}`);
+  const hasBody = BODY_METHODS.includes(request.method);
+  if (hasBody) lines.push("Content-Type: application/json", `Content-Length: ${byteLength(request.body)}`);
+  return `${lines.join("\n")}\n${hasBody ? `\n${request.body}` : ""}`;
+}
+
+function buildRawResponse(response, method) {
+  const lines = [`HTTP/1.1 ${response.status} ${STATUS_TEXT[response.status]}`];
+  Object.entries(response.headers).forEach(([name, value]) => lines.push(`${name}: ${value}`));
+  if (response.body) lines.push(`Content-Length: ${byteLength(response.body)}`);
+  const showBody = response.body && method !== "HEAD";
+  return `${lines.join("\n")}\n${showBody ? `\n${response.body}` : ""}`;
+}
+
+function statusClass(status) {
+  return `s${String(status)[0]}`;
+}
+
+function initRequestDemo() {
+  let serverState = createServerState();
+  const lastEtags = {};
+  const log = [];
+  const el = (id) => document.getElementById(id);
+  const methodSelect = el("req-method");
+  const pathInput = el("req-path");
+  const bodyInput = el("req-body");
+  const inmCheckbox = el("req-inm");
+
+  const refreshEtagHint = () => {
+    const etag = lastEtags[normalizePath(pathInput.value)];
+    el("req-inm-value").textContent = etag || "ще немає (спершу виконайте GET)";
+    inmCheckbox.disabled = !etag;
+    if (!etag) inmCheckbox.checked = false;
+  };
+  const refreshBody = () => {
+    const method = methodSelect.value;
+    bodyInput.disabled = !BODY_METHODS.includes(method);
+    if (DEFAULT_BODIES[method]) bodyInput.value = DEFAULT_BODIES[method];
+  };
+  const renderLog = () => {
+    el("req-log").innerHTML = log.length
+      ? log.map((entry) => `<tr><td>${escapeHtml(entry.method)}</td><td>${escapeHtml(entry.path)}</td><td><span class="status-pill ${statusClass(entry.status)}">${entry.status}</span></td><td>${entry.size}</td></tr>`).join("")
+      : '<tr><td colspan="4" style="color:var(--ink-soft)">Запитів ще не було.</td></tr>';
+  };
+  const send = () => {
+    const request = {
+      method: methodSelect.value,
+      path: pathInput.value.trim() || "/",
+      accept: el("req-accept").value,
+      auth: el("req-auth").checked,
+      ifNoneMatch: inmCheckbox.checked ? lastEtags[normalizePath(pathInput.value)] : "",
+      body: bodyInput.value,
+    };
+    const result = handleRequest(serverState, request);
+    serverState = result.state;
+    const etag = result.response.headers.ETag;
+    if (etag) lastEtags[normalizePath(request.path)] = etag;
+    const bodyBytes = request.method === "HEAD" ? 0 : byteLength(result.response.body);
+    log.unshift({ method: request.method, path: request.path, status: result.response.status, size: `${bodyBytes} B` });
+    log.splice(8);
+    el("req-output").innerHTML = `
+      <div class="two-col">
+        <div><h4>Запит</h4><pre class="code" data-lang="http">${escapeHtml(buildRawRequest(request))}</pre></div>
+        <div><h4>Відповідь <span class="status-pill ${statusClass(result.response.status)}">${result.response.status} ${STATUS_TEXT[result.response.status]}</span></h4><pre class="code" data-lang="http">${escapeHtml(buildRawResponse(result.response, request.method))}</pre></div>
+      </div>
+      <div class="explain"><p style="margin:0">${escapeHtml(result.note)}</p></div>`;
+    enhanceCodeBlocks(el("req-output"));
+    renderLog();
+    refreshEtagHint();
+  };
+
+  methodSelect.addEventListener("change", refreshBody);
+  pathInput.addEventListener("input", refreshEtagHint);
+  document.querySelectorAll("#request-demo [data-path]").forEach((button) => {
+    button.addEventListener("click", () => {
+      pathInput.value = button.dataset.path;
+      refreshEtagHint();
+    });
+  });
+  el("req-send").addEventListener("click", send);
+  el("req-reset").addEventListener("click", () => {
+    serverState = createServerState();
+    Object.keys(lastEtags).forEach((key) => delete lastEtags[key]);
+    log.length = 0;
+    renderLog();
+    refreshEtagHint();
+    el("req-output").innerHTML = '<div class="explain"><p style="margin:0">Дані сервера повернуто до початкових трьох книжок.</p></div>';
+  });
+  refreshBody();
+  refreshEtagHint();
+}
+
+/* =========================================================
+   Cache simulator
+   ========================================================= */
+const CACHE_TIMES = [
+  { label: "0 секунд (щойно)", seconds: 0 },
+  { label: "30 секунд", seconds: 30 },
+  { label: "5 хвилин", seconds: 300 },
+  { label: "15 хвилин", seconds: 900 },
+  { label: "2 години", seconds: 7200 },
+  { label: "1 день і 1 хвилина", seconds: 86460 },
+  { label: "3 дні", seconds: 259200 },
+  { label: "60 днів", seconds: 5184000 },
+];
+const FILE_SIZE = "48 kB";
+const NOT_MODIFIED_SIZE = "0.3 kB";
+
+function describeFreshness(policy, ageLabel) {
+  if (policy === "max-age") return `Копія є. Термін свіжості — max-age=600 (10 хвилин), вік копії — ${ageLabel}.`;
+  if (policy === "heuristic") return `Копія є, але явного терміну свіжості немає. Браузер рахує евристику: файл змінювали 10 днів тому, приблизно 10% від цього — близько доби свіжості (точна формула залежить від браузера). Вік копії — ${ageLabel}.`;
+  return `Копія є, вік — ${ageLabel}, але no-cache забороняє використовувати її без перевірки на сервері.`;
+}
+
+function decideCache({ policy, elapsed, ageLabel, changed, action }) {
+  const steps = [];
+  if (policy === "no-store") {
+    steps.push({ text: "no-store: під час попереднього завантаження браузер нічого не зберіг, тож використовувати чи перевіряти нічого." });
+    steps.push({ text: "Повний запит GET /css/main.css без умовних заголовків." });
+    steps.push({ text: `Сервер повертає 200 OK і весь файл: ${FILE_SIZE}.` });
+    return { steps, result: `Network: main.css · 200 · ${FILE_SIZE}. Так буде при кожному відкритті: для статичних файлів це марнотратно, для персональних даних — правильно.`, tone: "neutral" };
+  }
+  if (action === "hard") {
+    steps.push({ text: "Жорстке перезавантаження оминає кеш: браузер надсилає запит з Cache-Control: no-cache і без If-None-Match." });
+    steps.push({ text: `Сервер повертає 200 OK і весь файл (${FILE_SIZE})${changed ? ", уже нову версію" : ""}.` });
+    return { steps, result: `Network: main.css · 200 · ${FILE_SIZE}. Збережену копію замінено. Користувачі так роблять рідко, тож розраховувати на жорстке перезавантаження не можна.`, tone: "neutral" };
+  }
+  if (policy === "immutable") {
+    if (changed) {
+      steps.push({ text: "Вміст змінився, тож під час збирання змінилося й ім'я файлу: тепер main.8b07d1.css, і новий HTML (він має no-cache) посилається вже на нього." });
+      steps.push({ text: "Копії main.8b07d1.css у кеші немає, тож іде звичайний GET." });
+      steps.push({ text: `200 OK, ${FILE_SIZE}, знову з max-age=31536000, immutable.` });
+      return { steps, result: "Користувач отримав оновлення одразу. Стара main.3f9a2c.css лежить у кеші, але її більше ніхто не запитує.", tone: "good" };
+    }
+    steps.push({ text: `Копія main.3f9a2c.css є, вік — ${ageLabel}, свіжість — рік: копія свіжа.` });
+    steps.push({ text: "immutable обіцяє, що вміст не зміниться, тож браузер навіть не перевіряє. Запит у мережу не йде." });
+    return { steps, result: "Network: main.3f9a2c.css · 200 · (disk cache) · близько 0 мс. Оновлення прийде разом з новим ім'ям файлу.", tone: "good" };
+  }
+  const lifetime = policy === "max-age" ? 600 : policy === "heuristic" ? 86400 : 0;
+  steps.push({ text: describeFreshness(policy, ageLabel) });
+  if (elapsed < lifetime) {
+    steps.push({ text: "Копія свіжа, тож браузер використовує її без жодного запиту до сервера." });
+    if (changed) {
+      steps.push({ text: "Але файл на сервері вже змінився! Браузер про це не дізнається, бо не питав.", warn: true });
+      return { steps, result: "Network: main.css · 200 · (disk cache). Користувач бачить застарілий CSS, доки копія не прострочиться.", tone: "bad" };
+    }
+    return { steps, result: "Network: main.css · 200 · (disk cache). Нуль байтів мережею.", tone: "good" };
+  }
+  const condition = policy === "heuristic" ? "If-Modified-Since: (дата з Last-Modified)" : 'If-None-Match: "v1"';
+  steps.push({ text: `${policy === "no-cache" ? "Отже, потрібна перевірка" : "Копія прострочена"}: умовний запит GET /css/main.css з ${condition}.` });
+  if (changed) {
+    steps.push({ text: `Файл змінився, тож сервер відповідає 200 OK з новим тілом (${FILE_SIZE})${policy === "heuristic" ? " і новою датою Last-Modified" : ' і новим ETag: "v2"'}.` });
+    return { steps, result: `Network: main.css · 200 · ${FILE_SIZE}. Користувач отримав нову версію.`, tone: "good" };
+  }
+  steps.push({ text: `Файл той самий, тож сервер відповідає 304 Not Modified без тіла (близько ${NOT_MODIFIED_SIZE}). Браузер продовжує термін копії й бере тіло з кешу.` });
+  return { steps, result: `Network: main.css · 304 · ${NOT_MODIFIED_SIZE}. Один короткий запит замість ${FILE_SIZE}.`, tone: "good" };
+}
+
+function initCacheDemo() {
+  const el = (id) => document.getElementById(id);
+  const update = () => {
+    const time = CACHE_TIMES[Number(el("cache-time").value)];
+    el("cache-time-value").textContent = time.label;
+    const decision = decideCache({
+      policy: el("cache-policy").value,
+      elapsed: time.seconds,
+      ageLabel: time.label,
+      changed: el("cache-changed").checked,
+      action: el("cache-action").value,
+    });
+    el("cache-steps").innerHTML = decision.steps.map((step) => `<li class="${step.warn ? "warn" : ""}">${escapeHtml(step.text)}</li>`).join("");
+    const result = el("cache-result");
+    result.textContent = decision.result;
+    result.className = `sim-result tone-${decision.tone}`;
+  };
+  ["cache-policy", "cache-time", "cache-changed", "cache-action"].forEach((id) => {
+    el(id).addEventListener("input", update);
+    el(id).addEventListener("change", update);
+  });
+  update();
+}
+
+/* =========================================================
+   Network panel trainer
+   ========================================================= */
+const NETWORK_SCALE_MS = 4000;
+const NETWORK_ROWS = [
+  { id: "doc", name: "catalog", path: "/catalog", method: "GET", status: 200, type: "document", group: "Doc", mime: "text/html", initiator: "Other", transferredKb: 6.4, resourceKb: 24.1, time: 182, start: 0,
+    timing: { Queueing: 2, Stalled: 3, "DNS Lookup": 18, "Initial connection": 31, SSL: 36, "Request sent": 1, "Waiting for server response": 71, "Content Download": 20 },
+    resHeaders: { "content-type": "text/html; charset=utf-8", "content-encoding": "br", "cache-control": "no-cache", etag: '"page-41"' } },
+  { id: "css", name: "main.3f9a2c.css", path: "/css/main.3f9a2c.css", method: "GET", status: 200, type: "stylesheet", group: "CSS", mime: "text/css", initiator: "catalog:7", transferredKb: 0, resourceKb: 48.0, time: 3, start: 186, cache: "(disk cache)",
+    resHeaders: { "content-type": "text/css", "content-encoding": "br", "cache-control": "max-age=31536000, immutable" } },
+  { id: "js", name: "app.8d41e0.js", path: "/js/app.8d41e0.js", method: "GET", status: 200, type: "script", group: "JS", mime: "text/javascript", initiator: "catalog:8", transferredKb: 412, resourceKb: 412, time: 1290, start: 190,
+    timing: { Queueing: 4, Stalled: 6, "Request sent": 1, "Waiting for server response": 64, "Content Download": 1215 },
+    resHeaders: { "content-type": "text/javascript", "cache-control": "max-age=31536000, immutable", "content-length": "421888" } },
+  { id: "font", name: "inter-var.woff2", path: "/fonts/inter-var.woff2", method: "GET", status: 404, type: "font", group: "Font", mime: "text/html", initiator: "main.3f9a2c.css", transferredKb: 0.5, resourceKb: 0.3, time: 58, start: 205,
+    timing: { Queueing: 3, Stalled: 2, "Request sent": 1, "Waiting for server response": 48, "Content Download": 4 },
+    resHeaders: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } },
+  { id: "cover1", name: "cover-1.avif", path: "/assets/img/cover-1.avif", method: "GET", status: 200, type: "avif", group: "Img", mime: "image/avif", initiator: "catalog:41", transferredKb: 38.2, resourceKb: 38.2, time: 140, start: 200,
+    timing: { Queueing: 12, Stalled: 4, "Request sent": 1, "Waiting for server response": 52, "Content Download": 71 },
+    resHeaders: { "content-type": "image/avif", "cache-control": "no-cache", etag: '"c1-v3"' } },
+  { id: "cover2", name: "cover-2.avif", path: "/assets/img/cover-2.avif", method: "GET", status: 304, type: "avif", group: "Img", mime: "image/avif", initiator: "catalog:42", transferredKb: 0.3, resourceKb: 41.7, time: 46, start: 202,
+    timing: { Queueing: 10, Stalled: 3, "Request sent": 1, "Waiting for server response": 31, "Content Download": 1 },
+    resHeaders: { "cache-control": "no-cache", etag: '"c2-v1"' }, reqExtra: { "if-none-match": '"c2-v1"' } },
+  { id: "events", name: "events", path: "/api/events", method: "POST", status: 204, type: "fetch", group: "Fetch/XHR", mime: "", initiator: "app.8d41e0.js:20", transferredKb: 0.2, resourceKb: 0, time: 64, start: 1490,
+    timing: { Queueing: 1, Stalled: 2, "Request sent": 1, "Waiting for server response": 59, "Content Download": 1 },
+    resHeaders: { "cache-control": "no-store" }, reqExtra: { "content-type": "application/json" } },
+  { id: "profile", name: "profile", path: "/api/profile", method: "GET", status: 401, type: "fetch", group: "Fetch/XHR", mime: "application/problem+json", initiator: "app.8d41e0.js:87", transferredKb: 0.4, resourceKb: 0.1, time: 75, start: 1495,
+    timing: { Queueing: 1, Stalled: 2, "Request sent": 1, "Waiting for server response": 69, "Content Download": 2 },
+    resHeaders: { "content-type": "application/problem+json", "www-authenticate": 'Bearer error="invalid_token"', "cache-control": "no-store" }, reqExtra: { authorization: "Bearer eyJhbGciOi… (expired)" } },
+  { id: "api", name: "books?genre=css", path: "/api/books?genre=css", method: "GET", status: 200, type: "fetch", group: "Fetch/XHR", mime: "application/json", initiator: "app.8d41e0.js:112", transferredKb: 3.1, resourceKb: 11.8, time: 2386, start: 1500,
+    timing: { Queueing: 1, Stalled: 2, "Request sent": 1, "Waiting for server response": 2342, "Content Download": 40 },
+    resHeaders: { "content-type": "application/json; charset=utf-8", "content-encoding": "br", "cache-control": "private, no-cache", etag: '"list-v8"' } },
+  { id: "favicon", name: "favicon.svg", path: "/favicon.svg", method: "GET", status: 200, type: "svg+xml", group: "Img", mime: "image/svg+xml", initiator: "Other", transferredKb: 0, resourceKb: 1.1, time: 0, start: 1520, cache: "(memory cache)",
+    resHeaders: { "content-type": "image/svg+xml", "cache-control": "max-age=86400" } },
+];
+const NETWORK_TYPES = ["All", "Fetch/XHR", "Doc", "CSS", "JS", "Font", "Img"];
+const NETWORK_TASKS = [
+  { id: "font", answer: "font", title: "Шрифт не той",
+    text: "Заголовки сторінки відображаються системним шрифтом замість Inter. Знайдіть запит, який це пояснює.",
+    hint: "Спробуйте фільтр status-code:404 або кнопку Font.",
+    explanation: "inter-var.woff2 повернув 404. Initiator — main.3f9a2c.css: правило @font-face посилається на /fonts/…, а файл лежить в іншій папці. Подивіться і на Content-Type відповіді: text/html, тобто сервер віддав сторінку помилки замість шрифту." },
+  { id: "slow", answer: "api", title: "Список з'являється із затримкою",
+    text: "Каталог книжок з'являється більш ніж через 2 секунди після решти сторінки. Який запит винен і на якій фазі?",
+    hint: "Знайдіть найдовшу смугу у Waterfall, виділіть рядок і відкрийте вкладку Timing.",
+    explanation: "books?genre=css тривав 2,39 с, з них 2,34 с — Waiting for server response, а саме завантаження лише 40 мс. Відповідь маленька, тож проблема на сервері (наприклад, повільний запит до бази даних). Оптимізація фронтенду тут не допоможе." },
+  { id: "compress", answer: "js", title: "Найважчий ресурс без стиснення",
+    text: "На мобільному інтернеті сторінка відкривається повільно. Знайдіть текстовий ресурс, переданий без стиснення.",
+    hint: "Порівняйте два числа в колонці Size або введіть фільтр larger-than:100k.",
+    explanation: "app.8d41e0.js: передано 412 kB при розмірі ресурсу 412 kB, і в заголовках відповіді немає Content-Encoding. JavaScript як текст стискається Brotli в кілька разів. HTML і CSS цієї сторінки стиснуті, отже, сервер це вміє, а для скриптів стиснення просто не налаштовано." },
+  { id: "auth", answer: "profile", title: "Порожній блок «Мій профіль»",
+    text: "Блок профілю порожній, хоча верстка правильна. Знайдіть причину в мережі.",
+    hint: "Натисніть Fetch/XHR і подивіться на статуси.",
+    explanation: "profile повернув 401 Unauthorized із WWW-Authenticate: Bearer error=\"invalid_token\": токен у заголовку Authorization прострочений. Застосунок мав би обробити 401 і запропонувати увійти знову, а не мовчки показувати порожній блок." },
+  { id: "revalidated", answer: "cover2", title: "Перевірено, але не завантажено",
+    text: "Який ресурс браузер перевірив на сервері, але тіло повторно не завантажував?",
+    hint: "Шукайте статус 3xx з дуже малим розміром.",
+    explanation: "cover-2.avif: 304 Not Modified, передано 0,3 kB при розмірі ресурсу 41,7 kB. Браузер надіслав If-None-Match, ETag збігся, тіло взято з кешу. На відміну від main.3f9a2c.css з позначкою (disk cache), тут звернення до сервера все ж було." },
+];
+
+function parseSizeToBytes(value) {
+  const match = String(value).trim().match(/^(\d+(?:\.\d+)?)([kKmM]?)$/);
+  if (!match) return null;
+  const multiplier = { "": 1, k: 1024, K: 1024, m: 1048576, M: 1048576 }[match[2]];
+  return Number(match[1]) * multiplier;
+}
+
+function parseNetworkFilter(text) {
+  return text.trim().split(/\s+/).filter(Boolean).map((part) => {
+    const negate = part.startsWith("-") && part.includes(":");
+    const body = negate ? part.slice(1) : part;
+    const separator = body.indexOf(":");
+    if (separator > 0) return { negate, key: body.slice(0, separator).toLowerCase(), value: body.slice(separator + 1) };
+    return { negate: false, key: "text", value: body.toLowerCase() };
+  });
+}
+
+function rowMatchesToken(row, token) {
+  switch (token.key) {
+    case "status-code": return String(row.status) === token.value;
+    case "method": return row.method.toLowerCase() === token.value.toLowerCase();
+    case "larger-than": {
+      const limit = parseSizeToBytes(token.value);
+      return limit !== null && row.transferredKb * 1024 > limit;
+    }
+    case "is": return token.value === "from-cache" && Boolean(row.cache);
+    case "mime-type": return row.mime === token.value;
+    case "domain": return API_HOST.endsWith(token.value.replace(/^\*\.?/, ""));
+    case "has-response-header": return token.value.toLowerCase() in row.resHeaders;
+    case "text": return `${row.name} ${row.path}`.toLowerCase().includes(token.value);
+    default: return true;
+  }
+}
+
+function filterNetworkRows(rows, filterText, type) {
+  const tokens = parseNetworkFilter(filterText);
+  return rows.filter((row) => (type === "All" || row.group === type)
+    && tokens.every((token) => rowMatchesToken(row, token) !== token.negate));
+}
+
+function formatKb(value) {
+  return value >= 100 ? `${Math.round(value)} kB` : `${value.toFixed(1)} kB`;
+}
+
+function formatMs(ms) {
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${Math.round(ms)} ms`;
+}
+
+function summarizeNetwork(rows) {
+  const transferred = rows.reduce((sum, row) => sum + row.transferredKb, 0);
+  const resources = rows.reduce((sum, row) => sum + row.resourceKb, 0);
+  const finish = rows.length ? Math.max(...rows.map((row) => row.start + row.time)) : 0;
+  return `${rows.length} / ${NETWORK_ROWS.length} requests · ${formatKb(transferred)} transferred · ${formatKb(resources)} resources · Finish: ${formatMs(finish)} · DOMContentLoaded: 1.49 s · Load: 1.52 s`;
+}
+
+function buildRequestHeaders(row) {
+  const dest = { document: "document", stylesheet: "style", script: "script", font: "font", avif: "image", "svg+xml": "image", fetch: "empty" }[row.type];
+  const accept = { document: "text/html,application/xhtml+xml,*/*;q=0.8", stylesheet: "text/css,*/*;q=0.1", script: "*/*", fetch: "application/json", font: "*/*" }[row.type] || "image/avif,image/webp,*/*;q=0.8";
+  return {
+    accept,
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "uk,en;q=0.8",
+    "sec-fetch-dest": dest,
+    "sec-fetch-mode": row.type === "document" ? "navigate" : row.type === "fetch" || row.type === "font" ? "cors" : "no-cors",
+    "sec-fetch-site": row.type === "document" ? "none" : "same-origin",
+    ...(row.reqExtra || {}),
+  };
+}
+
+function renderKv(entries) {
+  return `<dl class="kv">${Object.entries(entries).map(([key, value]) => `<dt>${escapeHtml(key)}</dt><dd>${escapeHtml(String(value))}</dd>`).join("")}</dl>`;
+}
+
+function renderNetworkDetails(row, tab) {
+  if (!row) return '<p style="color:var(--ink-soft);margin-top:1rem">Виділіть запит у таблиці, щоб побачити заголовки й Timing.</p>';
+  const tabs = ["Headers", "Timing"].map((name) => `<button class="tab" type="button" role="tab" data-tab="${name}" aria-selected="${name === tab}">${name}</button>`).join("");
+  let panel;
+  if (tab === "Headers") {
+    const statusLine = row.cache ? `${row.status} OK ${row.cache}` : String(row.status);
+    panel = `<h4>General</h4>${renderKv({ "Request URL": `https://${API_HOST}${row.path}`, "Request Method": row.method, "Status Code": statusLine, Initiator: row.initiator })}
+      <h4 style="margin-top:1rem">Response Headers</h4>${renderKv(row.resHeaders)}
+      <h4 style="margin-top:1rem">Request Headers</h4>${row.cache ? '<p style="color:var(--ink-soft)">Запит до сервера не надсилався: ресурс узято з кешу.</p>' : renderKv(buildRequestHeaders(row))}`;
+  } else if (!row.timing) {
+    panel = `<p>Ресурс узято з ${escapeHtml(row.cache)}: мережевих фаз немає, загальний час — ${formatMs(row.time)}.</p>`;
+  } else {
+    const total = Object.values(row.timing).reduce((sum, value) => sum + value, 0);
+    let offset = 0;
+    panel = Object.entries(row.timing).map(([phase, ms]) => {
+      const left = (offset / total) * 100;
+      offset += ms;
+      return `<div class="timing-row"><span>${escapeHtml(phase)}</span><span class="bar-track" aria-hidden="true"><span style="left:${left}%;width:${Math.max((ms / total) * 100, 0.8)}%"></span></span><span class="timing-ms">${formatMs(ms)}</span></div>`;
+    }).join("") + `<p style="margin-top:0.6rem;font-weight:600">Разом: ${formatMs(total)}</p>`;
+  }
+  return `<div class="tabs" role="tablist" aria-label="Деталі запиту ${escapeHtml(row.name)}">${tabs}</div><div class="tab-panel" role="tabpanel">${panel}</div>`;
+}
+
+function renderWaterfall(row) {
+  const left = (row.start / NETWORK_SCALE_MS) * 100;
+  const width = Math.max((row.time / NETWORK_SCALE_MS) * 100, 0.8);
+  const waiting = row.timing ? row.timing["Waiting for server response"] || 0 : 0;
+  const before = row.timing ? Object.entries(row.timing).filter(([phase]) => !["Waiting for server response", "Content Download"].includes(phase)).reduce((sum, [, ms]) => sum + ms, 0) : 0;
+  const preShare = row.time ? (before / row.time) * 100 : 0;
+  const waitEnd = row.time ? ((before + waiting) / row.time) * 100 : 0;
+  const fill = row.timing
+    ? `linear-gradient(90deg, var(--wf-pre) ${preShare}%, var(--wf-wait) ${preShare}% ${waitEnd}%, var(--wf-dl) ${waitEnd}%)`
+    : "var(--wf-pre)";
+  return `<div class="wf" aria-hidden="true"><span style="left:${left}%;width:${width}%;background:${fill}"></span></div>`;
+}
+
+function initNetworkDemo() {
+  const el = (id) => document.getElementById(id);
+  let type = "All";
+  let selectedId = null;
+  let tab = "Headers";
+
+  el("net-task").innerHTML = NETWORK_TASKS.map((task, index) => `<option value="${task.id}">${index + 1}. ${escapeHtml(task.title)}</option>`).join("");
+  el("net-types").innerHTML = NETWORK_TYPES.map((name) => `<button class="chip" type="button" data-type="${name}" aria-pressed="${name === type}">${name}</button>`).join("");
+
+  const currentTask = () => NETWORK_TASKS.find((task) => task.id === el("net-task").value);
+  const renderTask = () => {
+    el("net-task-text").textContent = currentTask().text;
+    el("net-feedback").innerHTML = "";
+  };
+  const renderDetails = () => {
+    el("net-details").innerHTML = renderNetworkDetails(NETWORK_ROWS.find((row) => row.id === selectedId), tab);
+    el("net-details").querySelectorAll("[data-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        tab = button.dataset.tab;
+        renderDetails();
+        el("net-details").querySelector(`[data-tab="${tab}"]`).focus();
+      });
+    });
+  };
+  const select = (id) => {
+    selectedId = id;
+    renderTable();
+    renderDetails();
+    const button = el("net-rows").querySelector(`[data-select="${id}"]`);
+    if (button) button.focus();
+  };
+  function renderTable() {
+    const rows = filterNetworkRows(NETWORK_ROWS, el("net-filter").value, type);
+    el("net-rows").innerHTML = rows.length ? rows.map((row) => {
+      const top = row.cache ? row.cache : formatKb(row.transferredKb);
+      return `<tr data-id="${row.id}" class="${row.status >= 400 ? "err" : ""} ${row.id === selectedId ? "is-selected" : ""}">
+        <td class="name-cell"><button class="row-btn" type="button" data-select="${row.id}" aria-pressed="${row.id === selectedId}">${escapeHtml(row.name)}</button></td>
+        <td class="status-cell">${row.status}</td><td>${escapeHtml(row.type)}</td><td>${escapeHtml(row.initiator)}</td>
+        <td>${top}<br><span class="dim">${formatKb(row.resourceKb)}</span></td><td>${formatMs(row.time)}</td><td>${renderWaterfall(row)}</td></tr>`;
+    }).join("") : '<tr><td colspan="7" class="dim">Жоден запит не відповідає фільтру.</td></tr>';
+    el("net-summary").textContent = summarizeNetwork(rows);
+    el("net-rows").querySelectorAll("tr[data-id]").forEach((tr) => {
+      tr.addEventListener("click", () => select(tr.dataset.id));
+    });
+  }
+
+  el("net-filter").addEventListener("input", renderTable);
+  el("net-types").querySelectorAll("[data-type]").forEach((button) => {
+    button.addEventListener("click", () => {
+      type = button.dataset.type;
+      el("net-types").querySelectorAll("[data-type]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      renderTable();
+    });
+  });
+  el("net-task").addEventListener("change", renderTask);
+  el("net-check").addEventListener("click", () => {
+    const task = currentTask();
+    const box = el("net-feedback");
+    if (!selectedId) {
+      box.innerHTML = '<div class="explain"><p style="margin:0">Спершу виділіть запит у таблиці.</p></div>';
+      return;
+    }
+    const ok = selectedId === task.answer;
+    box.innerHTML = `<div class="q-feedback ${ok ? "ok" : "fail"}"><p class="verdict-line">${ok ? "✓ Так, це він." : "✗ Не цей запит."}</p><p>${escapeHtml(ok ? task.explanation : `Підказка: ${task.hint}`)}</p></div>`;
+  });
+  renderTask();
+  renderTable();
+  renderDetails();
+}
+
+/* =========================================================
+   ECMAScript timeline
+   ========================================================= */
+const ES_EDITIONS = [
+  { id: "es5", label: "ES5", title: "ECMAScript 5 — 5-те видання, грудень 2009",
+    summary: "Суворий режим \"use strict\", вбудований об'єкт JSON, методи масивів forEach, map, filter, reduce, Object.keys, геттери й сеттери в літералах об'єктів.",
+    detectLabel: "JSON.stringify", detect: () => typeof JSON === "object" && typeof JSON.stringify === "function",
+    code: '"use strict";\nvar titles = ["css", "html"].map(function (title) {\n  return title.toUpperCase();\n});\nconsole.log(JSON.stringify({ titles: titles })); // {"titles":["CSS","HTML"]}' },
+  { id: "es2015", label: "ES2015", title: "ECMAScript 2015 (ES6) — 6-те видання, червень 2015",
+    summary: "Найбільше оновлення в історії мови: let і const, стрілкові функції, класи, модулі import/export, Promise, шаблонні рядки, деструктуризація, параметри за замовчуванням, Map і Set, ітератори й for...of.",
+    detectLabel: "Promise і Map", detect: () => typeof Promise === "function" && typeof Map === "function",
+    code: 'class Book {\n  constructor(title, year = 2024) {\n    this.title = title;\n    this.year = year;\n  }\n}\n\nconst describe = ({ title, year }) => `${title} (${year})`;\nconsole.log(describe(new Book("CSS in Depth"))); // "CSS in Depth (2024)"' },
+  { id: "es2016", label: "ES2016", title: "ECMAScript 2016 — 7-ме видання",
+    summary: "Перше щорічне видання, навмисно маленьке: Array.prototype.includes і оператор піднесення до степеня **.",
+    detectLabel: "Array.prototype.includes", detect: () => typeof Array.prototype.includes === "function",
+    code: 'const genres = ["css", "html", "js"];\nconsole.log(genres.includes("css")); // true\nconsole.log(2 ** 10);                // 1024' },
+  { id: "es2017", label: "ES2017", title: "ECMAScript 2017 — 8-ме видання",
+    summary: "async/await для асинхронного коду, Object.values і Object.entries, padStart і padEnd для рядків.",
+    detectLabel: "Object.entries", detect: () => typeof Object.entries === "function",
+    code: 'async function loadBooks() {\n  const response = await fetch("/api/books");\n  return response.json();\n}\n\nconsole.log(Object.entries({ css: 3, js: 5 })); // [["css", 3], ["js", 5]]\nconsole.log("7".padStart(3, "0"));              // "007"' },
+  { id: "es2018", label: "ES2018", title: "ECMAScript 2018 — 9-те видання",
+    summary: "Rest і spread для об'єктів, Promise.prototype.finally, асинхронна ітерація for await...of, іменовані групи в регулярних виразах.",
+    detectLabel: "Promise.prototype.finally", detect: () => typeof Promise.prototype.finally === "function",
+    code: 'const book = { title: "HTML and CSS", year: 2011, pages: 512 };\nconst { pages, ...summary } = book;\nconst updated = { ...summary, year: 2026 };\nconsole.log(updated); // { title: "HTML and CSS", year: 2026 }' },
+  { id: "es2019", label: "ES2019", title: "ECMAScript 2019 — 10-те видання",
+    summary: "Array.prototype.flat і flatMap (той самий flat, що мав називатися flatten), Object.fromEntries, trimStart і trimEnd, catch без параметра.",
+    detectLabel: "Array.prototype.flat", detect: () => typeof Array.prototype.flat === "function",
+    code: 'const shelves = [["CSS", "HTML"], ["JS"]];\nconsole.log(shelves.flat()); // ["CSS", "HTML", "JS"]\nconsole.log(Object.fromEntries([["css", 3], ["js", 5]])); // { css: 3, js: 5 }' },
+  { id: "es2020", label: "ES2020", title: "ECMAScript 2020 — 11-те видання",
+    summary: "Опціональний ланцюжок ?., оператор ?? (nullish coalescing), BigInt, динамічний import(), globalThis, Promise.allSettled.",
+    detectLabel: "globalThis і BigInt", detect: () => typeof globalThis === "object" && typeof BigInt === "function",
+    code: 'const book = { title: "CSS in Depth", author: null };\nconsole.log(book.author?.name);          // undefined, no TypeError\nconsole.log(book.rating ?? "no rating"); // "no rating"\nconsole.log(0 ?? 5, 0 || 5);             // 0 5' },
+  { id: "es2021", label: "ES2021", title: "ECMAScript 2021 — 12-те видання",
+    summary: "String.prototype.replaceAll, логічне присвоєння ||=, &&=, ??=, роздільники в числах 1_000_000, Promise.any.",
+    detectLabel: "String.prototype.replaceAll", detect: () => typeof String.prototype.replaceAll === "function",
+    code: 'const settings = { pageSize: 0 };\nsettings.pageSize ||= 20;   // 20, because 0 is falsy\nsettings.theme ??= "light"; // set only when null or undefined\nconsole.log(settings, "a-b-c".replaceAll("-", " "), 1_000_000);' },
+  { id: "es2022", label: "ES2022", title: "ECMAScript 2022 — 13-те видання",
+    summary: "Поля класів, зокрема приватні #, статичні блоки, await на верхньому рівні модуля, метод .at(), Object.hasOwn, причина помилки cause.",
+    detectLabel: "Array.prototype.at і Object.hasOwn", detect: () => typeof Array.prototype.at === "function" && typeof Object.hasOwn === "function",
+    code: 'class Catalog {\n  #books = [];\n  add(title) {\n    this.#books.push(title);\n    return this.#books.length;\n  }\n  last() {\n    return this.#books.at(-1);\n  }\n}\n\nconst catalog = new Catalog();\ncatalog.add("CSS");\ncatalog.add("JS");\nconsole.log(catalog.last()); // "JS"' },
+  { id: "es2023", label: "ES2023", title: "ECMAScript 2023 — 14-те видання",
+    summary: "findLast і findLastIndex; методи, що не змінюють вихідний масив: toSorted, toReversed, toSpliced, with; підтримка рядка #! на початку скриптів.",
+    detectLabel: "Array.prototype.toSorted", detect: () => typeof Array.prototype.toSorted === "function",
+    code: 'const years = [2011, 2024, 2019];\nconst sorted = years.toSorted((a, b) => a - b);\nconsole.log(sorted, years); // [2011, 2019, 2024] [2011, 2024, 2019]\nconsole.log(years.findLast((year) => year > 2015)); // 2019' },
+  { id: "es2024", label: "ES2024", title: "ECMAScript 2024 — 15-те видання",
+    summary: "Групування Object.groupBy і Map.groupBy, Promise.withResolvers, прапорець v у регулярних виразах, перевірка коректності рядків isWellFormed, ArrayBuffer змінного розміру.",
+    detectLabel: "Object.groupBy", detect: () => typeof Object.groupBy === "function",
+    code: 'const books = [\n  { title: "CSS in Depth", genre: "css" },\n  { title: "Eloquent JavaScript", genre: "js" },\n  { title: "HTML and CSS", genre: "css" },\n];\nconst byGenre = Object.groupBy(books, (book) => book.genre);\nconsole.log(byGenre.css.length); // 2' },
+  { id: "es2025", label: "ES2025", title: "ECMAScript 2025 — 16-те видання",
+    summary: "Допоміжні методи ітераторів (map, filter, take та інші), операції над множинами union, intersection, difference, атрибути імпорту й JSON-модулі, RegExp.escape, Promise.try, Float16Array.",
+    detectLabel: "Set.prototype.union", detect: () => typeof Set.prototype.union === "function",
+    code: 'const read = new Set(["CSS", "HTML"]);\nconst wishlist = new Set(["HTML", "JS"]);\nconsole.log(read.union(wishlist));        // Set {"CSS", "HTML", "JS"}\nconsole.log(read.intersection(wishlist)); // Set {"HTML"}\n\nconst firstTwo = ["a", "b", "c"].values().map((x) => x.toUpperCase()).take(2).toArray();\nconsole.log(firstTwo); // ["A", "B"]' },
+  { id: "es2026", label: "ES2026", title: "ECMAScript 2026 — 17-те видання, затверджене 30 червня 2026",
+    summary: "Math.sumPrecise для точного додавання, Error.isError, Array.fromAsync, Iterator.concat, перетворення Uint8Array у base64 і hex та назад, методи Map для значення за замовчуванням, доступ до вихідного тексту в JSON.parse і JSON.rawJSON.",
+    detectLabel: "Math.sumPrecise і Error.isError", detect: () => typeof Math.sumPrecise === "function" && typeof Error.isError === "function",
+    code: 'console.log(0.1 + 0.2 + 0.3);                  // 0.6000000000000001\nconsole.log(Math.sumPrecise([0.1, 0.2, 0.3]));  // 0.6\nconsole.log(Error.isError(new TypeError("x"))); // true\n\nasync function collectCovers(source) {\n  return Array.fromAsync(source); // source: any async iterable\n}' },
+  { id: "es2027", label: "ES2027 (чернетка)", title: "ECMAScript 2027 — чернетка 18-го видання",
+    summary: "Чернетка на tc39.es уже містить пропозиції, що досягли Stage 4 у 2026 році, серед них Temporal — новий API для дат і часу на заміну незручному Date. Затвердження очікується в червні 2027 року; підтримка в браузерах поки різна.",
+    detectLabel: "Temporal", detect: () => typeof globalThis.Temporal === "object",
+    code: 'const published = Temporal.PlainDate.from("2026-06-30");\nconst nextEdition = published.add({ years: 1 });\nconsole.log(nextEdition.toString()); // "2027-06-30"' },
+];
+
+function detectSupport(edition) {
+  try {
+    return edition.detect();
+  } catch {
+    return false;
+  }
+}
+
+function renderEdition(edition) {
+  const supported = detectSupport(edition);
+  return `<div class="edition-card">
+    <h4>${escapeHtml(edition.title)}</h4>
+    <p>${escapeHtml(edition.summary)}</p>
+    <p><span class="support ${supported ? "yes" : "no"}">${supported ? "✓" : "✗"} У вашому браузері ${escapeHtml(edition.detectLabel)}: ${supported ? "підтримується" : "не підтримується"}</span></p>
+    <pre class="code" data-lang="js">${escapeHtml(edition.code)}</pre>
+  </div>`;
+}
+
+function initEsTimeline() {
+  const chips = document.getElementById("es-chips");
+  const card = document.getElementById("es-card");
+  chips.innerHTML = ES_EDITIONS.map((edition) => `<button class="chip" type="button" data-edition="${edition.id}" aria-pressed="false">${escapeHtml(edition.label)}</button>`).join("");
+  const select = (id) => {
+    chips.querySelectorAll("[data-edition]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.edition === id)));
+    card.innerHTML = renderEdition(ES_EDITIONS.find((edition) => edition.id === id));
+    enhanceCodeBlocks(card);
+  };
+  chips.querySelectorAll("[data-edition]").forEach((button) => button.addEventListener("click", () => select(button.dataset.edition)));
+  select("es2026");
+}
+
+/* =========================================================
+   Cheatsheet printing
+   ========================================================= */
+function printCheatsheet() {
+  document.body.classList.add("print-cheatsheet");
+  window.print();
+}
+
+function initPrint() {
+  document.getElementById("print-cheatsheet").addEventListener("click", printCheatsheet);
+  window.addEventListener("afterprint", () => document.body.classList.remove("print-cheatsheet"));
+}
+
+/* =========================================================
+   Quiz
+   ========================================================= */
+const QUIZ_TOPICS = {
+  messages: { title: "Структура HTTP-повідомлень", anchor: "#messages" },
+  methods: { title: "Методи", anchor: "#methods" },
+  status: { title: "Коди стану", anchor: "#status" },
+  headers: { title: "Заголовки", anchor: "#headers" },
+  "browser-client": { title: "Браузер як HTTP-клієнт", anchor: "#browser-client" },
+  caching: { title: "Кешування", anchor: "#caching" },
+  network: { title: "Аналіз мережі в DevTools", anchor: "#network" },
+  "standards-bodies": { title: "Хто творить вебстандарти", anchor: "#standards-bodies" },
+  ecmascript: { title: "Як розвивається ECMAScript", anchor: "#ecmascript" },
+};
+
+const QUIZ_QUESTIONS = [
+  {
+    id: "q-blank-line", topic: "messages",
+    text: "Як отримувач HTTP/1.1-повідомлення визначає, де закінчилися заголовки й почалося тіло?",
+    options: ["За порожнім рядком після останнього заголовка", "За заголовком Content-Type", "Тіло завжди починається із символу {", "Останнім заголовком завжди йде Content-Length"],
+    correct: 0,
+    explanation: "Порожній рядок — єдиний розділювач між заголовками й тілом. Content-Type каже, як тлумачити тіло, а Content-Length — де тіло закінчується, але не де воно починається; порядок заголовків довільний. Тіло може бути чим завгодно — HTML, зображенням, даними форми, — а не лише JSON.",
+  },
+  {
+    id: "q-idempotent", topic: "methods",
+    text: "Яка пара методів ідемпотентна, але не безпечна?",
+    options: ["PUT і DELETE", "GET і HEAD", "POST і PATCH", "OPTIONS і GET"],
+    correct: 0,
+    explanation: "PUT і DELETE змінюють стан сервера, тож вони не безпечні, але повторення дає той самий стан, тож вони ідемпотентні. GET, HEAD і OPTIONS ідемпотентні, але водночас безпечні. POST і PATCH ідемпотентності не гарантують: повторний POST може створити ще одну книжку.",
+  },
+  {
+    id: "q-201", topic: "status",
+    text: "Сервер успішно створив книжку у відповідь на POST /api/books. Яка відповідь найточніше це описує?",
+    options: ["201 Created із заголовком Location: /api/books/4", "200 OK з текстом «created» у тілі", "204 No Content", "302 Found з переходом на /api/books/4"],
+    correct: 0,
+    explanation: "201 Created прямо повідомляє, що з'явився новий ресурс, а Location дає клієнту його адресу без розбору тіла. 200 технічно не помилка, але втрачає цю інформацію. 204 означає «успіх без тіла» і не повідомляє адреси. 302 змусив би браузер перейти на іншу сторінку.",
+  },
+  {
+    id: "q-fetch-ok", topic: "status",
+    text: "Що виведе консоль, якщо сервер відповідає на цей запит кодом 404?",
+    code: "async function checkBook() {\n  try {\n    const response = await fetch(\"/api/books/999\");\n    console.log(\"ok:\", response.ok, response.status);\n  } catch {\n    console.log(\"network error\");\n  }\n}\n\ncheckBook();",
+    lang: "js",
+    options: ["ok: false 404", "network error", "ok: true 404", "Нічого: fetch не завершиться"],
+    correct: 0,
+    explanation: "fetch завершується помилкою лише тоді, коли відповіді немає взагалі — збій мережі чи блокування запиту. На 404 сервер відповів, тож проміс виконується успішно, а response.ok дорівнює false, бо статус поза діапазоном 200–299. Перевіряти ok має сам код.",
+  },
+  {
+    id: "q-no-cache", topic: "caching",
+    text: "Відповідь містила Cache-Control: no-cache і ETag. Що зробить браузер, коли ресурс знадобиться знову?",
+    options: ["Надішле умовний запит з If-None-Match: на 304 використає збережену копію, на 200 замінить її", "Не збереже копію взагалі й завантажить файл повністю", "Візьме копію з кешу без жодного запиту", "Збереже копію лише до закриття вкладки"],
+    correct: 0,
+    explanation: "no-cache не забороняє зберігати — він забороняє використовувати копію без перевірки. Заборона зберігання — це no-store. Використання копії без запиту — поведінка свіжої відповіді з max-age. Час зберігання копії від вкладки не залежить.",
+  },
+  {
+    id: "q-stale-css", topic: "caching",
+    text: "Файл main.css віддається з Cache-Control: max-age=86400 під незмінним ім'ям. Ви оновили стилі на сервері. Що побачить користувач, який відкривав сайт годину тому, при звичайному переході на сторінку?",
+    options: ["Старий CSS: копія ще свіжа, і браузер не звертається до сервера", "Новий CSS, бо браузер щоразу перевіряє ETag", "Новий CSS, бо сервер повідомить браузер про зміну", "Сторінку без стилів, бо кеш стане недійсним"],
+    correct: 0,
+    explanation: "Поки копія свіжа (24 години від завантаження), браузер не надсилає жодного запиту, тож про новий файл не дізнається. Сервер не може «повідомити» браузер, бо HTTP працює лише у відповідь на запити. Тому статику версіонують хешем в імені, а HTML віддають з no-cache.",
+  },
+  {
+    id: "q-forbidden", topic: "headers",
+    text: "Що станеться із заголовками цього запиту зі сторінки https://books.example.com?",
+    code: "fetch(\"/api/books\", {\n  headers: { \"Host\": \"evil.example\", \"X-Request-Id\": \"42\" },\n});",
+    lang: "js",
+    options: ["Host браузер мовчки відкине як заборонений, а X-Request-Id надішле", "Запит піде на сервер evil.example", "fetch кине TypeError через заборонений заголовок", "Обидва заголовки буде надіслано як є"],
+    correct: 0,
+    explanation: "Host входить до заборонених заголовків запиту: його виставляє лише браузер за URL. Спроба задати його з JavaScript ігнорується без помилки. Власний заголовок X-Request-Id для запиту на те саме походження дозволений. Інакше скрипт міг би підробляти адресата чи контекст запиту.",
+  },
+  {
+    id: "q-cors", topic: "browser-client",
+    text: "Сторінка з https://books.example.com виконує fetch(\"https://api.other.example/books\"). Сервер відповідає 200 без заголовка Access-Control-Allow-Origin. Що побачить код сторінки?",
+    options: ["Запит дійде до сервера, але браузер не віддасть відповідь коду: fetch відхилиться з TypeError, у консолі — помилка CORS", "Код отримає дані, бо статус 200", "Сервер сам поверне 403 через CORS", "Браузер не надішле жодного запиту"],
+    correct: 0,
+    explanation: "Для простого GET браузер надсилає запит одразу, сервер відповідає, але без дозволу Access-Control-Allow-Origin браузер не передає відповідь сторінці. CORS виконує браузер, а не сервер, тому статус 200 нічого не змінює. Попередній OPTIONS без основного запиту був би лише для «непростих» запитів.",
+  },
+  {
+    id: "q-disk-cache", topic: "network",
+    text: "У колонці Size для main.3f9a2c.css написано (disk cache), а Time — 3 ms. Що це означає?",
+    options: ["Ресурс узято з дискового кешу без звернення до сервера", "Сервер відповів 304 Not Modified", "Файл порожній", "Запит заблоковано через Block request URL"],
+    correct: 0,
+    explanation: "(disk cache) чи (memory cache) у колонці Size означає, що копія була свіжою і мережею нічого не передавалося. Після 304 у колонці Size стояли б кількасот переданих байтів, бо запит до сервера був. Заблокований запит позначається окремим статусом блокування.",
+  },
+  {
+    id: "q-timing", topic: "network",
+    text: "У вкладці Timing найдовша фаза — Waiting for server response (2,3 с), а Content Download — 40 мс. Де шукати причину затримки?",
+    options: ["На сервері: він довго формує відповідь", "У розмірі файлу: його треба стиснути", "У DNS: ім'я довго розв'язується", "У браузері, що повільно малює сторінку"],
+    correct: 0,
+    explanation: "Waiting for server response — час від надсилання запиту до першого байта відповіді. Майже весь він припадає на обробку на сервері. Розмір файлу впливав би на Content Download, DNS має окрему фазу DNS Lookup, а малювання сторінки до мережевих фаз не належить.",
+  },
+  {
+    id: "q-fetch-spec", topic: "standards-bodies",
+    text: "fetch() в одному з браузерів поводиться інакше, ніж описано на MDN. Де визначено, як fetch має працювати, і куди варто звертатися?",
+    options: ["До WHATWG Fetch Standard і трекера помилок цього браузера", "До Ecma TC39, бо fetch — частина JavaScript", "До IETF, бо fetch надсилає HTTP-запити", "До W3C CSS Working Group"],
+    correct: 0,
+    explanation: "fetch — це Web API, описаний у WHATWG Fetch Standard, а не частина мови ECMAScript, тому TC39 тут ні до чого. IETF визначає сам протокол HTTP, але не браузерний інтерфейс до нього. Розбіжність між браузером і специфікацією — це баг реалізації, і його звітують у трекер браузера.",
+  },
+  {
+    id: "q-stage3", topic: "ecmascript",
+    text: "Пропозиція в TC39 щойно отримала Stage 3. Що це означає для розробника?",
+    options: ["Дизайн завершено, тести є, рушії її реалізують; у проєкті — лише після перевірки підтримки", "Вона вже стала частиною чинного стандарту ECMAScript", "Її вже підтримують усі сучасні браузери", "Комітет лише погодився, що проблема варта розв'язання"],
+    correct: 0,
+    explanation: "На Stage 3 специфікація стабільна, тести в test262 готові, і рушії реалізують можливість. До стандарту вона потрапить на Stage 4, коли з'являться сумісні реалізації. Підтримку в браузерах треба перевіряти окремо. Згода, що проблема варта розв'язання, — це лише Stage 1.",
+  },
+];
+
+const QUIZ_STORAGE_KEY = "cwt-lecture-02-quiz-v1";
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function createQuizState(questions) {
+  return {
+    order: shuffle(questions.map((question) => question.id)),
+    optionOrder: Object.fromEntries(questions.map((question) => [question.id, shuffle(question.options.map((_, index) => index))])),
+    answers: {},
+  };
+}
+
+function isValidQuizState(state, questions) {
+  if (!state || !Array.isArray(state.order) || typeof state.answers !== "object" || !state.optionOrder) return false;
+  const ids = questions.map((question) => question.id);
+  return state.order.length === ids.length && ids.every((id) => state.order.includes(id) && Array.isArray(state.optionOrder[id]));
+}
+
+function loadQuizState(questions) {
+  try {
+    const raw = localStorage.getItem(QUIZ_STORAGE_KEY);
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    return isValidQuizState(state, questions) ? state : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveQuizState(state) {
+  try {
+    localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* Storage is unavailable: the quiz keeps working in memory. */
+  }
+}
+
+function findQuestion(id) {
+  return QUIZ_QUESTIONS.find((question) => question.id === id);
+}
+
+function isAnswerCorrect(question, optionIndex) {
+  return question.correct === optionIndex;
+}
+
+function getQuizSummary(state) {
+  const answeredIds = Object.keys(state.answers);
+  const wrong = answeredIds.map(findQuestion).filter((question) => question && !isAnswerCorrect(question, state.answers[question.id]));
+  const topicsToReview = [...new Set(wrong.map((question) => question.topic))].map((topic) => QUIZ_TOPICS[topic]);
+  return {
+    total: QUIZ_QUESTIONS.length,
+    answered: answeredIds.length,
+    correct: answeredIds.length - wrong.length,
+    topicsToReview,
+  };
+}
+
+const OPTION_LETTERS = ["А", "Б", "В", "Г"];
+
+function renderQuestionFeedback(feedback, question, chosen) {
+  const ok = isAnswerCorrect(question, chosen);
+  const topic = QUIZ_TOPICS[question.topic];
+  feedback.className = `q-feedback ${ok ? "ok" : "fail"}`;
+  feedback.innerHTML = `
+    <p class="verdict-line">${ok ? "✓ Правильно." : `✗ Неправильно. Правильна відповідь: ${escapeHtml(question.options[question.correct])}`}</p>
+    <p>${escapeHtml(question.explanation)}</p>
+    <p><a href="${topic.anchor}">Повторити розділ «${escapeHtml(topic.title)}»</a></p>`;
+}
+
+function applyAnsweredState(card, question, chosen) {
+  card.querySelectorAll(".q-option").forEach((button) => {
+    const index = Number(button.dataset.option);
+    button.disabled = true;
+    button.classList.toggle("is-correct", index === question.correct);
+    button.classList.toggle("is-wrong", index === chosen && index !== question.correct);
+    button.classList.toggle("is-dim", index !== chosen && index !== question.correct);
+    if (index === chosen) button.setAttribute("aria-pressed", "true");
+  });
+  renderQuestionFeedback(card.querySelector(".q-feedback"), question, chosen);
+}
+
+function createQuestionCard(question, number, state, onAnswer) {
+  const card = document.createElement("fieldset");
+  card.className = "q-card";
+  card.id = question.id;
+  const legend = document.createElement("legend");
+  legend.innerHTML = `<span class="q-num">Запитання ${number} з ${QUIZ_QUESTIONS.length}</span>${escapeHtml(question.text)}`;
+  card.append(legend);
+  if (question.code) card.append(createCodeBlock(question.code, question.lang));
+  if (question.code2) card.append(createCodeBlock(question.code2, question.lang2));
+  const options = document.createElement("div");
+  options.className = "q-options";
+  state.optionOrder[question.id].forEach((optionIndex, position) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "q-option";
+    button.dataset.option = String(optionIndex);
+    button.setAttribute("aria-pressed", "false");
+    button.innerHTML = `<span class="mark" aria-hidden="true">${OPTION_LETTERS[position]}</span><span>${escapeHtml(question.options[optionIndex])}</span>`;
+    button.addEventListener("click", () => onAnswer(question, optionIndex, card));
+    options.append(button);
+  });
+  const feedback = document.createElement("div");
+  feedback.className = "q-feedback";
+  feedback.setAttribute("aria-live", "polite");
+  card.append(options, feedback);
+  if (question.id in state.answers) applyAnsweredState(card, question, state.answers[question.id]);
+  return card;
+}
+
+function renderQuizProgress(summary) {
+  document.getElementById("quiz-progress").value = summary.answered;
+  document.getElementById("quiz-progress-label").textContent = `Відповіли: ${summary.answered} з ${summary.total}`;
+}
+
+function renderQuizSummary(container, summary, onRestart) {
+  if (summary.answered < summary.total) {
+    container.innerHTML = `<p style="margin:0">Дайте відповідь на всі запитання, щоб побачити результат. Залишилося: ${summary.total - summary.answered}.</p>`;
+    return;
+  }
+  const review = summary.topicsToReview.length
+    ? `<p>Варто повторити:</p><ul>${summary.topicsToReview.map((topic) => `<li><a href="${topic.anchor}">${escapeHtml(topic.title)}</a></li>`).join("")}</ul>`
+    : "<p>Усі відповіді правильні — матеріал лекції засвоєно.</p>";
+  container.innerHTML = `
+    <h3>Результат</h3>
+    <p class="score">${summary.correct} з ${summary.total}</p>
+    ${review}
+    <button class="btn" type="button" id="quiz-restart-bottom">Пройти ще раз</button>`;
+  container.querySelector("#quiz-restart-bottom").addEventListener("click", onRestart);
+}
+
+function initQuiz() {
+  const list = document.getElementById("quiz-list");
+  const summaryBox = document.getElementById("quiz-summary");
+  let state = loadQuizState(QUIZ_QUESTIONS) || createQuizState(QUIZ_QUESTIONS);
+
+  const refreshSummary = () => {
+    const summary = getQuizSummary(state);
+    renderQuizProgress(summary);
+    renderQuizSummary(summaryBox, summary, restart);
+  };
+
+  const handleAnswer = (question, optionIndex, card) => {
+    if (question.id in state.answers) return;
+    state.answers[question.id] = optionIndex;
+    saveQuizState(state);
+    applyAnsweredState(card, question, optionIndex);
+    refreshSummary();
+  };
+
+  const render = () => {
+    list.replaceChildren(...state.order.map((id, index) => createQuestionCard(findQuestion(id), index + 1, state, handleAnswer)));
+    refreshSummary();
+  };
+
+  function restart() {
+    state = createQuizState(QUIZ_QUESTIONS);
+    saveQuizState(state);
+    render();
+    document.getElementById("quiz").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    const firstOption = list.querySelector(".q-option");
+    if (firstOption) firstOption.focus({ preventScroll: true });
+  }
+
+  document.getElementById("quiz-restart-top").addEventListener("click", restart);
+  saveQuizState(state);
+  render();
+}
+
+/* =========================================================
+   Init
+   ========================================================= */
+enhanceCodeBlocks(document);
+initRequestDemo();
+initCacheDemo();
+initNetworkDemo();
+initEsTimeline();
+initPrint();
+initQuiz();
+</script>
+<script src="../styles/course-theme.js"></script>
+</body>
+</html>
