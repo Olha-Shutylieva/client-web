@@ -2,15 +2,9 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<script>
-try {
-  var savedTheme = localStorage.getItem("ctw-theme");
-  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
-} catch (error) {}
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Лекція 1. Як працює веб. Середовище розробки</title>
-<meta name="description" content="Клієнтські технології вебпрограмування. Лекція 1: клієнт і сервер, URL, DNS, HTTP, рендеринг у браузері, VS Code, DevTools, Git.">
+<title>Лекція 1. Вступ до клієнтських технологій</title>
+<meta name="description" content="Клієнтські технології вебпрограмування. Лекція 1: клієнт–сервер, HTTP/HTTPS, життєвий цикл запиту, побудова сторінки, стандарти W3C/WHATWG/ECMAScript, VS Code і WebStorm, Node.js LTS і npm, DevTools, Git.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -628,38 +622,6 @@ pre.code code { font-family: inherit; background: none; padding: 0; }
 .links-group ul { margin: 0; padding-left: 1.2em; }
 .links-group li { margin-bottom: 0.3em; }
 footer { border-top: 1px solid var(--line); padding: 1.5rem 1.25rem 2.5rem; color: var(--ink-soft); font-size: 0.9rem; text-align: center; }
-footer p { margin: 0 0 0.6rem; }
-footer a { font-weight: 700; }
-.page-tools {
-  position: sticky;
-  top: 0;
-  z-index: 6;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  padding: 0.55rem 1.25rem;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
-}
-.page-tools a, .page-tools button {
-  font: inherit;
-  font-weight: 700;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 0.3rem 0.9rem;
-}
-.page-tools a { color: var(--ink); text-decoration: none; }
-.page-tools button {
-  border: 2px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -670,7 +632,7 @@ footer a { font-weight: 700; }
 @media print {
   :root { padding: 0; }
   body { background: #fff; color: #000; font-size: 11pt; }
-  .skip-link, .toc, .copy-btn, .controls, .btn, #quiz, .demo, .page-tools { display: none !important; }
+  .skip-link, .toc, .copy-btn, .controls, .btn, #quiz, .demo { display: none !important; }
   .hero { background: #fff; color: #000; padding: 0 0 1rem; }
   .hero * { color: #000 !important; }
   .code-wrap { background: #f3f5f9; border: 1px solid #ccc; }
@@ -695,16 +657,12 @@ footer a { font-weight: 700; }
 </head>
 <body>
 <a class="skip-link" href="#content">Перейти до змісту лекції</a>
-<div class="page-tools">
-  <a href="../index.html">← На головну</a>
-  <button type="button" id="theme-toggle" aria-pressed="false">Темна тема</button>
-</div>
 
 <header class="hero">
   <div class="hero-inner">
-    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 1</p>
-    <h1>Як працює веб. Середовище розробки</h1>
-    <p class="hero-lead">Що відбувається між натисканням Enter і першими пікселями на екрані, і які інструменти дають змогу все це побачити, перевірити й зберегти в історії змін.</p>
+    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 1, денна форма навчання</p>
+    <h1>Вступ до клієнтських технологій</h1>
+    <p class="hero-lead">Як браузер і сервер обмінюються даними, як із байтів HTML з'являється сторінка, хто пише правила для всіх браузерів і з якими інструментами ви працюватимете весь курс.</p>
 
     <figure class="hero-url" aria-label="Будова URL-адреси">
       <div class="anatomy">
@@ -722,11 +680,11 @@ footer a { font-weight: 700; }
     <div class="hero-outcomes">
       <h2>Після лекції ви зможете</h2>
       <ul>
-        <li>пояснити шлях від введеної адреси до готової сторінки: DNS, з'єднання, HTTP-запит і відповідь, побудова DOM і CSSOM, рендеринг;</li>
-        <li>розібрати будь-який URL на частини й сказати, які з них отримає сервер, а які — лише браузер;</li>
-        <li>налаштувати VS Code для верстки: розширення, Emmet, форматування при збереженні, локальний сервер Live Server;</li>
-        <li>знаходити причини проблем у DevTools через панелі Elements, Console, Network і Sources;</li>
-        <li>вести проєкт у Git невеликими комітами з осмисленими повідомленнями й коректним <code>.gitignore</code>.</li>
+        <li>пояснити архітектуру «клієнт–сервер» і пройти весь життєвий цикл запиту: URL, DNS, з'єднання, HTTP-запит і відповідь, кешування, перенаправлення;</li>
+        <li>розрізняти HTTP і HTTPS: що шифрує TLS, що залишається видимим і навіщо сертифікат;</li>
+        <li>описати, як браузер будує сторінку: парсинг, DOM, CSSOM, дерево рендерингу, layout і paint;</li>
+        <li>пояснити, хто створює стандарти вебу (W3C, WHATWG, Ecma TC39) і як перевірити, чи можна вже використовувати нову можливість;</li>
+        <li>підготувати робоче середовище: VS Code або WebStorm, Node.js LTS і npm, DevTools і Git з осмисленими комітами.</li>
       </ul>
     </div>
   </div>
@@ -739,11 +697,15 @@ footer a { font-weight: 700; }
       <li><a href="#theory">Теорія</a>
         <ol>
           <li><a href="#client-server">Клієнт і сервер</a></li>
+          <li><a href="#standards">Стандарти вебу</a></li>
           <li><a href="#url">Анатомія URL</a></li>
           <li><a href="#dns">DNS</a></li>
           <li><a href="#http">HTTP: запит і відповідь</a></li>
+          <li><a href="#https">HTTPS і TLS</a></li>
+          <li><a href="#lifecycle">Життєвий цикл запиту</a></li>
           <li><a href="#rendering">Як браузер будує сторінку</a></li>
-          <li><a href="#vscode">VS Code і локальний сервер</a></li>
+          <li><a href="#editor">VS Code і WebStorm</a></li>
+          <li><a href="#node">Node.js LTS і npm</a></li>
           <li><a href="#devtools">DevTools</a></li>
           <li><a href="#git">Git: базові команди</a></li>
         </ol>
@@ -769,9 +731,39 @@ footer a { font-weight: 700; }
         <h3>Клієнт і сервер</h3>
         <p>Коли ви відкриваєте каталог книжок, здається, що сторінка «живе» у вкладці браузера. Насправді HTML-файл, стилі, скрипти й обкладинки лежать на іншому комп'ютері, іноді за тисячі кілометрів. Проблема, яку розв'язує веб, — як мільйонам людей одночасно отримати актуальну версію тих самих файлів, якщо зберігаються вони в одному місці й оновлюються там само.</p>
         <p>Відповідь — модель <strong>клієнт–сервер</strong>. Клієнт — програма, яка ініціює обмін: браузер, мобільний застосунок, утиліта командного рядка. Сервер — програма, яка чекає на запити й відповідає на них. Важливо, що роль визначається тим, хто починає розмову, а не «залізом»: коли ви запускаєте на ноутбуці локальний сервер для розробки, той самий ноутбук одночасно і сервер (програма віддає файли), і клієнт (браузер їх запитує).</p>
-        <p>Між клієнтом і сервером працює стек протоколів, і кожен шар відповідає за своє. IP доставляє пакети даних за адресою, TCP (або QUIC у HTTP/3) стежить, щоб пакети не губилися й приходили в правильному порядку, а HTTP описує зміст розмови: «дай мені цей ресурс» і «ось він». Наша дисципліна — про клієнтський бік: HTML, CSS і JavaScript, які браузер отримує від сервера й виконує на комп'ютері користувача.</p>
+        <p>Між клієнтом і сервером працює стек протоколів, і кожен шар відповідає за своє. IP доставляє пакети даних за адресою, TCP (або QUIC у HTTP/3) стежить, щоб пакети не губилися й приходили в правильному порядку, а HTTP описує зміст розмови: «дай мені цей ресурс» і «ось він». Наша дисципліна — про клієнтський бік: HTML описує структуру й зміст сторінки, CSS — її вигляд, JavaScript (а згодом TypeScript, що компілюється в JavaScript) — поведінку, а Web API браузера дають коду доступ до DOM, мережі та сховищ. Усе це браузер отримує від сервера й виконує на комп'ютері користувача.</p>
         <div class="callout">
           <p><strong>Коли це знадобиться.</strong> Щойно щось не працює, перше запитання — на чиєму боці проблема. Помилка в JavaScript видна в консолі браузера й виправляється в клієнтському коді; статус 500 у панелі Network означає, що впав сервер, і правити клієнтський код марно.</p>
+        </div>
+      </article>
+
+      <!-- Standards -->
+      <article class="concept prose" id="standards">
+        <h3>Стандарти вебу: W3C, WHATWG, ECMAScript</h3>
+        <p>Каталог книжок має однаково виглядати й працювати в Chrome, Edge, Firefox і Safari. Це продукти різних компаній на різних рушіях: Blink, Gecko, WebKit. Без спільних правил кожен браузер трактував би розмітку по-своєму. Так і було наприкінці 1990-х, у часи «війн браузерів», коли сайти чесно писали «найкраще переглядати в такому-то браузері», а розробники підтримували кілька версій однієї сторінки.</p>
+        <p>Розв'язання — <strong>стандарти</strong>: специфікації, які описують поведінку настільки точно, що незалежні реалізації дають однаковий результат. Специфікація HTML, наприклад, визначає не лише теги, а й алгоритм парсингу аж до того, як виправляти помилки в розмітці. Саме тому однаково «зламаний» HTML усі сучасні браузери перетворюють на однаковий DOM. Для клієнтських технологій важливі три організації.</p>
+        <p><strong>W3C</strong> (World Wide Web Consortium) заснований 1994 року творцем вебу Тімом Бернерсом-Лі. Тут розробляють CSS: CSS Working Group видає специфікацію модулями, і кожен модуль розвивається окремо, тому «CSS3» як єдиної версії не існує. Тут же створено настанови доступності WCAG і чимало програмних інтерфейсів браузера.</p>
+        <p><strong>WHATWG</strong> (Web Hypertext Application Technology Working Group) створили 2004 року розробники Apple, Mozilla та Opera, а сьогодні в його керівному комітеті Apple, Google, Microsoft і Mozilla. WHATWG веде HTML, DOM, URL, Fetch, Encoding та інші специфікації як <em>Living Standard</em>: одну безперервно оновлювану версію замість нумерованих випусків. З 2019 року за угодою між W3C і WHATWG єдину версію HTML і DOM розвиває WHATWG. Тому слово «HTML5» сьогодні означає просто HTML.</p>
+        <p><strong>Ecma International</strong> через технічний комітет <strong>TC39</strong> розвиває стандарт ECMA-262, тобто <strong>ECMAScript</strong>. Це специфікація мови, а JavaScript — її реалізація в браузерах і Node.js. З 2015 року видання виходять щороку в червні. ECMAScript 2026, 17-те видання, Генеральна асамблея Ecma затвердила 30 червня 2026 року, а чернетка наступного вже публікується на <code>tc39.es</code>. Нові можливості проходять стадії пропозицій. На Stage 3 специфікація вважається готовою, і браузери починають її реалізовувати. Stage 4 означає, що є сумісні реалізації й тести, і пропозиція потрапить до найближчого щорічного видання.</p>
+        <p>Важливо розуміти межу. ECMAScript описує саму мову: змінні, функції, об'єкти, масиви, проміси, модулі. А <code>document</code>, <code>fetch</code>, <code>console</code> чи <code>localStorage</code> — це <strong>Web API</strong>, описані специфікаціями WHATWG і W3C. Браузер надає їх «навколо» мови, а Node.js натомість має власні API, наприклад модуль <code>fs</code> для роботи з файлами.</p>
+        <pre class="code" data-lang="js"><code>// ECMAScript: the language itself, works in browsers and in Node.js
+function getTitles(books) {
+  return books.map((book) => book.title);
+}
+
+// Web APIs: provided by the browser, not by the language
+function renderTitles(titles) {
+  const list = document.querySelector(".book-list"); // DOM Standard (WHATWG)
+  list.replaceChildren(...titles.map((title) => {
+    const item = document.createElement("li");
+    item.textContent = title;
+    return item;
+  }));
+  return list.children.length;
+}</code></pre>
+        <p>Стандарт ще не означає підтримку. Браузери реалізують специфікації у власному темпі, тому перед використанням нової можливості дивляться таблицю <strong>Browser compatibility</strong> на MDN або позначку <strong>Baseline</strong>. Статус «Newly available» означає, що можливість уже є в усіх основних браузерах: Chrome, Edge, Firefox і Safari, на комп'ютерах і мобільних. «Widely available» з'являється через 30 місяців після цього, коли старі версії браузерів практично зникли.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щоразу, коли треба з'ясувати, як щось працює насправді: першоджерело — специфікація та MDN, а не стаття десятирічної давнини. І щоразу, коли вирішуєте, чи можна вже використати нову можливість CSS чи JavaScript у проєкті.</p>
         </div>
       </article>
 
@@ -839,9 +831,62 @@ Cache-Control: max-age=600
   ...</code></pre>
         <p><strong>Статус-код</strong> — тризначне число, перша цифра якого задає клас: 2xx — успіх (<code>200 OK</code>, <code>201 Created</code>), 3xx — перенаправлення або «бери з кешу» (<code>301 Moved Permanently</code>, <code>304 Not Modified</code>), 4xx — помилка клієнта (<code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>), 5xx — помилка сервера (<code>500 Internal Server Error</code>, <code>503 Service Unavailable</code>). Заголовок <code>Content-Type</code> вирішальний: саме за ним, а не за розширенням файлу, браузер вирішує, як інтерпретувати тіло — як HTML, CSS, JavaScript чи зображення.</p>
         <p>HTTP <strong>не зберігає стан</strong> між запитами: кожен запит самодостатній, і сервер «не пам'ятає», що ви щойно завантажували. Стан (наприклад, те, що ви увійшли в обліковий запис) передається явно — через cookie чи заголовки. Крім того, кожен ресурс — окремий запит: сторінка каталогу з одним CSS, двома скриптами й двадцятьма обкладинками — це понад двадцять запитів, і всі вони видні в DevTools.</p>
-        <p><strong>HTTPS</strong> — це той самий HTTP поверх TLS: перед обміном браузер перевіряє сертифікат сервера й узгоджує ключі шифрування, тож дані не можна прочитати чи непомітно змінити дорогою. Версії HTTP/2 і HTTP/3 змінили транспорт (кілька запитів в одному з'єднанні, протокол QUIC), але зміст — методи, статуси, заголовки — лишився тим самим. У DevTools для HTTP/2 ви побачите псевдозаголовки <code>:method</code> і <code>:path</code> замість рядка запиту — це ті самі дані в іншому записі.</p>
+        <p>Версії HTTP/2 і HTTP/3 змінили транспорт (кілька запитів в одному з'єднанні, протокол QUIC), але зміст — методи, статуси, заголовки — лишився тим самим. У DevTools для HTTP/2 ви побачите псевдозаголовки <code>:method</code> і <code>:path</code> замість рядка запиту — це ті самі дані в іншому записі.</p>
         <div class="callout">
           <p><strong>Коли це знадобиться.</strong> Постійно: коли стилі «не підтягнулися» (шукайте 404 на CSS-файлі), коли сервер повертає 500, коли браузер показує JavaScript-файл як текст (неправильний <code>Content-Type</code>), і в наступних лекціях про роботу з API через <code>fetch</code>.</p>
+        </div>
+      </article>
+
+      <!-- HTTPS -->
+      <article class="concept prose" id="https">
+        <h3>HTTPS і TLS</h3>
+        <p>HTTP-повідомлення від браузера до сервера проходять через десяток чужих вузлів: роутер кав'ярні, мережу провайдера, магістральні канали. У звичайному HTTP усе передається відкритим текстом. Будь-хто на шляху може прочитати пароль чи cookie, непомітно змінити відповідь, наприклад вставити в сторінку рекламу чи шкідливий скрипт, або видати себе за сервер.</p>
+        <p><strong>HTTPS</strong> — це той самий HTTP, але поверх протоколу <strong>TLS</strong> (сучасна версія — TLS 1.3). TLS дає три гарантії. Перша — конфіденційність: дані зашифровано. Друга — цілісність: будь-яку зміну дорогою буде виявлено. Третя — автентичність: ви говорите саме з <code>books.example.com</code>, а не з підмінним сервером.</p>
+        <p>Автентичність забезпечує <strong>сертифікат</strong>. Це документ, який пов'язує доменне ім'я з публічним ключем сервера і підписаний центром сертифікації (CA). Під час TLS-рукостискання сервер надсилає сертифікат, а браузер перевіряє три речі. Перша — ланцюжок підписів веде до кореневого сертифіката з довіреного сховища системи чи браузера. Друга — ім'я в сертифікаті збігається з хостом. Третя — термін дії не минув. Якщо хоч одна перевірка не проходить, браузер показує повноекранне попередження замість сайту. Потім сторони узгоджують одноразові симетричні ключі сесії, і далі шифрується все HTTP-повідомлення: рядок запиту зі шляхом і параметрами, заголовки, cookie, тіло.</p>
+        <p>Водночас HTTPS не приховує всього. Сторонній спостерігач бачить IP-адресу сервера, ім'я хоста (з DNS-запиту та поля SNI в рукостисканні), обсяг і час передачі. А секрети в URL небезпечні й без перехоплення, бо адреса зберігається в історії браузера та журналах сервера.</p>
+        <p>Кілька механізмів підтримують HTTPS на практиці. Сервер перенаправляє запити з <code>http://</code> на <code>https://</code> статусом <code>301</code> або <code>308</code>. Заголовок <code>Strict-Transport-Security</code> (HSTS) наказує браузеру надалі відкривати домен лише через HTTPS, навіть якщо користувач ввів <code>http://</code>. Якщо сторінка на HTTPS підключає скрипт через <code>http://</code> (<em>mixed content</em>), браузер такий ресурс блокує, бо він зруйнував би захист усієї сторінки. Нарешті, частина Web API доступна лише в <em>безпечному контексті</em> (secure context): геолокація, Service Worker, Clipboard API. Безпечним вважається HTTPS, а також <code>localhost</code> і <code>127.0.0.1</code>, тому під час розробки на Live Server ці API працюють і без сертифіката.</p>
+        <pre class="code" data-lang="http"><code>GET /catalog HTTP/1.1
+Host: books.example.com
+
+HTTP/1.1 301 Moved Permanently
+Location: https://books.example.com/catalog
+
+HTTP/1.1 200 OK
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Type: text/html; charset=utf-8</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли сторінка показує попередження про сертифікат, коли в консолі з'являється помилка Mixed Content, коли API на кшталт геолокації «не працює» на відкритій через IP адресі, і коли вирішуєте, які дані взагалі можна передавати в URL.</p>
+        </div>
+      </article>
+
+      <!-- Request lifecycle -->
+      <article class="concept prose" id="lifecycle">
+        <h3>Життєвий цикл запиту</h3>
+        <p>Окремі частини ми вже розібрали: URL, DNS, HTTP, TLS. Тепер зберемо їх у повний цикл одного запиту. Важливо пам'ятати, що одна сторінка — це десятки таких циклів: документ, кожен CSS-файл, скрипт, шрифт, зображення. Кожен запит проходить свій шлях, і на кожному кроці браузер намагається зекономити час.</p>
+        <p>Цикл починається з <strong>формування абсолютного URL</strong>: відносний шлях на кшталт <code>css/main.css</code> розв'язується відносно адреси документа. Далі браузер <strong>перевіряє HTTP-кеш</strong>. Якщо збережена копія ще свіжа (сервер дозволив це заголовком <code>Cache-Control: max-age=600</code>), запит у мережу взагалі не йде, і в Network видно «(memory cache)» або «(disk cache)». Якщо копія застаріла, але має мітку версії <code>ETag</code>, браузер надсилає <strong>умовний запит</strong>. Сервер, переконавшись, що файл не змінився, відповідає коротким <code>304 Not Modified</code> без тіла, і браузер бере тіло з кешу.</p>
+        <pre class="code" data-lang="http"><code>GET /css/main.css HTTP/1.1
+Host: books.example.com
+If-None-Match: "a1b2c3"
+
+HTTP/1.1 304 Not Modified
+ETag: "a1b2c3"
+Cache-Control: max-age=600</code></pre>
+        <p>Якщо мережа таки потрібна, браузер <strong>розв'язує ім'я через DNS</strong> (теж з кешем) і <strong>встановлює з'єднання</strong>. Для HTTPS до цього додається ще TLS-рукостискання. Вже відкрите з'єднання з тим самим сервером використовується повторно, а HTTP/2 і HTTP/3 передають кілька запитів одним з'єднанням паралельно. Потім іде <strong>запит</strong>: рядок запиту, заголовки й cookie, які сервер раніше встановив заголовком <code>Set-Cookie</code>. Сервер <strong>обробляє запит</strong> і повертає <strong>відповідь</strong>. Статус 3xx із заголовком <code>Location</code> запускає новий цикл за новою адресою, і в Network такий ланцюжок видно повністю. Статус 2xx означає, що тіло обробляється відповідно до <code>Content-Type</code>.</p>
+        <p>Для HTML-документа цикл не закінчується на відповіді. Парсер знаходить підресурси й породжує нові запити. Сторінка проходить дві ключові події: <code>DOMContentLoaded</code> настає, коли DOM побудовано й виконано скрипти з <code>defer</code>, а <code>load</code> — коли завантажено все, включно із зображеннями й шрифтами.</p>
+        <pre class="code" data-lang="js"><code>function formatPageEvent(eventName) {
+  const elapsed = Math.round(performance.now());
+  return `${eventName}: ${elapsed} ms after navigation start`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log(formatPageEvent("DOMContentLoaded"));
+});
+
+window.addEventListener("load", () => {
+  console.log(formatPageEvent("load"));
+});</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Вкладка Timing будь-якого запиту в панелі Network — це і є життєвий цикл у мілісекундах: DNS Lookup, Initial connection, SSL, Waiting for server response, Content Download. Коли сторінка вантажиться повільно, саме тут видно, на якому кроці втрачається час. Пройти цикл крок за кроком можна в <a href="#journey-demo">інтерактивному демо</a>.</p>
         </div>
       </article>
 
@@ -873,12 +918,13 @@ Cache-Control: max-age=600
         </div>
       </article>
 
-      <!-- VS Code -->
-      <article class="concept prose" id="vscode">
-        <h3>VS Code: розширення, Emmet, форматування, Live Server</h3>
-        <p>Писати HTML і CSS можна й у «Блокноті», але тоді ви вручну закриваєте кожен тег, шукаєте пропущену дужку очима й сперечаєтеся з колегами про відступи. Редактор коду бере цю рутину на себе. Visual Studio Code — безкоштовний редактор із підсвіткою синтаксису, автодоповненням і вбудованою підтримкою HTML, CSS, JavaScript і TypeScript; решту можливостей додають розширення.</p>
-        <p><strong>Розширення</strong> встановлюються з панелі Extensions (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, на macOS <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>). Для курсу знадобляться два: <strong>Prettier</strong> (автоматичне форматування) і <strong>Live Server</strong> (локальний сервер з автоперезавантаженням). Будь-яку команду редактора можна знайти через палітру команд <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.</p>
-        <p><strong>Emmet</strong> вбудований у VS Code і розгортає короткі абревіатури в розмітку за клавішею <kbd>Tab</kbd>. Знак оклику <code>!</code> у порожньому HTML-файлі дає повний каркас документа. Синтаксис абревіатур схожий на CSS-селектори: <code>.</code> — клас, <code>#</code> — id, <code>></code> — вкладений елемент, <code>+</code> — сусідній, <code>*3</code> — повторити тричі, <code>{}</code> — текст усередині.</p>
+      <!-- Editor -->
+      <article class="concept prose" id="editor">
+        <h3>Редактор коду: VS Code і WebStorm</h3>
+        <p>Писати HTML і CSS можна й у «Блокноті», але тоді ви вручну закриваєте кожен тег, шукаєте пропущену дужку очима й сперечаєтеся з колегами про відступи. Редактор коду бере цю рутину на себе: підсвічує синтаксис, доповнює код, показує помилки до запуску, форматує й інтегрується з Git і терміналом. У курсі можна працювати в одному з двох інструментів, і їхні можливості для верстки та JavaScript перетинаються майже повністю.</p>
+        <p><strong>Visual Studio Code</strong> — безкоштовний редактор від Microsoft. З коробки він підтримує HTML, CSS, JavaScript і TypeScript, а решту можливостей додають <strong>розширення</strong> з панелі Extensions (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, на macOS <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>). Для курсу знадобляться два: <strong>Prettier</strong> для автоматичного форматування і <strong>Live Server</strong> для локального сервера з автоперезавантаженням. Будь-яку команду можна знайти через палітру команд <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>.</p>
+        <p><strong>WebStorm</strong> — повноцінне середовище розробки (IDE) від JetBrains, спеціалізоване на JavaScript і TypeScript. Те, що у VS Code додається розширеннями, тут є одразу: глибокий аналіз коду, безпечні рефакторинги, налагоджувач, запуск тестів, інтерфейс для Git, вбудований вебсервер, інтеграція з Prettier. З жовтня 2024 року WebStorm безкоштовний для некомерційного використання, зокрема навчання: під час першого запуску достатньо вибрати ліцензію Non-commercial use. Пошук будь-якої дії відкривається комбінацією <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> (на macOS <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>).</p>
+        <p><strong>Emmet</strong> вбудований в обидва редактори й розгортає короткі абревіатури в розмітку за клавішею <kbd>Tab</kbd>. Знак оклику <code>!</code> у порожньому HTML-файлі дає повний каркас документа. Синтаксис абревіатур схожий на CSS-селектори: <code>.</code> — клас, <code>#</code> — id, <code>></code> — вкладений елемент, <code>+</code> — сусідній, <code>*3</code> — повторити тричі, <code>{}</code> — текст усередині.</p>
         <pre class="code" data-lang="text"><code>ul.book-list>li.book*3>h2.book__title{Title}+p.book__author</code></pre>
         <pre class="code" data-lang="html"><code>&lt;ul class="book-list">
   &lt;li class="book">
@@ -894,17 +940,60 @@ Cache-Control: max-age=600
     &lt;p class="book__author">&lt;/p>
   &lt;/li>
 &lt;/ul></code></pre>
-        <p><strong>Форматування</strong> вирівнює відступи, переноси й лапки за єдиними правилами. Вручну його запускає команда Format Document: <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> у Windows, <kbd>Shift</kbd>+<kbd>Option</kbd>+<kbd>F</kbd> у macOS, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> у Linux. Значно краще доручити це редактору: налаштування, збережені в папці <code>.vscode</code> проєкту, діють для всіх, хто його відкриває.</p>
+        <p><strong>Форматування</strong> вирівнює відступи, переноси й лапки за єдиними правилами. У VS Code команда Format Document викликається комбінацією <kbd>Shift</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> у Windows, <kbd>Shift</kbd>+<kbd>Option</kbd>+<kbd>F</kbd> у macOS і <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> у Linux. У WebStorm це Reformat Code: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>L</kbd>, на macOS <kbd>Cmd</kbd>+<kbd>Option</kbd>+<kbd>L</kbd>. Значно краще доручити це редактору при кожному збереженні. У WebStorm це налаштовується в Settings → Tools → Actions on Save (Reformat code або Run Prettier), у VS Code — у файлі налаштувань робочої області.</p>
         <pre class="code" data-lang="json"><code>{
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.tabSize": 2,
   "files.eol": "\n"
 }</code></pre>
-        <p><strong>Live Server</strong> запускає на вашому комп'ютері невеликий HTTP-сервер (типово на порту 5500) і відкриває сторінку за адресою на кшталт <code>http://127.0.0.1:5500/index.html</code>; після кожного збереження файлу сторінка перезавантажується сама. Запускається він кнопкою Go Live у рядку стану або командою Open with Live Server з контекстного меню HTML-файлу.</p>
+        <p>Якщо в команді працюють у різних редакторах, правила форматування варто тримати не в налаштуваннях редактора, а у файлі <code>.prettierrc</code> у корені проєкту. Його читають і розширення Prettier у VS Code, і WebStorm, тож код буде відформатовано однаково незалежно від того, хто й де його зберіг.</p>
+        <p><strong>Локальний сервер.</strong> Live Server у VS Code запускає невеликий HTTP-сервер (типово на порту 5500) і відкриває сторінку за адресою на кшталт <code>http://127.0.0.1:5500/index.html</code>; після кожного збереження сторінка перезавантажується. Запускається він кнопкою Go Live у рядку стану або командою Open with Live Server з контекстного меню HTML-файлу. WebStorm має вбудований сервер: коли ви відкриваєте HTML-файл у браузері з редактора, адреса має вигляд <code>http://localhost:63342/book-catalog/index.html</code>, де <code>book-catalog</code> — назва проєкту.</p>
         <p>Чому не просто двічі клацнути по файлу? Тоді браузер відкриє його через <code>file://</code>, і сторінка отримає походження <code>null</code>. Для статичного HTML і CSS це непомітно, але модулі JavaScript і запити <code>fetch</code> підпадають під правила CORS, і браузер їх блокує, щоб сторінка з диска не могла читати інші ваші файли. Локальний сервер віддає файли по HTTP так само, як справжній хостинг, тож поведінка під час розробки збігається з поведінкою в інтернеті.</p>
         <div class="callout">
-          <p><strong>Коли це знадобиться.</strong> На кожному занятті: Emmet прискорює верстку в рази, форматування при збереженні прибирає суперечки про стиль, а Live Server обов'язковий, щойно в проєкті з'являються модулі чи <code>fetch</code> — тобто вже в найближчих лекціях про JavaScript.</p>
+          <p><strong>Коли це знадобиться.</strong> На кожному занятті. Вибір редактора — справа смаку, а от звички спільні: Emmet для верстки, форматування при збереженні з єдиним <code>.prettierrc</code> і локальний сервер, обов'язковий, щойно в проєкті з'являються модулі чи <code>fetch</code>.</p>
+        </div>
+      </article>
+
+      <!-- Node.js and npm -->
+      <article class="concept prose" id="node">
+        <h3>Node.js LTS і npm як інструменти</h3>
+        <p>Prettier, лінтери, компілятор TypeScript, збирачі й сервери для розробки — це програми, написані на JavaScript. Браузер їх не запустить: у сторінки немає доступу до ваших файлів. Потрібне середовище, яке виконує JavaScript на самому комп'ютері. А щоб у всіх учасників проєкту були однакові версії цих інструментів, потрібен ще й менеджер пакетів.</p>
+        <p><strong>Node.js</strong> — середовище виконання JavaScript поза браузером, побудоване на рушії V8, тому самому, що в Chrome. У нашій дисципліні ми не пишемо на Node.js серверний код: він слугує інструментом на вашому комп'ютері, який запускає утиліти для фронтенду. Тут добре видно межу між мовою і платформою. Мова та сама (ECMAScript), але <code>document</code> і <code>window</code> у Node.js немає, натомість є власні модулі, наприклад <code>fs</code> для роботи з файлами.</p>
+        <p>Для навчання й роботи беруть версію <strong>LTS</strong> (Long Term Support): вона стабільна й роками отримує виправлення безпеки. Досі нові мажорні версії Node.js виходили двічі на рік, а LTS ставали парні. Станом на початок жовтня 2026 року Active LTS — Node.js 24, а наприкінці жовтня цей статус переходить до Node.js 26. Починаючи з Node.js 27 проєкт переходить на один мажорний випуск на рік: у квітні виходить нова версія, а в жовтні вона стає LTS, і так кожна. Актуальний стан завжди видно на сторінці релізів nodejs.org. Встановлюють Node.js інсталятором LTS з офіційного сайту або менеджером версій, якщо треба тримати кілька версій паралельно.</p>
+        <p>Разом із Node.js встановлюється <strong>npm</strong> — менеджер пакетів і найбільший реєстр JavaScript-пакетів. Його центр — файл <code>package.json</code>, «паспорт» проєкту з назвою, скриптами й залежностями. Інструменти розробки записують у <code>devDependencies</code>: вони потрібні вам, але не потрапляють на сторінку в браузері.</p>
+        <pre class="code" data-lang="bash"><code># Check the installation
+node -v
+npm -v
+
+# Create package.json and add Prettier as a dev tool
+npm init -y
+npm install --save-dev prettier
+
+# Run the locally installed tool
+npx prettier --write .
+
+# Run a script defined in package.json
+npm run format
+
+# Install exact versions from package-lock.json (fresh clone, CI)
+npm ci</code></pre>
+        <pre class="code" data-lang="json"><code>{
+  "name": "book-catalog",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}</code></pre>
+        <p>Версії пакетів записуються за семантичним версіонуванням <code>MAJOR.MINOR.PATCH</code>. Номер у прикладі умовний: npm сам підставить актуальну версію під час встановлення. Префікс <code>^</code> дозволяє оновлення в межах тієї самої мажорної версії, бо зміна MAJOR за домовленістю означає несумісні зміни. Щоб не було сюрпризів, npm створює <code>package-lock.json</code>, у якому записано точні версії всього дерева залежностей. Цей файл комітять у Git, а папку <code>node_modules</code> додають у <code>.gitignore</code>: вона відновлюється командою <code>npm ci</code> рівно в тому стані, що зафіксований у lock-файлі.</p>
+        <p>Чому команда з <code>scripts</code> працює, хоча Prettier не встановлено глобально? Під час <code>npm run</code> npm додає до шляху пошуку програм папку <code>node_modules/.bin</code> проєкту. Утиліта <code>npx</code> робить те саме для разового запуску. Тому кожен проєкт працює зі своєю версією інструмента, а не з тією, що випадково стоїть у системі.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Уже в цьому курсі: форматування через Prettier, компіляція TypeScript, локальні сервери й збирачі для проєктів з модулями — усе це запускається через Node.js і npm. Звичка «інструменти — у <code>devDependencies</code>, запуск — через <code>npm run</code>» знадобиться в будь-якому сучасному фронтенд-проєкті.</p>
         </div>
       </article>
 
@@ -999,7 +1088,7 @@ git clone https://github.com/your-name/book-catalog.git</code></pre>
       </div>
 
       <div class="demo" id="journey-demo">
-        <h3>Що відбувається після натискання Enter</h3>
+        <h3>Життєвий цикл запиту: що відбувається після натискання Enter</h3>
         <p style="color:var(--ink-soft)">Адреса: <code>https://books.example.com/catalog</code>. Керуйте кроками кнопками або клавішами <kbd>←</kbd> і <kbd>→</kbd>, коли фокус на кнопках.</p>
         <div class="stage" aria-hidden="true">
           <div class="actor" data-actor="browser">Браузер<small>клієнт</small></div>
@@ -1039,6 +1128,17 @@ git clone https://github.com/your-name/book-catalog.git</code></pre>
       </div>
       <div class="cheat-grid">
         <article class="cheat-card">
+          <h3>Стандарти</h3>
+          <dl>
+            <dt>WHATWG</dt><dd>HTML, DOM, URL, Fetch — Living Standard</dd>
+            <dt>W3C</dt><dd>CSS (модулями), WCAG, частина Web API</dd>
+            <dt>Ecma TC39 → ECMA-262</dt><dd>ECMAScript, видання щочервня; ES2026 — 17-те</dd>
+            <dt>Stage 3 / Stage 4</dt><dd>готово до реалізації / входить у стандарт</dd>
+            <dt>ECMAScript vs Web API</dt><dd>мова vs <code>document</code>, <code>fetch</code>, <code>console</code></dd>
+            <dt>MDN Browser compatibility, Baseline</dt><dd>чи можна вже використовувати</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
           <h3>URL</h3>
           <dl>
             <dt>scheme://host:port/path?query#fragment</dt><dd>загальна будова адреси</dd>
@@ -1061,7 +1161,20 @@ git clone https://github.com/your-name/book-catalog.git</code></pre>
             <dt>200 301 304 404 500</dt><dd>OK, переїхав, бери з кешу, не знайдено, збій сервера</dd>
             <dt>Host</dt><dd>ім'я сайту в запиті</dd>
             <dt>Content-Type</dt><dd>як інтерпретувати тіло відповіді</dd>
-            <dt>HTTPS = HTTP + TLS</dt><dd>шифрування й перевірка сертифіката</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>HTTPS і життєвий цикл запиту</h3>
+          <dl>
+            <dt>HTTPS = HTTP + TLS</dt><dd>конфіденційність, цілісність, автентичність</dd>
+            <dt>Сертифікат</dt><dd>домен + публічний ключ, підпис центру сертифікації</dd>
+            <dt>Зашифровано / видно</dt><dd>шлях, query, заголовки, тіло / хост, IP, обсяг</dd>
+            <dt>Strict-Transport-Security</dt><dd>надалі лише HTTPS (HSTS)</dd>
+            <dt>Mixed content</dt><dd>http-ресурс на https-сторінці блокується</dd>
+            <dt>URL → кеш → DNS → з'єднання + TLS → запит → відповідь</dt><dd>цикл кожного ресурсу</dd>
+            <dt>Cache-Control: max-age / ETag → 304</dt><dd>свіжа копія без мережі / умовний запит</dd>
+            <dt>3xx + Location</dt><dd>новий цикл за новою адресою</dd>
+            <dt>DOMContentLoaded / load</dt><dd>DOM готовий / завантажено все</dd>
           </dl>
         </article>
         <article class="cheat-card">
@@ -1077,15 +1190,29 @@ git clone https://github.com/your-name/book-catalog.git</code></pre>
           </dl>
         </article>
         <article class="cheat-card">
-          <h3>VS Code</h3>
+          <h3>VS Code і WebStorm</h3>
           <dl>
-            <dt>Ctrl+Shift+X</dt><dd>розширення</dd>
-            <dt>Ctrl+Shift+P</dt><dd>палітра команд</dd>
-            <dt>Shift+Alt+F</dt><dd>форматувати (macOS: Shift+Option+F)</dd>
-            <dt>"editor.formatOnSave": true</dt><dd>форматувати при збереженні</dd>
-            <dt>! + Tab</dt><dd>каркас HTML-документа</dd>
-            <dt>. # &gt; + * {}</dt><dd>клас, id, вкладення, сусід, повтор, текст</dd>
-            <dt>Go Live</dt><dd>Live Server на http://127.0.0.1:5500</dd>
+            <dt>Ctrl+Shift+P / Ctrl+Shift+A</dt><dd>пошук команди (VS Code / WebStorm)</dd>
+            <dt>Shift+Alt+F / Ctrl+Alt+L</dt><dd>форматувати (macOS: Shift+Option+F / Cmd+Option+L)</dd>
+            <dt>"editor.formatOnSave": true</dt><dd>VS Code: форматувати при збереженні</dd>
+            <dt>Actions on Save</dt><dd>WebStorm: Reformat code або Run Prettier</dd>
+            <dt>.prettierrc</dt><dd>єдині правила для обох редакторів</dd>
+            <dt>! + Tab · ul>li*3 · .class · #id · + · {text}</dt><dd>Emmet</dd>
+            <dt>:5500 / :63342</dt><dd>Live Server / вбудований сервер WebStorm</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Node.js і npm</h3>
+          <dl>
+            <dt>node -v · npm -v</dt><dd>перевірити встановлення</dd>
+            <dt>LTS</dt><dd>стабільна гілка з довгою підтримкою; жовтень 2026: 24 → 26</dd>
+            <dt>npm init -y</dt><dd>створити package.json</dd>
+            <dt>npm i -D prettier</dt><dd>інструмент у devDependencies</dd>
+            <dt>npx prettier --write .</dt><dd>разовий запуск локального пакета</dd>
+            <dt>npm run format</dt><dd>скрипт з package.json</dd>
+            <dt>npm ci</dt><dd>точно за package-lock.json</dd>
+            <dt>^3.6.2</dt><dd>MAJOR.MINOR.PATCH, дозволено minor і patch</dd>
+            <dt>package-lock.json / node_modules</dt><dd>комітити / ігнорувати</dd>
           </dl>
         </article>
         <article class="cheat-card">
@@ -1151,7 +1278,10 @@ renderBooks(await response.json());</code></pre>
         <div class="good-block">
           <span class="verdict good">✓ Добре</span>
           <pre class="code" data-lang="text"><code>VS Code → right-click index.html → Open with Live Server
-http://127.0.0.1:5500/index.html</code></pre>
+http://127.0.0.1:5500/index.html
+
+WebStorm → open index.html → Open in Browser
+http://localhost:63342/book-catalog/index.html</code></pre>
         </div>
       </article>
 
@@ -1268,6 +1398,25 @@ git commit -m "Stop tracking node_modules"</code></pre>
       </article>
 
       <article class="pattern">
+        <h3>Встановлювати інструменти глобально замість devDependencies</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="bash"><code>npm install -g prettier
+prettier --write .
+# package.json does not mention Prettier at all</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Версія інструмента ніде в проєкті не записана. В одногрупника глобально стоїть інша версія або жодної, тож той самий код форматується інакше, і кожен коміт тягне «зміни», яких ніхто не робив. Новий учасник не дізнається з репозиторію, що проєкту потрібен Prettier. А глобальне встановлення часто вимагає прав адміністратора й змішує версії між різними проєктами на одному комп'ютері.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="bash"><code>npm init -y
+npm install --save-dev prettier
+npm pkg set scripts.format="prettier --write ."
+npm run format</code></pre>
+          <p class="why">Версію записано в <code>package.json</code> і <code>package-lock.json</code>; будь-хто після <code>npm ci</code> отримає ту саму.</p>
+        </div>
+      </article>
+
+      <article class="pattern">
         <h3>Абсолютні шляхи до файлів на своєму диску</h3>
         <div class="bad-block">
           <span class="verdict bad">✗ Погано</span>
@@ -1309,12 +1458,14 @@ git commit -m "Stop tracking node_modules"</code></pre>
   .gitignore
   .prettierrc
   index.html
+  package.json
+  package-lock.json
   README.md</code></pre>
       </article>
 
       <article class="pattern">
         <h3>Автоформатування при збереженні</h3>
-        <p class="why">Редактор, а не людина, відповідає за відступи й переноси. Код завжди виглядає однаково, у <code>diff</code> потрапляють лише справжні зміни, а не переформатовані рядки, і неправильна вкладеність тегів одразу стає помітною. Налаштування зберігаються в проєкті, тож працюють для кожного, хто його відкриє, а файл рекомендацій підкаже VS Code запропонувати потрібні розширення.</p>
+        <p class="why">Редактор, а не людина, відповідає за відступи й переноси. Код завжди виглядає однаково, у <code>diff</code> потрапляють лише справжні зміни, а не переформатовані рядки, і неправильна вкладеність тегів одразу стає помітною. Правила форматування зберігаються в <code>.prettierrc</code> у проєкті, тож однаково працюють у VS Code і WebStorm. У VS Code файл рекомендацій підкаже встановити потрібні розширення, а в WebStorm достатньо ввімкнути Run Prettier в Settings → Tools → Actions on Save.</p>
         <pre class="code" data-lang="json"><code>// .vscode/extensions.json
 {
   "recommendations": ["esbenp.prettier-vscode", "ritwickdey.LiveServer"]
@@ -1350,10 +1501,12 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Editor: ignore personal settings, keep shared ones
+# Editors: ignore personal settings, keep shared ones
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+.idea/workspace.xml
+.idea/shelf/
 
 # Logs and build output
 *.log
@@ -1367,6 +1520,20 @@ dist/</code></pre>
 git add js/search.js
 git diff --staged
 git commit -m "Ignore letter case in title search"</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Node.js LTS і зафіксовані залежності</h3>
+        <p class="why">LTS-версія Node.js отримує виправлення безпеки роками, а інструменти фронтенду тестуються насамперед на ній. Щоб у всіх учасників проєкту була та сама версія середовища й пакетів, мінімальну версію Node.js вказують у <code>engines</code>, <code>package-lock.json</code> комітять, а залежності встановлюють командою <code>npm ci</code>. Тоді «у мене працює» означає «працює в усіх».</p>
+        <pre class="code" data-lang="json"><code>{
+  "name": "book-catalog",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  }
+}</code></pre>
+        <pre class="code" data-lang="bash"><code>node -v   # an LTS line, e.g. v24.x
+npm ci    # exact versions from package-lock.json</code></pre>
       </article>
 
       <article class="pattern">
@@ -1403,15 +1570,25 @@ F12 → Console → filter: Errors</code></pre>
     <section id="links" aria-labelledby="links-title">
       <h2 id="links-title">Корисні посилання</h2>
       <div class="links-group">
-        <h3>Як працює веб, URL, DNS, HTTP</h3>
+        <h3>Стандарти вебу</h3>
+        <ul>
+          <li><a href="https://whatwg.org/" target="_blank" rel="noopener">WHATWG</a> і специфікації <a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">HTML</a>, <a href="https://dom.spec.whatwg.org/" target="_blank" rel="noopener">DOM</a>, <a href="https://url.spec.whatwg.org/" target="_blank" rel="noopener">URL</a></li>
+          <li><a href="https://www.w3.org/Style/CSS/" target="_blank" rel="noopener">W3C: CSS — специфікації та статус модулів</a></li>
+          <li><a href="https://tc39.es/ecma262/" target="_blank" rel="noopener">ECMA-262: чинна чернетка ECMAScript</a> і <a href="https://ecma-international.org/publications-and-standards/standards/ecma-262/" target="_blank" rel="noopener">затверджені видання</a></li>
+          <li><a href="https://tc39.es/process-document/" target="_blank" rel="noopener">TC39: процес і стадії пропозицій</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility" target="_blank" rel="noopener">MDN Glossary: Baseline (compatibility)</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>Як працює веб, URL, DNS, HTTP, HTTPS</h3>
         <ul>
           <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works" target="_blank" rel="noopener">MDN: How the web works</a></li>
-          <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL" target="_blank" rel="noopener">MDN: What is a URL?</a></li>
-          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/URL" target="_blank" rel="noopener">MDN: URL API</a></li>
-          <li><a href="https://url.spec.whatwg.org/" target="_blank" rel="noopener">WHATWG URL Standard</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL" target="_blank" rel="noopener">MDN: What is a URL?</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/API/URL" target="_blank" rel="noopener">URL API</a></li>
           <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/DNS" target="_blank" rel="noopener">MDN Glossary: DNS</a></li>
-          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">MDN: An overview of HTTP</a></li>
-          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status" target="_blank" rel="noopener">MDN: HTTP response status codes</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview" target="_blank" rel="noopener">MDN: An overview of HTTP</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status" target="_blank" rel="noopener">статус-коди</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching" target="_blank" rel="noopener">MDN: HTTP caching</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections" target="_blank" rel="noopener">Redirections in HTTP</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/HTTPS" target="_blank" rel="noopener">MDN Glossary: HTTPS</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security" target="_blank" rel="noopener">Strict-Transport-Security</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content" target="_blank" rel="noopener">MDN: Mixed content</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts" target="_blank" rel="noopener">Secure contexts</a></li>
         </ul>
       </div>
       <div class="links-group">
@@ -1420,17 +1597,30 @@ F12 → Console → filter: Errors</code></pre>
           <li><a href="https://developer.mozilla.org/en-US/docs/Web/Performance/How_browsers_work" target="_blank" rel="noopener">MDN: How browsers work</a></li>
           <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script" target="_blank" rel="noopener">MDN: &lt;script&gt; — атрибути defer, async, type="module"</a></li>
           <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank" rel="noopener">MDN: JavaScript modules</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event" target="_blank" rel="noopener">MDN: DOMContentLoaded</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event" target="_blank" rel="noopener">load</a></li>
         </ul>
       </div>
       <div class="links-group">
-        <h3>Інструменти</h3>
+        <h3>Редактори та інструменти</h3>
         <ul>
-          <li><a href="https://code.visualstudio.com/docs/editing/codebasics" target="_blank" rel="noopener">VS Code: Basic editing (форматування)</a></li>
-          <li><a href="https://code.visualstudio.com/docs/editing/emmet" target="_blank" rel="noopener">VS Code: Emmet</a></li>
+          <li><a href="https://code.visualstudio.com/docs/editing/codebasics" target="_blank" rel="noopener">VS Code: Basic editing</a> і <a href="https://code.visualstudio.com/docs/editing/emmet" target="_blank" rel="noopener">Emmet</a></li>
           <li><a href="https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer" target="_blank" rel="noopener">Live Server — сторінка розширення</a></li>
+          <li><a href="https://www.jetbrains.com/help/webstorm/" target="_blank" rel="noopener">WebStorm: документація</a> і <a href="https://www.jetbrains.com/help/webstorm/reformat-and-rearrange-code.html" target="_blank" rel="noopener">Reformat code</a></li>
           <li><a href="https://prettier.io/docs/" target="_blank" rel="noopener">Prettier: документація</a></li>
-          <li><a href="https://developer.chrome.com/docs/devtools" target="_blank" rel="noopener">Chrome DevTools</a></li>
-          <li><a href="https://firefox-source-docs.mozilla.org/devtools-user/" target="_blank" rel="noopener">Firefox DevTools User Docs</a></li>
+          <li><a href="https://developer.chrome.com/docs/devtools" target="_blank" rel="noopener">Chrome DevTools</a> і <a href="https://firefox-source-docs.mozilla.org/devtools-user/" target="_blank" rel="noopener">Firefox DevTools</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>Node.js і npm</h3>
+        <ul>
+          <li><a href="https://nodejs.org/en/about/previous-releases" target="_blank" rel="noopener">Node.js: релізи та статуси LTS</a> і <a href="https://nodejs.org/en/download" target="_blank" rel="noopener">завантаження</a></li>
+          <li><a href="https://docs.npmjs.com/cli/configuring-npm/package-json" target="_blank" rel="noopener">npm: package.json</a>, <a href="https://docs.npmjs.com/cli/commands/npm-ci" target="_blank" rel="noopener">npm ci</a>, <a href="https://docs.npmjs.com/cli/commands/npx" target="_blank" rel="noopener">npx</a></li>
+          <li><a href="https://docs.npmjs.com/about-semantic-versioning" target="_blank" rel="noopener">npm: About semantic versioning</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>Git</h3>
+        <ul>
           <li><a href="https://git-scm.com/book/uk/v2" target="_blank" rel="noopener">Pro Git (українською)</a></li>
           <li><a href="https://git-scm.com/docs/gitignore" target="_blank" rel="noopener">Git: gitignore</a></li>
         </ul>
@@ -1440,8 +1630,7 @@ F12 → Console → filter: Errors</code></pre>
 </div>
 
 <footer>
-  <p>Клієнтські технології вебпрограмування. Лекція 1: як працює веб, середовище розробки.</p>
-  <p><a href="../index.html">На головну</a></p>
+  Клієнтські технології вебпрограмування. Лекція 1: вступ до клієнтських технологій.
 </footer>
 
 <script>
@@ -1811,10 +2000,13 @@ function initPrint() {
    ========================================================= */
 const QUIZ_TOPICS = {
   url: { title: "Анатомія URL", anchor: "#url" },
-  dns: { title: "DNS", anchor: "#dns" },
+  standards: { title: "Стандарти вебу: W3C, WHATWG, ECMAScript", anchor: "#standards" },
   http: { title: "HTTP: запит і відповідь", anchor: "#http" },
+  https: { title: "HTTPS і TLS", anchor: "#https" },
+  lifecycle: { title: "Життєвий цикл запиту", anchor: "#lifecycle" },
   rendering: { title: "Як браузер будує сторінку", anchor: "#rendering" },
-  vscode: { title: "VS Code і локальний сервер", anchor: "#vscode" },
+  editor: { title: "Редактор коду: VS Code і WebStorm", anchor: "#editor" },
+  node: { title: "Node.js LTS і npm", anchor: "#node" },
   devtools: { title: "DevTools", anchor: "#devtools" },
   git: { title: "Git: базові команди", anchor: "#git" },
 };
@@ -1826,21 +2018,35 @@ const QUIZ_QUESTIONS = [
     code: "https://books.example.com/catalog?page=2#reviews", lang: "text",
     options: ["#reviews", "?page=2", "/catalog", "books.example.com"],
     correct: 0,
-    explanation: "Фрагмент обробляє лише браузер: він прокручує сторінку до елемента з id=\"reviews\". Шлях і рядок запиту йдуть у рядку запиту GET /catalog?page=2, а ім'я хоста — у заголовку Host. Пастка — думати, що хост «не потрібен», бо вже відомий IP: на одному IP можуть жити сотні сайтів, і сервер розрізняє їх саме за Host.",
+    explanation: "Фрагмент обробляє лише браузер: він прокручує сторінку до елемента з id=\"reviews\". Шлях і рядок запиту йдуть у рядку запиту GET /catalog?page=2, а ім'я хоста — у заголовку Host. Пастка в тому, щоб вважати хост «непотрібним», бо IP уже відомий: на одному IP можуть працювати сотні сайтів, і сервер розрізняє їх саме за Host.",
   },
   {
-    id: "q-dns", topic: "dns",
-    text: "Що саме повертає DNS-резолвер у відповідь на запит про books.example.com?",
-    options: ["IP-адресу сервера (запис A або AAAA)", "HTML-код головної сторінки сайту", "TLS-сертифікат сайту", "Список файлів, доступних на сервері"],
+    id: "q-standards", topic: "standards",
+    text: "У статті сказано, що метод описано в ECMAScript 2026. Що треба перевірити, перш ніж використати його на сторінці?",
+    options: ["Підтримку в цільових браузерах: таблицю Browser compatibility на MDN або статус Baseline", "Нічого: якщо метод є в стандарті, його вже підтримують усі браузери", "Чи затвердив цей метод W3C", "Чи встановлено відповідний пакет через npm"],
     correct: 0,
-    explanation: "DNS лише перетворює ім'я на адресу — «телефонна книга», а не сам телефонний дзвінок. HTML браузер отримує пізніше від сервера по HTTP, сертифікат — під час TLS-рукостискання з тим самим сервером, а список файлів сервер взагалі не зобов'язаний розкривати.",
+    explanation: "Стандарт описує, як має працювати мова, а браузери реалізують його у своєму темпі, тож потрібна перевірка сумісності. ECMAScript розвиває Ecma TC39, а не W3C: W3C відповідає за CSS та частину Web API. Вбудовані методи мови є частиною рушія браузера, npm-пакет їх не «вмикає».",
   },
   {
     id: "q-404-css", topic: "http",
     text: "У панелі Network видно: index.html — 200, css/main.css — 404. Що побачить користувач?",
     options: ["Сторінку з вмістом, але без стилів із main.css", "Порожній білий екран", "Сторінку помилки 404 замість сайту", "Звичайну сторінку зі стилями, бо браузер візьме CSS із кешу"],
     correct: 0,
-    explanation: "Кожен ресурс — окремий HTTP-запит зі своїм статусом. HTML прийшов успішно, тож DOM побудовано й сторінка відмалюється, просто без правил із файлу, якого немає. Сторінка помилки показується лише тоді, коли 404 повернули на сам документ. Відповідь 404 — це нова відповідь сервера, а не привід використати стару копію з кешу.",
+    explanation: "Кожен ресурс — окремий HTTP-запит зі своїм статусом. HTML прийшов успішно, тож DOM побудовано, і сторінка відмалюється, просто без правил із файлу, якого немає. Сторінку помилки браузер показує лише тоді, коли 404 повернуто на сам документ. Відповідь 404 — це нова відповідь сервера, а не привід брати стару копію з кешу.",
+  },
+  {
+    id: "q-https", topic: "https",
+    text: "Студент у публічній Wi-Fi відкриває https://books.example.com/account?token=abc123. Що може дізнатися сторонній спостерігач у цій мережі?",
+    options: ["Ім'я хоста та IP-адресу сервера, але не шлях, параметри, заголовки чи тіло", "Повну адресу разом із ?token=abc123", "Нічого, навіть того, до якого сайту йде з'єднання", "Усе, бо HTTPS шифрує лише паролі у формах"],
+    correct: 0,
+    explanation: "TLS шифрує все HTTP-повідомлення, включно з рядком запиту, тому шлях і параметри дорогою не видно. Ім'я хоста розкривається через DNS-запит і поле SNI в рукостисканні, а IP — через самі пакети. Проте токен в URL однаково небезпечний: адреса зберігається в історії браузера й журналах сервера.",
+  },
+  {
+    id: "q-cache-304", topic: "lifecycle",
+    text: "При повторному відкритті сторінки запит на main.css має статус 304 і майже нульовий розмір. Що сталося?",
+    options: ["Браузер надіслав умовний запит з ETag, сервер підтвердив, що файл не змінився, і тіло взято з кешу", "Сервер не знайшов файл, і стилі не застосовано", "Браузер узагалі не звертався до сервера", "Файл завантажився повністю, але DevTools показує неправильний розмір"],
+    correct: 0,
+    explanation: "304 Not Modified — відповідь на умовний запит з If-None-Match: сервер повертає лише заголовки без тіла, а браузер використовує збережену копію. Якщо ж до сервера не звертаються взагалі, бо копія ще свіжа за Cache-Control, у Network видно «(memory cache)» або «(disk cache)», а не 304. Відсутній файл дав би 404.",
   },
   {
     id: "q-script-head", topic: "rendering",
@@ -1851,71 +2057,57 @@ const QUIZ_QUESTIONS = [
     lang2: "js",
     options: ["У Console з'явиться TypeError, бо querySelector повернув null", "У списку з'явиться текст «Loading...»", "Браузер дочекається появи ul і тоді виконає рядок", "Нічого: рядок мовчки пропуститься без помилки"],
     correct: 0,
-    explanation: "Скрипт без defer виконується одразу, щойно парсер до нього дійшов, а <body> ще не розібрано. Елемента .book-list у DOM немає, querySelector повертає null, і звернення до textContent на null кидає TypeError. Браузер нічого не «чекає» — ця можливість з'являється лише з defer або type=\"module\".",
-  },
-  {
-    id: "q-file-module", topic: "vscode",
-    text: "Сторінку відкрито як file:///C:/projects/book-catalog/index.html, у ній підключено <script type=\"module\" src=\"js/app.js\">. Модуль не завантажується. Чому?",
-    options: ["Сторінка з file:// має походження null, і браузер блокує модуль за правилами CORS", "У файлі app.js обов'язково є синтаксична помилка", "Модулі працюють лише в TypeScript-проєктах", "Модулю бракує атрибута async"],
-    correct: 0,
-    explanation: "Модулі завантажуються за правилами CORS, а для походження null браузер їх не дозволяє, щоб сторінка з диска не читала інші локальні файли. Код тут ні до чого: той самий файл через Live Server (http://127.0.0.1:5500) працює. Атрибут async не змінює правил безпеки, а модулі — стандартна можливість JavaScript.",
+    explanation: "Скрипт без defer виконується одразу, щойно парсер до нього дійшов, а <body> ще не розібрано. Елемента .book-list у DOM немає, querySelector повертає null, і звернення до textContent на null кидає TypeError. Браузер нічого не «чекає»: таку поведінку дають лише defer або type=\"module\".",
   },
   {
     id: "q-tbody", topic: "rendering",
     text: "У файлі написано <table><tr><td>CSS</td></tr></table>, а в панелі Elements між table і tr з'явився <tbody>. Чому?",
-    options: ["Elements показує DOM, а парсер HTML за специфікацією додає tbody", "Prettier змінив файл під час збереження", "Live Server вставляє tbody у відповідь", "Elements показує вихідний файл, де tbody був прихований"],
+    options: ["Elements показує DOM, а парсер HTML за специфікацією додає tbody", "Prettier змінив файл під час збереження", "Локальний сервер вставляє tbody у відповідь", "Elements показує вихідний файл, де tbody був прихований"],
     correct: 0,
-    explanation: "Панель Elements — це живий DOM, а не текст вашого файлу. Парсер HTML поблажливий і виправляє структуру за правилами специфікації, зокрема додає неявний tbody. Відкрийте «Переглянути код сторінки» (view-source) — там tbody немає, тож ні редактор, ні сервер файл не змінювали.",
+    explanation: "Панель Elements — це живий DOM, а не текст вашого файлу. Специфікація HTML описує алгоритм парсингу разом із виправленням помилок, і за цим алгоритмом рядок таблиці отримує неявний tbody. У перегляді коду сторінки (view-source) tbody немає, тож ні редактор, ні сервер файл не змінювали.",
   },
   {
-    id: "q-cssom", topic: "rendering",
-    text: "Чому браузер не малює сторінку, доки не завантажиться CSS із <link rel=\"stylesheet\"> у <head>?",
-    options: ["Для дерева рендерингу потрібен CSSOM; без нього сторінка з'явилася б без стилів і одразу перемалювалася", "CSS-файли завжди завантажуються раніше за HTML", "Браузер не вміє показувати HTML без CSS", "Так поводиться лише Live Server"],
+    id: "q-file-module", topic: "editor",
+    text: "Сторінку відкрито як file:///C:/projects/book-catalog/index.html, у ній підключено <script type=\"module\" src=\"js/app.js\">. Модуль не завантажується. Чому?",
+    options: ["Сторінка з file:// має походження null, і браузер блокує модуль за правилами CORS", "У файлі app.js обов'язково є синтаксична помилка", "Модулі працюють лише в TypeScript-проєктах", "Модулю бракує атрибута async"],
     correct: 0,
-    explanation: "Дерево рендерингу поєднує DOM і CSSOM, тож браузер чекає на стилі, щоб не показати «голу» розмітку, яка за мить перестрибне в оформлену. HTML без CSS браузер показати вміє — зі стилями за замовчуванням, коли таблиць стилів немає. CSS запитується після того, як парсер знайшов <link>, тобто після початку завантаження HTML.",
+    explanation: "Модулі завантажуються за правилами CORS, а для походження null браузер їх не дозволяє, щоб сторінка з диска не читала інші локальні файли. Код тут ні до чого: той самий файл через Live Server чи вбудований сервер WebStorm працює. Атрибут async правил безпеки не змінює, а модулі — стандартна можливість JavaScript.",
+  },
+  {
+    id: "q-npm-ci", topic: "node",
+    text: "Ви склонували репозиторій. У ньому є package.json і package-lock.json, а node_modules додано в .gitignore. Як отримати ті самі версії інструментів, що й в автора?",
+    options: ["npm ci", "npm install -g prettier", "Скопіювати папку node_modules у автора", "npm init -y"],
+    correct: 0,
+    explanation: "npm ci встановлює залежності рівно за package-lock.json, тож версії збігаються з авторськими. Глобальне встановлення ставить якусь версію в систему й ніяк не пов'язане з lock-файлом. Копіювання node_modules ламається між різними ОС і саме тому не потрапляє в Git. npm init -y лише створює новий package.json.",
+  },
+  {
+    id: "q-npm-scripts", topic: "node",
+    text: "Після npm ci ви виконуєте npm run format. Prettier глобально не встановлено. Що станеться?",
+    code: "{\n  \"scripts\": { \"format\": \"prettier --write .\" },\n  \"devDependencies\": { \"prettier\": \"^3.6.2\" }\n}",
+    lang: "json",
+    options: ["Prettier відформатує файли: npm додає node_modules/.bin до шляху пошуку програм", "Помилка «prettier: command not found»", "npm спершу встановить Prettier глобально", "Скрипт запуститься в браузері"],
+    correct: 0,
+    explanation: "Під час npm run у PATH додається node_modules/.bin проєкту, тож знаходиться локальна версія Prettier з devDependencies. Помилка з'явилася б, якби той самий рядок набрали прямо в терміналі без npx. Нічого глобально npm не встановлює, а скрипти виконуються в Node.js, не в браузері.",
   },
   {
     id: "q-git-staging", topic: "git",
     text: "Що виведе Git після останньої команди?",
-    code: "git add index.html\ngit commit -m \"Add catalog markup\"\n# edit index.html in VS Code and save\ngit commit -m \"Fix heading\"",
+    code: "git add index.html\ngit commit -m \"Add catalog markup\"\n# edit index.html in the editor and save\ngit commit -m \"Fix heading\"",
     lang: "bash",
-    options: ["Повідомлення no changes added to commit: у індексі немає змін", "Буде створено коміт «Fix heading» зі зміненим index.html", "Попередній коміт перезапишеться новою версією", "Git сам виконає git add і створить коміт"],
+    options: ["Повідомлення no changes added to commit: в індексі немає змін", "Буде створено коміт «Fix heading» зі зміненим index.html", "Попередній коміт перезапишеться новою версією", "Git сам виконає git add і створить коміт"],
     correct: 0,
-    explanation: "Коміт фіксує вміст індексу, а після першого коміту індекс збігається з останнім знімком. Нові правки лежать лише в робочій директорії, тож Git підкаже виконати git add. Автоматичного add немає, а коміти не перезаписуються — кожен новий додається до історії.",
-  },
-  {
-    id: "q-gitignore-tracked", topic: "git",
-    text: "Папку node_modules уже закомітили. Потім у .gitignore додали рядок node_modules/. Що відбудеться?",
-    options: ["Git і далі відстежуватиме папку, доки не виконати git rm -r --cached node_modules", "Git автоматично прибере папку з репозиторію", "Папка зникне з диска", "Git видаватиме помилку при кожному коміті"],
-    correct: 0,
-    explanation: ".gitignore діє лише на файли, які Git ще не відстежує. Уже відстежувані файли він продовжує порівнювати з історією. git rm -r --cached прибирає папку з індексу, не чіпаючи файли на диску, а наступний коміт зафіксує, що вона більше не відстежується. Помилок чи видалень з диска .gitignore не спричиняє.",
-  },
-  {
-    id: "q-emmet", topic: "vscode",
-    text: "Що згенерує Emmet з абревіатури ul.book-list>li.book*3?",
-    options: ["Один <ul class=\"book-list\"> з трьома <li class=\"book\"> усередині", "Три <ul class=\"book-list\">, у кожному один <li class=\"book\">", "<ul> і три <li> поруч на одному рівні", "Один <li class=\"book*3\">"],
-    correct: 0,
-    explanation: "Знак > означає вкладення, а *3 множить лише найближчий елемент ліворуч — li.book. Щоб елементи стояли поруч, потрібен +, а щоб повторився ul, множник мав би стояти після нього.",
-  },
-  {
-    id: "q-relative-url", topic: "url",
-    text: "Що виведе цей код?",
-    code: "const base = \"https://books.example.com/catalog/list/index.html\";\nconst url = new URL(\"../img/cover.png\", base);\nconsole.log(url.href);",
-    lang: "js",
-    options: ["https://books.example.com/catalog/img/cover.png", "https://books.example.com/catalog/list/img/cover.png", "https://books.example.com/img/cover.png", "../img/cover.png"],
-    correct: 0,
-    explanation: "Відносна адреса розв'язується від папки документа: ім'я файлу index.html відкидається, лишається /catalog/list/, а .. піднімає на рівень вище — до /catalog/. Варіант без підйому ігнорує .., варіант з /img/ піднімає на два рівні, а href завжди повертає абсолютну адресу.",
+    explanation: "Коміт фіксує вміст індексу, а після першого коміту індекс збігається з останнім знімком. Нові правки лежать лише в робочій директорії, тож Git підкаже виконати git add. Автоматичного add немає, а коміти не перезаписуються: кожен новий додається до історії.",
   },
   {
     id: "q-breakpoint", topic: "devtools",
     text: "Функція пошуку повертає порожній масив, хоча книжки з такою назвою є. У Console помилок немає. Що найшвидше покаже значення змінної normalized усередині функції під час виконання?",
     options: ["Breakpoint у Sources і перегляд змінних у Scope", "Перезавантаження з увімкненим Disable cache", "Перегляд панелі Elements", "Фільтр Fetch/XHR у панелі Network"],
     correct: 0,
-    explanation: "Помилки немає — отже, проблема в логіці, а не в синтаксисі. Точка зупинки зупиняє код саме в тому місці й показує поточні значення всіх змінних. Elements показує DOM, Network — запити, а Disable cache допоможе лише тоді, коли браузер виконує стару версію файлу.",
+    explanation: "Помилки немає, отже, проблема в логіці, а не в синтаксисі. Точка зупинки зупиняє код саме в цьому місці й показує поточні значення всіх змінних. Elements показує DOM, Network — запити, а Disable cache допомагає лише тоді, коли браузер виконує стару версію файлу.",
   },
 ];
 
-const QUIZ_STORAGE_KEY = "cwt-lecture-01-quiz-v1";
+const QUIZ_STORAGE_KEY = "cwt-lecture-01-quiz-v2";
 
 function shuffle(items) {
   const copy = [...items];
@@ -2099,38 +2291,6 @@ initUrlDemo();
 initJourney();
 initPrint();
 initQuiz();
-</script>
-<script>
-function bindThemeToggle() {
-  var button = document.getElementById("theme-toggle");
-  if (!button) return;
-  function saved() {
-    try {
-      var value = localStorage.getItem("ctw-theme");
-      return value === "dark" || value === "light" ? value : "";
-    } catch (error) {
-      return "";
-    }
-  }
-  function current() {
-    var value = saved();
-    if (value) return value;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  function paint(theme) {
-    button.textContent = theme === "dark" ? "Світла тема" : "Темна тема";
-    button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-  }
-  var theme = current();
-  paint(theme);
-  button.addEventListener("click", function () {
-    theme = theme === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", theme);
-    try { localStorage.setItem("ctw-theme", theme); } catch (error) {}
-    paint(theme);
-  });
-}
-bindThemeToggle();
 </script>
 </body>
 </html>
