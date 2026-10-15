@@ -1,0 +1,3128 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+try {
+  var savedTheme = localStorage.getItem("ctw-theme");
+  if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme);
+} catch (error) {}
+</script>
+<title>Лекція 7. Синтаксис і базові конструкції JavaScript</title>
+<meta name="description" content="Клієнтські технології вебпрограмування. Лекція 7: типи даних, let і const, приведення типів, оператори, цикли, функції, область видимості, об'єкти, масиви й методи перебору, деструктуризація, копіювання, JSON, модулі ESM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../styles/course.css">
+<style>
+/* ---------- Tokens ---------- */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --surface-2: #e9eef7;
+  --ink: #16213a;
+  --ink-soft: #4a5876;
+  --line: #d3dbe8;
+  --navy: #1c2e5a;
+  --navy-ink: #ffffff;
+  --accent: #e8772e;
+  --accent-text: #b04e0f;
+  --accent-soft: #fff0e4;
+  --bad: #b42318;
+  --bad-soft: #fdecea;
+  --good: #1e7b4b;
+  --good-soft: #e5f5ec;
+  --focus: #e8772e;
+  --code-bg: #0f1b33;
+  --code-ink: #e3e9f5;
+  --code-line: #24345a;
+  --seg-protocol: #fde2cc;
+  --seg-cred: #e2e8f0;
+  --seg-host: #d6e4ff;
+  --seg-port: #e9ddff;
+  --seg-path: #d5f2e0;
+  --seg-query: #fff1c2;
+  --seg-hash: #ffd6de;
+  --seg-protocol-line: #d9661c;
+  --seg-cred-line: #64748b;
+  --seg-host-line: #2f5fd0;
+  --seg-port-line: #7a4fd6;
+  --seg-path-line: #1e8a52;
+  --seg-query-line: #b58a00;
+  --seg-hash-line: #c8334f;
+  --radius-lg: 14px;
+  --radius-sm: 6px;
+  --font-body: "Commissioner", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Unbounded", "Commissioner", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1526;
+    --surface: #141f36;
+    --surface-2: #1b2842;
+    --ink: #e7ecf5;
+    --ink-soft: #a8b4cc;
+    --line: #2b3a5c;
+    --navy: #111d38;
+    --navy-ink: #e7ecf5;
+    --accent: #ff9a4d;
+    --accent-text: #ffae6b;
+    --accent-soft: #3a2616;
+    --bad: #ff8a80;
+    --bad-soft: #3a1c1f;
+    --good: #6fd69b;
+    --good-soft: #15332a;
+    --focus: #ffae6b;
+    --code-bg: #0a1224;
+    --code-ink: #e3e9f5;
+    --code-line: #22314f;
+    --seg-protocol: #5a3212;
+    --seg-cred: #334155;
+    --seg-host: #1e3767;
+    --seg-port: #3b2a66;
+    --seg-path: #1b4a31;
+    --seg-query: #574514;
+    --seg-hash: #5e2230;
+    --seg-protocol-line: #ff9a4d;
+    --seg-cred-line: #94a3b8;
+    --seg-host-line: #7fa8ff;
+    --seg-port-line: #b89cff;
+    --seg-path-line: #6fd69b;
+    --seg-query-line: #f5c84b;
+    --seg-hash-line: #ff7f98;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1526;
+  --surface: #141f36;
+  --surface-2: #1b2842;
+  --ink: #e7ecf5;
+  --ink-soft: #a8b4cc;
+  --line: #2b3a5c;
+  --navy: #111d38;
+  --navy-ink: #e7ecf5;
+  --accent: #ff9a4d;
+  --accent-text: #ffae6b;
+  --accent-soft: #3a2616;
+  --bad: #ff8a80;
+  --bad-soft: #3a1c1f;
+  --good: #6fd69b;
+  --good-soft: #15332a;
+  --focus: #ffae6b;
+  --code-bg: #0a1224;
+  --code-ink: #e3e9f5;
+  --code-line: #22314f;
+  --seg-protocol: #5a3212;
+  --seg-cred: #334155;
+  --seg-host: #1e3767;
+  --seg-port: #3b2a66;
+  --seg-path: #1b4a31;
+  --seg-query: #574514;
+  --seg-hash: #5e2230;
+  --seg-protocol-line: #ff9a4d;
+  --seg-cred-line: #94a3b8;
+  --seg-host-line: #7fa8ff;
+  --seg-port-line: #b89cff;
+  --seg-path-line: #6fd69b;
+  --seg-query-line: #f5c84b;
+  --seg-hash-line: #ff7f98;
+  color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 16px); scroll-behavior: smooth; }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-text-size-adjust: 100%;
+}
+img, svg { max-width: 100%; }
+a { color: var(--accent-text); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code, kbd, pre { font-family: var(--font-mono); }
+:not(pre) > code {
+  font-size: 0.88em;
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+kbd {
+  font-size: 0.85em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  background: var(--surface);
+  padding: 0.05em 0.4em;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.6em; }
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 1.1rem + 1.4vw, 2rem);
+  color: var(--ink);
+}
+h3 { font-size: 1.28rem; font-weight: 700; margin-top: 1.8em; }
+h4 { font-size: 1.08rem; font-weight: 700; }
+p { margin: 0 0 1em; }
+.skip-link {
+  position: absolute; left: 12px; top: -60px;
+  background: var(--accent); color: #1a1a1a; padding: 8px 14px; border-radius: 6px; z-index: 10;
+  font-weight: 600;
+}
+.skip-link:focus { top: calc(env(safe-area-inset-top, 0px) + 12px); }
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 0.4em;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 0.45em 1em;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn:hover:not(:disabled) { background: var(--accent-text); border-color: var(--accent-text); color: var(--bg); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---------- Hero ---------- */
+.hero {
+  background: var(--navy);
+  color: #fff;
+  padding: clamp(2rem, 5vw, 4rem) 1.25rem clamp(2rem, 4vw, 3rem);
+}
+:root[data-theme="dark"] .hero { color: var(--navy-ink); }
+.hero-inner { max-width: 1180px; margin: 0 auto; }
+.hero-course { margin: 0 0 0.75rem; color: #c9d4ee; font-weight: 500; }
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 1.2rem + 3.2vw, 3.4rem);
+  line-height: 1.12;
+  max-width: 20ch;
+  margin-bottom: 0.5em;
+}
+.hero-lead { max-width: 60ch; color: #dce4f5; font-size: 1.1rem; }
+.hero-url {
+  margin: 2rem 0 0;
+  padding: 1.25rem 1.25rem 1rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+}
+.hero-url figcaption { font-size: 0.92rem; color: #c9d4ee; margin-top: 0.75rem; }
+.anatomy { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0; font-family: var(--font-mono); }
+.anatomy-part { display: inline-flex; flex-direction: column; align-items: flex-start; }
+.anatomy-part > span:first-child {
+  font-size: clamp(1rem, 0.7rem + 1.5vw, 1.6rem);
+  padding: 0.1em 0.12em;
+  border-bottom: 3px solid currentColor;
+  white-space: nowrap;
+}
+.anatomy-part > small {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  margin-top: 0.35rem;
+  color: #c9d4ee;
+  padding-left: 0.12em;
+}
+.anatomy .sep > span:first-child { border-bottom-color: transparent; color: #8fa0c6; }
+.a-protocol { color: #ffb27a; }
+.a-host { color: #9dc0ff; }
+.a-port { color: #cdb6ff; }
+.a-path { color: #8fe3b3; }
+.a-query { color: #ffd66b; }
+.a-hash { color: #ff9fb1; }
+.hero-outcomes { margin-top: 2rem; max-width: 70ch; }
+.hero-outcomes h2 { font-size: 1.15rem; color: #fff; margin-bottom: 0.5em; font-family: var(--font-body); }
+.hero-outcomes ul { margin: 0; padding-left: 1.2em; color: #dce4f5; }
+.hero-outcomes li { margin-bottom: 0.35em; }
+.hero-outcomes li::marker { color: #ffb27a; }
+
+/* ---------- Layout ---------- */
+.layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+@media (min-width: 1080px) {
+  .layout { grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; }
+  .toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 1.25rem); align-self: start; max-height: calc(100vh - 2.5rem); overflow-y: auto; }
+}
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.1rem 0.9rem;
+}
+.toc h2 { font-family: var(--font-body); font-size: 1rem; margin-bottom: 0.6rem; }
+.toc ol { margin: 0; padding-left: 1.4em; font-size: 0.95rem; }
+.toc li { margin-bottom: 0.3em; }
+.toc li::marker { color: var(--accent-text); font-weight: 700; }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--accent-text); text-decoration: underline; }
+.toc ol ol { margin-top: 0.3em; list-style: none; padding-left: 0.2em; font-size: 0.9rem; }
+.toc ol ol a { color: var(--ink-soft); }
+main { min-width: 0; }
+main > section { margin-bottom: 4rem; }
+.prose { max-width: 74ch; }
+.section-lead { color: var(--ink-soft); font-size: 1.05rem; max-width: 68ch; }
+.concept { border-top: 1px solid var(--line); padding-top: 1.6rem; margin-top: 2.2rem; }
+.concept:first-of-type { border-top: 0; padding-top: 0; margin-top: 1rem; }
+.concept > h3 { margin-top: 0; }
+.callout {
+  border-left: 5px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.85rem 1.1rem;
+  margin: 1.2rem 0;
+  max-width: 74ch;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout strong:first-child { color: var(--accent-text); }
+.callout-navy { border-left-color: var(--navy); background: var(--surface-2); }
+:root .callout-navy { border-left-color: var(--ink-soft); }
+.callout-navy strong:first-child { color: var(--ink); }
+
+/* ---------- Code blocks ---------- */
+.code-wrap {
+  position: relative;
+  margin: 1.1rem 0 1.4rem;
+  background: var(--code-bg);
+  border-radius: 10px;
+  border: 1px solid var(--code-line);
+  max-width: 100%;
+}
+.code-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
+  border-bottom: 1px solid var(--code-line);
+  color: #9fb0d4;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+.copy-btn {
+  background: transparent;
+  color: #dbe4f7;
+  border: 1px solid #3a4d78;
+  border-radius: 6px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+}
+.copy-btn:hover { background: #22345d; }
+pre.code {
+  margin: 0;
+  padding: 0.9rem 1rem 1rem;
+  overflow-x: auto;
+  color: var(--code-ink);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  tab-size: 2;
+}
+pre.code code { font-family: inherit; background: none; padding: 0; }
+.tok-comment { color: #7e8ba8; font-style: italic; }
+.tok-string { color: #a5e3ad; }
+.tok-keyword { color: #ffa45c; }
+.tok-number { color: #f5c26b; }
+.tok-fn { color: #8cc4ff; }
+.tok-tag { color: #7fb8ff; }
+.tok-attr { color: #d3b2ff; }
+.tok-prop { color: #8cc4ff; }
+.tok-flag { color: #d3b2ff; }
+.tok-at { color: #ffa45c; }
+
+/* ---------- Demo ---------- */
+.demo {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.75rem);
+  margin: 1.5rem 0 2.5rem;
+}
+.demo h3 { margin-top: 0; }
+.field-label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+.url-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.url-row input {
+  flex: 1 1 260px;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.url-row input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+.presets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0.2rem; align-items: center; }
+.presets span { font-size: 0.9rem; color: var(--ink-soft); margin-right: 0.2rem; }
+.chip {
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+.chip:hover { border-color: var(--accent); }
+.url-line {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 0.8rem + 0.6vw, 1.2rem);
+  line-height: 2.1;
+  margin: 1.25rem 0 1rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+.seg { padding: 0.12em 0.1em; border-bottom: 3px solid; border-radius: 3px 3px 0 0; }
+.seg-protocol { background: var(--seg-protocol); border-color: var(--seg-protocol-line); }
+.seg-cred { background: var(--seg-cred); border-color: var(--seg-cred-line); }
+.seg-host { background: var(--seg-host); border-color: var(--seg-host-line); }
+.seg-port { background: var(--seg-port); border-color: var(--seg-port-line); }
+.seg-path { background: var(--seg-path); border-color: var(--seg-path-line); }
+.seg-query { background: var(--seg-query); border-color: var(--seg-query-line); }
+.seg-hash { background: var(--seg-hash); border-color: var(--seg-hash-line); }
+.seg-sep { color: var(--ink-soft); }
+.url-parts { display: grid; gap: 0.6rem; margin: 0 0 1rem; }
+.url-part {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  padding: 0.6rem 0.8rem;
+  border-left: 4px solid var(--line);
+  background: var(--bg);
+  border-radius: 0 8px 8px 0;
+}
+@media (min-width: 640px) { .url-part { grid-template-columns: 11rem minmax(0, 1fr); } }
+.url-part dt { font-weight: 700; }
+.url-part dd { margin: 0; overflow-wrap: anywhere; }
+.url-part dd code { font-size: 0.92em; }
+.url-part .hint { display: block; color: var(--ink-soft); font-size: 0.92rem; }
+.url-part.k-protocol { border-left-color: var(--seg-protocol-line); }
+.url-part.k-cred { border-left-color: var(--seg-cred-line); }
+.url-part.k-host { border-left-color: var(--seg-host-line); }
+.url-part.k-port { border-left-color: var(--seg-port-line); }
+.url-part.k-path { border-left-color: var(--seg-path-line); }
+.url-part.k-query { border-left-color: var(--seg-query-line); }
+.url-part.k-hash { border-left-color: var(--seg-hash-line); }
+.url-error {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--bad);
+  background: var(--bad-soft);
+  border-radius: 0 8px 8px 0;
+}
+.params { margin: 0.3rem 0 0; padding-left: 1.1em; }
+
+/* Journey */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  padding: 0.5rem 0 2.6rem;
+}
+.actor {
+  text-align: center;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0.8rem 0.3rem;
+  font-weight: 600;
+  font-size: clamp(0.82rem, 0.7rem + 0.5vw, 1rem);
+  transition: border-color 0.25s, background-color 0.25s, transform 0.25s;
+}
+.actor small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.8em; }
+.actor.is-active { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-2px); }
+.track {
+  position: absolute; left: 16.66%; right: 16.66%; bottom: 1.1rem;
+  height: 2px; background: var(--line);
+}
+.packet {
+  position: absolute;
+  bottom: calc(1.1rem - 11px);
+  left: 16.66%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #1a1a1a;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: left 1.1s cubic-bezier(.45,.05,.3,1), opacity 0.2s;
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.packet.no-anim { transition: none; }
+.packet.is-hidden { opacity: 0; }
+.pipeline {
+  list-style: none; padding: 0; margin: 0 0 1rem;
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.pipeline li {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  border: 1px dashed var(--line);
+  color: var(--ink-soft);
+}
+.pipeline li.is-done { border-style: solid; border-color: var(--good); color: var(--good); }
+.pipeline li.is-done::before { content: "✓ "; }
+.pipeline li.is-current { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.step-panel {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  min-height: 9.5rem;
+}
+.step-count { font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 0.2rem; }
+.step-panel h4 { margin-bottom: 0.35rem; }
+.step-panel p:last-child { margin-bottom: 0; }
+.step-progress { height: 4px; background: var(--line); border-radius: 4px; margin: 0.9rem 0; overflow: hidden; }
+.step-progress span { display: block; height: 100%; background: var(--accent); width: 0; transition: width 0.3s; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* ---------- Cheatsheet ---------- */
+.cheat-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.cheat-head h2 { margin: 0; }
+.cheat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 1rem;
+}
+.cheat-card {
+  background: var(--surface);
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  break-inside: avoid;
+}
+.cheat-card h3 { margin: 0 0 0.6rem; font-size: 1.02rem; color: var(--accent-text); }
+.cheat-card dl { margin: 0; }
+.cheat-card dt { font-family: var(--font-mono); font-size: 0.86rem; font-weight: 600; margin-top: 0.45rem; overflow-wrap: anywhere; }
+.cheat-card dd { margin: 0; color: var(--ink-soft); }
+.cheat-card .code-wrap { margin: 0.6rem 0 0; }
+.cheat-card pre.code { font-size: 0.8rem; padding: 0.6rem 0.75rem; }
+
+/* ---------- Antipatterns / best practices ---------- */
+.pattern {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.6rem);
+  margin: 1.25rem 0;
+}
+.pattern > h3 { margin-top: 0; }
+.verdict {
+  display: inline-flex; align-items: center; gap: 0.35em;
+  font-weight: 700; font-size: 0.9rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  margin: 0.4rem 0 -0.3rem;
+}
+.verdict.bad { color: var(--bad); background: var(--bad-soft); }
+.verdict.good { color: var(--good); background: var(--good-soft); }
+.bad-block .code-wrap { border-left: 5px solid var(--bad); }
+.good-block .code-wrap { border-left: 5px solid var(--good); }
+.why { max-width: 74ch; }
+.why strong { color: var(--ink); }
+.practice-list { counter-reset: none; }
+
+/* ---------- Quiz ---------- */
+.quiz-top {
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center;
+  margin-bottom: 1.25rem;
+}
+.quiz-top progress { width: min(320px, 100%); height: 10px; accent-color: var(--accent); }
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin: 0 0 1.1rem;
+  min-width: 0;
+}
+.q-card legend {
+  float: left; width: 100%;
+  padding: 0;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.q-card legend + * { clear: both; }
+.q-num { display: block; font-size: 0.85rem; font-weight: 500; color: var(--ink-soft); margin-bottom: 0.25rem; }
+.q-options { display: grid; gap: 0.5rem; margin-top: 0.8rem; clear: both; }
+.q-option {
+  text-align: left;
+  border: 2px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  line-height: 1.45;
+  display: flex; gap: 0.6rem; align-items: flex-start;
+}
+.q-option:hover:not(:disabled) { border-color: var(--accent); }
+.q-option:disabled { cursor: default; }
+.q-option .mark {
+  flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  font-size: 0.85rem; font-weight: 700;
+  background: var(--surface-2); color: var(--ink-soft);
+}
+.q-option.is-correct { border-color: var(--good); background: var(--good-soft); }
+.q-option.is-correct .mark { background: var(--good); color: var(--surface); }
+.q-option.is-wrong { border-color: var(--bad); background: var(--bad-soft); }
+.q-option.is-wrong .mark { background: var(--bad); color: var(--surface); }
+.q-option.is-dim { opacity: 0.6; }
+.q-feedback:empty { display: none; }
+.q-feedback { margin-top: 0.9rem; padding: 0.8rem 1rem; border-radius: 10px; background: var(--surface-2); }
+.q-feedback .verdict-line { font-weight: 700; margin-bottom: 0.35rem; }
+.q-feedback.ok .verdict-line { color: var(--good); }
+.q-feedback.fail .verdict-line { color: var(--bad); }
+.q-feedback p:last-child { margin-bottom: 0; }
+.quiz-summary {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+.quiz-summary h3 { margin-top: 0; }
+.score { font-family: var(--font-display); font-size: 2rem; font-weight: 700; margin: 0 0 0.4rem; }
+
+/* ---------- Links / footer ---------- */
+.links-group { margin-bottom: 1.4rem; }
+.links-group h3 { margin: 1.2rem 0 0.4rem; font-size: 1.05rem; }
+.links-group ul { margin: 0; padding-left: 1.2em; }
+.links-group li { margin-bottom: 0.3em; }
+footer { border-top: 1px solid var(--line); padding: 1.5rem 1.25rem 2.5rem; color: var(--ink-soft); font-size: 0.9rem; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .packet, .actor, .step-progress span { transition: none !important; }
+}
+
+/* ---------- Lecture 2 additions ---------- */
+:root { --wf-pre: #9aa6bd; --wf-wait: #2fa36b; --wf-dl: #3b7be0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.dim { color: var(--ink-soft); }
+.exchange { display: grid; gap: 1rem; margin-top: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .exchange { grid-template-columns: 1fr 1fr; } }
+.msg {
+  margin: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+}
+.msg figcaption { font-size: 0.92rem; color: #c9d4ee; margin-bottom: 0.6rem; font-weight: 600; }
+.msg-lines { font-family: var(--font-mono); font-size: clamp(0.82rem, 0.72rem + 0.4vw, 1rem); line-height: 1.8; min-width: max-content; }
+.ln { display: flex; gap: 1.5rem; justify-content: space-between; align-items: baseline; border-left: 3px solid transparent; padding-left: 0.7rem; white-space: nowrap; }
+.ln small { font-family: var(--font-body); font-size: 0.75rem; color: #c9d4ee; }
+.ln-start { border-color: #ffb27a; color: #ffd2ad; }
+.ln-head { border-color: #7fa8ff; color: #cddcff; }
+.ln-blank { border-left-style: dashed; border-color: #8fa0c6; min-height: 1.8em; }
+.ln-body { border-color: #6fd69b; color: #c4f2d8; }
+
+.form-grid { display: grid; gap: 0.5rem 1rem; grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 720px) { .form-grid { grid-template-columns: 11rem minmax(0, 1fr); } .form-grid > .field-label { padding-top: 0.55rem; } }
+.control {
+  font: inherit; font-size: 0.95rem;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid var(--line); border-radius: 8px;
+  background: var(--bg); color: var(--ink);
+  width: 100%; min-width: 0;
+}
+.control:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: var(--accent); }
+.control:disabled { opacity: 0.55; }
+textarea.control { font-family: var(--font-mono); min-height: 7.5rem; resize: vertical; font-size: 0.88rem; }
+.check { display: flex; gap: 0.55rem; align-items: flex-start; font-size: 0.95rem; }
+.check input { margin-top: 0.3rem; accent-color: var(--accent); width: 1.05rem; height: 1.05rem; flex: none; }
+.check input:disabled + span { opacity: 0.6; }
+.two-col { display: grid; gap: 0 1.25rem; grid-template-columns: minmax(0, 1fr); margin-top: 1.25rem; }
+@media (min-width: 960px) { .two-col { grid-template-columns: 1fr 1fr; } }
+.two-col h4 { margin: 0.4rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.explain { background: var(--bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-top: 0.75rem; }
+.status-pill { display: inline-block; font-family: var(--font-mono); font-weight: 600; padding: 0.05rem 0.55rem; border-radius: 999px; font-size: 0.82rem; }
+.s1, .s3 { background: var(--surface-2); color: var(--ink); }
+.s2 { background: var(--good-soft); color: var(--good); }
+.s4, .s5 { background: var(--bad-soft); color: var(--bad); }
+.table-wrap { overflow-x: auto; margin-top: 0.8rem; border: 1px solid var(--line); border-radius: 10px; }
+.net-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; font-family: var(--font-mono); }
+.net-table th, .net-table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+.net-table th { font-family: var(--font-body); font-weight: 600; background: var(--surface-2); }
+#net-table tbody tr { cursor: pointer; }
+#net-table tbody tr:hover { background: var(--accent-soft); }
+#net-table tbody tr.is-selected { background: var(--surface-2); box-shadow: inset 4px 0 0 var(--accent); }
+.net-table tr.err .name-cell .row-btn, .net-table tr.err .status-cell { color: var(--bad); font-weight: 700; }
+.row-btn { background: none; border: 0; padding: 0; color: var(--ink); font: inherit; text-align: left; text-decoration: underline dotted; text-underline-offset: 3px; }
+.wf { position: relative; height: 10px; width: 200px; }
+.wf span { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+.net-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.net-toolbar .control { font-family: var(--font-mono); font-size: 0.88rem; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.net-summary { font-size: 0.8rem; color: var(--ink-soft); padding: 0.5rem 0.6rem; margin: 0; font-family: var(--font-mono); }
+.tabs { display: flex; gap: 0.2rem; border-bottom: 1px solid var(--line); margin-top: 1.2rem; flex-wrap: wrap; }
+.tab { border: 0; background: none; color: var(--ink-soft); padding: 0.45rem 0.85rem; border-bottom: 3px solid transparent; font-weight: 600; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab-panel { padding: 0.9rem 0.1rem 0; }
+.tab-panel h4 { margin: 0 0 0.4rem; font-size: 0.98rem; }
+.kv { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: 0.2rem 1rem; font-family: var(--font-mono); font-size: 0.83rem; margin: 0; }
+.kv dt { color: var(--ink-soft); overflow-wrap: anywhere; }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .kv { grid-template-columns: minmax(0, 1fr); } .kv dd { margin-bottom: 0.35rem; } }
+.timing-row { display: grid; grid-template-columns: 14rem minmax(0, 1fr) 4.5rem; gap: 0.6rem; align-items: center; font-size: 0.86rem; margin-bottom: 0.3rem; }
+.timing-ms { text-align: right; font-family: var(--font-mono); }
+@media (max-width: 600px) { .timing-row { grid-template-columns: minmax(0, 1fr) 4.5rem; } .timing-row .bar-track { grid-column: 1 / -1; grid-row: 2; } }
+.bar-track { height: 10px; background: var(--surface-2); border-radius: 5px; position: relative; overflow: hidden; }
+.bar-track span { position: absolute; top: 0; height: 100%; background: var(--accent); border-radius: 5px; }
+.task-box { background: var(--accent-soft); border-radius: 10px; padding: 0.9rem 1rem; margin-bottom: 1rem; }
+.sim-steps { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: 0.5rem; counter-reset: step; }
+.sim-steps li { counter-increment: step; background: var(--bg); border-radius: 8px; padding: 0.6rem 0.8rem 0.6rem 2.8rem; position: relative; }
+.sim-steps li::before {
+  content: counter(step); position: absolute; left: 0.75rem; top: 0.62rem;
+  width: 1.45rem; height: 1.45rem; border-radius: 50%;
+  background: var(--ink); color: var(--bg); font-size: 0.8rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+.sim-steps li.warn { box-shadow: inset 4px 0 0 var(--bad); background: var(--bad-soft); }
+.sim-result { margin: 1rem 0 0; font-weight: 600; padding: 0.7rem 1rem; border-radius: 8px; background: var(--surface-2); }
+.sim-result.tone-good { background: var(--good-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--good); }
+.sim-result.tone-bad { background: var(--bad-soft); color: var(--ink); box-shadow: inset 4px 0 0 var(--bad); }
+.edition-chips { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.2rem 0.1rem 0.5rem; }
+.edition-chips .chip { white-space: nowrap; flex: none; }
+.edition-card { margin-top: 1rem; }
+.support { display: inline-flex; gap: 0.35em; align-items: center; font-weight: 600; font-size: 0.9rem; padding: 0.2rem 0.7rem; border-radius: 999px; }
+.support.yes { background: var(--good-soft); color: var(--good); }
+.support.no { background: var(--bad-soft); color: var(--bad); }
+
+
+/* ---------- Lecture 6 additions ---------- */
+.hero-axes { display: grid; gap: 1rem; margin-top: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .hero-axes { grid-template-columns: 1fr 1fr; } }
+.axis-panel { margin: 0; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-lg); padding: 1rem 1.1rem; }
+.axis-panel figcaption { font-weight: 600; color: #fff; margin-bottom: 0.6rem; }
+.axis-label { margin: 0 0 0.35rem; font-size: 0.8rem; color: #ffb27a; font-family: var(--font-mono); }
+.axis-note { margin: 0.7rem 0 0; font-size: 0.85rem; color: #c9d4ee; }
+.hero-flex { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.hero-flex span, .hero-grid span {
+  font-family: var(--font-mono); font-size: 0.85rem; color: #fff;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+  border-top: 3px solid #ffb27a; border-radius: 6px; padding: 0.35rem 0.6rem;
+}
+.hero-lines { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 0.75rem; color: #9dc0ff; margin-bottom: 0.25rem; }
+.hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; background-image: linear-gradient(90deg, transparent calc(33.33% - 1px), rgba(157,192,255,0.35) calc(33.33% - 1px), rgba(157,192,255,0.35) 33.33%, transparent 33.33%, transparent calc(66.66% - 1px), rgba(157,192,255,0.35) calc(66.66% - 1px), rgba(157,192,255,0.35) 66.66%, transparent 66.66%); }
+.hero-grid span { border-top-color: #9dc0ff; text-align: center; }
+.hero-grid .hg-header { grid-column: 1 / 4; }
+.hero-grid .hg-main { grid-column: 2 / 4; }
+
+.pg-layout { display: grid; gap: 1.25rem; grid-template-columns: minmax(0, 1fr); margin-top: 1rem; }
+@media (min-width: 1100px) { .pg-layout { grid-template-columns: 17rem minmax(0, 1fr); } }
+.pg-group { border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.9rem 0.9rem; margin: 0 0 1rem; min-width: 0; }
+.pg-group legend { font-weight: 700; padding: 0 0.3rem; }
+.pg-fields { display: grid; gap: 0.6rem; margin-top: 0.4rem; }
+@media (min-width: 640px) and (max-width: 1099px) { .pg-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pg-field label { display: block; font-family: var(--font-mono); font-size: 0.82rem; margin-bottom: 0.2rem; }
+.pg-field label.check { font-family: var(--font-body); font-size: 0.9rem; display: flex; }
+.pg-field input[type="range"] { width: 100%; accent-color: var(--accent); }
+.pg-field .control { font-size: 0.88rem; padding: 0.35rem 0.5rem; }
+.control.mono { font-family: var(--font-mono); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.35rem; }
+.chip-sm { font-size: 0.72rem; padding: 0.1rem 0.5rem; font-family: var(--font-mono); }
+.pg-output { min-width: 0; }
+.axis-hint { background: var(--accent-soft); border-radius: 8px; padding: 0.6rem 0.85rem; margin: 0 0 0.8rem; font-size: 0.95rem; }
+.stage-scroll { overflow-x: auto; padding: 0.25rem 0 0.5rem; }
+.fx-stage {
+  display: flex; box-sizing: content-box;
+  padding: 10px; min-height: 60px;
+  border: 2px dashed var(--ink-soft); border-radius: 8px;
+  background: repeating-linear-gradient(45deg, transparent 0 8px, var(--surface-2) 8px 9px), var(--bg);
+}
+.fx-item, .gd-item {
+  font: inherit; font-size: 0.88rem; text-align: left; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--item-color, var(--accent));
+  border-radius: 6px; padding: 0.4rem 0.6rem;
+}
+.fx-item.c1 { font-size: 1.15rem; }
+.fx-item[aria-pressed="true"], .gd-item[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: 1px; }
+.fx-num { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); margin-right: 0.35rem; }
+.c0 { --item-color: #e8772e; } .c1 { --item-color: #3b7be0; } .c2 { --item-color: #2fa36b; }
+.c3 { --item-color: #9b59d0; } .c4 { --item-color: #d6455d; } .c5 { --item-color: #c9a227; }
+.sizes { font-size: 0.88rem; color: var(--ink-soft); font-family: var(--font-mono); margin: 0.4rem 0 0; }
+.gd-wrap { position: relative; width: max-content; }
+.gd-stage {
+  display: grid; box-sizing: content-box;
+  padding: 26px 12px 12px 32px; min-height: 60px;
+  border: 2px dashed var(--ink-soft); border-radius: 8px; background: var(--bg);
+}
+.gd-item { text-align: center; font-family: var(--font-mono); font-weight: 600; min-height: 2.4rem; }
+.gd-overlay { position: absolute; inset: 0; pointer-events: none; }
+.gl { position: absolute; border-color: #c8334f; border-style: dashed; border-width: 0; opacity: 0.75; }
+.gl-v { border-left-width: 1px; transform: translateX(-0.5px); }
+.gl-h { border-top-width: 1px; transform: translateY(-0.5px); }
+.gl-num { position: absolute; transform: translateX(-50%); font: 600 0.7rem/1 var(--font-mono); color: #fff; background: #c8334f; border-radius: 3px; padding: 0.15rem 0.3rem; }
+.gl-num-row { transform: translateY(-50%); }
+.lg-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin: 0.8rem 0; }
+.lg-meta input { flex: 1 1 14rem; accent-color: var(--accent); }
+.lg-about { margin: 0 0 0.8rem; max-width: 74ch; }
+.method-badge { display: inline-block; font-weight: 700; font-size: 0.82rem; padding: 0.1rem 0.6rem; border-radius: 999px; background: var(--ink); color: var(--bg); margin-right: 0.3rem; }
+.lg-host { border: 2px dashed var(--ink-soft); border-radius: 8px; overflow: hidden; max-width: none; }
+@media (prefers-reduced-motion: reduce) { .fx-item, .gd-item { transition: none; } }
+
+
+/* ---------- Lecture 7 additions ---------- */
+.hero-js { display: grid; gap: 1rem; margin-top: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .hero-js { grid-template-columns: 3fr 2fr; } }
+.type-chips { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
+.type-chips li { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-left: 3px solid #ffb27a; border-radius: 6px; padding: 0.3rem 0.55rem; }
+.type-chips li.obj { border-left-color: #9dc0ff; }
+.type-chips li.quirk { border-left-color: #ff9fb1; }
+.type-chips code { background: none; color: #fff; padding: 0; font-size: 0.85rem; }
+.type-chips span { font-family: var(--font-mono); font-size: 0.72rem; color: #c9d4ee; text-align: right; }
+.surprise p { margin: 0 0 0.4rem; display: flex; justify-content: space-between; gap: 1rem; font-family: var(--font-mono); background: rgba(255,255,255,0.08); border-radius: 6px; padding: 0.4rem 0.7rem; }
+.surprise code { background: none; color: #fff; padding: 0; }
+.surprise span { color: #ffb27a; }
+.code-editor {
+  font-family: var(--font-mono); font-size: 0.88rem; line-height: 1.55; tab-size: 2;
+  min-height: 16rem; resize: vertical; white-space: pre; overflow: auto;
+  background: var(--code-bg); color: var(--code-ink); border-color: var(--code-line);
+}
+.code-editor:focus-visible { border-color: var(--accent); }
+.console-out {
+  margin-top: 0.8rem; background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-line);
+  border-radius: 10px; padding: 0.4rem 0; font-family: var(--font-mono); font-size: 0.85rem; min-height: 3rem; overflow-x: auto;
+}
+.console-out:empty { display: none; }
+.console-line { padding: 0.25rem 0.9rem; border-bottom: 1px solid var(--code-line); white-space: pre-wrap; overflow-wrap: anywhere; }
+.console-line:last-child { border-bottom: 0; }
+.console-line.level-error { color: #ffb4b4; background: rgba(214,69,93,0.16); }
+.console-line.level-warn { color: #ffe08a; background: rgba(201,162,39,0.14); }
+.console-line.level-group { color: #9dc0ff; }
+.console-empty { margin: 0; padding: 0.5rem 0.9rem; color: #9fb0d4; }
+.console-table table { border-collapse: collapse; font-size: 0.8rem; }
+.console-table th, .console-table td { border: 1px solid var(--code-line); padding: 0.2rem 0.5rem; text-align: left; white-space: nowrap; }
+.console-table th { color: #9fb0d4; font-weight: 600; }
+.coerce-row { display: grid; gap: 0.6rem; grid-template-columns: minmax(0, 1fr); margin-bottom: 0.6rem; }
+@media (min-width: 640px) { .coerce-row { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 2fr); } }
+.mono-chip { font-family: var(--font-mono); }
+.coerce-expr { font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.4rem); margin: 1rem 0 0.2rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.coerce-expr code { font-size: 1em; }
+.coerce-result { background: var(--accent-soft) !important; color: var(--ink); font-weight: 700; }
+.conv-table td:first-child { font-weight: 600; }
+.pl-builder { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; margin-top: 0.8rem; }
+.pl-builder .pg-field { flex: 1 1 13rem; }
+.pl-builder .pg-field[hidden] { display: none; }
+.pl-steps { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.6rem; counter-reset: pl; }
+.pl-steps > li { background: var(--bg); border-radius: 10px; padding: 0.7rem 0.9rem; border-left: 4px solid var(--accent); min-width: 0; }
+.pl-steps > li:first-child { border-left-color: var(--line); }
+.pl-head { margin: 0 0 0.4rem; font-size: 0.92rem; overflow-wrap: anywhere; }
+.pl-list { margin: 0; padding-left: 1.2rem; font-size: 0.88rem; }
+.pl-value { margin: 0; }
+.pl-more { margin: 0.3rem 0 0; font-size: 0.85rem; }
+.pl-steps .table-wrap { margin-top: 0.3rem; }
+
+/* ---------- Print ---------- */
+@media print {
+  :root { padding: 0; }
+  body { background: #fff; color: #000; font-size: 11pt; }
+  .skip-link, .toc, .copy-btn, .controls, .btn, #quiz, .demo { display: none !important; }
+  .hero { background: #fff; color: #000; padding: 0 0 1rem; }
+  .hero * { color: #000 !important; }
+  .code-wrap { background: #f3f5f9; border: 1px solid #ccc; }
+  pre.code { color: #111; white-space: pre-wrap; }
+  pre.code span { color: #111 !important; }
+  .code-bar { color: #555; }
+  a { color: #000; }
+  section, .pattern, .cheat-card { break-inside: avoid-page; }
+  body.print-cheatsheet .hero,
+  body.print-cheatsheet footer,
+  body.print-cheatsheet main > section:not(#cheatsheet) { display: none !important; }
+  body.print-cheatsheet .layout { display: block; padding: 0; }
+  body.print-cheatsheet #cheatsheet { margin: 0; }
+  body.print-cheatsheet .cheat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  body.print-cheatsheet .cheat-card { border: 1px dashed #777; padding: 8px 10px; font-size: 8.5pt; background: #fff; }
+  body.print-cheatsheet .cheat-card h3 { color: #000; font-size: 10pt; }
+  body.print-cheatsheet .cheat-card dd { color: #333; }
+  body.print-cheatsheet .cheat-card pre.code { font-size: 7.5pt; padding: 4px 6px; }
+  body.print-cheatsheet .cheat-head h2 { font-size: 14pt; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">Перейти до змісту лекції</a>
+<div class="course-bar">
+  <a class="course-bar__home" href="../index.html">На головну</a>
+  <button type="button" class="course-bar__theme" id="theme-toggle" aria-pressed="false">Темна тема</button>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="hero-course">Клієнтські технології вебпрограмування, лекція 7, денна форма навчання</p>
+    <h1>Синтаксис і базові конструкції JavaScript</h1>
+    <p class="hero-lead">Мова, яка оживляє сторінку: значення та їхні типи, змінні, оператори, умови й цикли, функції, об'єкти й масиви, методи перебору колекцій і модулі. Без DOM — лише мова, на якій далі будуватиметься весь інтерактив каталогу.</p>
+
+    <div class="hero-js" aria-label="Типи значень у JavaScript">
+      <figure class="axis-panel">
+        <figcaption>Кожне значення має тип</figcaption>
+        <ul class="type-chips">
+          <li><code>"CSS"</code><span>string</span></li>
+          <li><code>42</code><span>number</span></li>
+          <li><code>2n ** 64n</code><span>bigint</span></li>
+          <li><code>true</code><span>boolean</span></li>
+          <li><code>undefined</code><span>undefined</span></li>
+          <li class="quirk"><code>null</code><span>"object" (історична помилка)</span></li>
+          <li><code>Symbol("id")</code><span>symbol</span></li>
+          <li class="obj"><code>{ title }</code><span>object</span></li>
+          <li class="obj"><code>[1, 2]</code><span>object (масив)</span></li>
+          <li class="obj"><code>() =&gt; {}</code><span>function</span></li>
+        </ul>
+        <p class="axis-note">Сім примітивів і об'єкти. Праворуч від значення — що поверне <code>typeof</code>.</p>
+      </figure>
+      <figure class="axis-panel">
+        <figcaption>Три рядки, які варто зрозуміти, а не запам'ятати</figcaption>
+        <div class="surprise">
+          <p><code>"5" + 3</code><span>→ "53"</span></p>
+          <p><code>"5" - 3</code><span>→ 2</span></p>
+          <p><code>0.1 + 0.2</code><span>→ 0.30000000000000004</span></p>
+        </div>
+        <p class="axis-note">Перші два — неявне приведення типів, третій — двійкове подання дробових чисел. Обидва механізми розібрано нижче.</p>
+      </figure>
+    </div>
+
+    <div class="hero-outcomes">
+      <h2>Після лекції ви зможете</h2>
+      <ul>
+        <li>оголошувати змінні через <code>const</code> і <code>let</code>, розрізняти примітиви й об'єкти та пояснювати поведінку <code>typeof</code>;</li>
+        <li>передбачати результат неявного приведення типів і свідомо обирати <code>===</code>;</li>
+        <li>писати умови, цикли та функції різних видів, пояснюючи область видимості, підняття й тимчасову мертву зону;</li>
+        <li>працювати з об'єктами й масивами: обирати метод перебору за наміром, будувати ланцюжки без мутацій, деструктуризувати й копіювати дані;</li>
+        <li>розбивати код на ES-модулі з <code>import</code> і <code>export</code>;</li>
+        <li>розв'язувати задачу маленькими функціями, що повертають значення, і налагоджувати її в DevTools.</li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">План лекції</h2>
+    <ol>
+      <li><a href="#theory">Теорія</a>
+        <ol>
+          <li><a href="#js-role">JavaScript у браузері</a></li>
+          <li><a href="#variables">Змінні: let і const</a></li>
+          <li><a href="#types">Типи даних і typeof</a></li>
+          <li><a href="#coercion">Приведення типів, == і ===</a></li>
+          <li><a href="#operators">Оператори й умови</a></li>
+          <li><a href="#loops">Цикли</a></li>
+          <li><a href="#functions">Функції</a></li>
+          <li><a href="#scope">Область видимості й TDZ</a></li>
+          <li><a href="#objects">Об'єкти</a></li>
+          <li><a href="#arrays">Масиви й методи перебору</a></li>
+          <li><a href="#destructuring">Деструктуризація, spread, rest</a></li>
+          <li><a href="#copy-json">Копіювання і JSON</a></li>
+          <li><a href="#modules">Модулі ESM</a></li>
+          <li><a href="#debugging">Налагодження</a></li>
+          <li><a href="#mini-task">Міні-задача з розв'язанням</a></li>
+        </ol>
+      </li>
+      <li><a href="#demo">Інтерактивне демо</a>
+        <ol>
+          <li><a href="#console-demo">JS-консоль</a></li>
+          <li><a href="#coercion-demo">Візуалізатор приведення</a></li>
+          <li><a href="#pipeline-demo">Конвеєр методів масиву</a></li>
+        </ol>
+      </li>
+      <li><a href="#cheatsheet">Шпаргалка</a></li>
+      <li><a href="#antipatterns">Антипатерни</a></li>
+      <li><a href="#best-practices">Бест практики</a></li>
+      <li><a href="#quiz">Квіз для самоперевірки</a></li>
+      <li><a href="#links">Корисні посилання</a></li>
+    </ol>
+  </nav>
+
+  <main id="content">
+
+    <section id="theory" aria-labelledby="theory-title">
+      <h2 id="theory-title">Теорія</h2>
+      <p class="section-lead">Наскрізний приклад — дані каталогу книжок: масив об'єктів із назвою, автором, жанром, роком, кількістю сторінок, рейтингом і ціною. Цього разу ми не виводимо їх на сторінку (це тема наступної лекції про DOM), а вчимося зберігати, перевіряти, перетворювати й рахувати.</p>
+
+      <!-- JS role -->
+      <article class="concept prose" id="js-role">
+        <h3>JavaScript у браузері: що це і як підключити</h3>
+        <p>HTML описує, що є на сторінці, CSS — як воно виглядає. Але відфільтрувати каталог за жанром, порахувати суму кошика чи перевірити форму до відправки статична розмітка не може. Для цього потрібна мова програмування, яку браузер виконує сам, без встановлення додаткових програм.</p>
+        <p>Такою мовою є <strong>JavaScript</strong>, реалізація стандарту ECMAScript, з яким ви познайомилися в лекції 2. Браузер має <strong>рушій</strong> (V8 у Chrome й Edge, SpiderMonkey у Firefox, JavaScriptCore у Safari). Він розбирає код, компілює його на льоту й виконує. Важливо розрізняти саму мову і середовище. Змінні, функції, масиви, об'єкти й модулі — це ECMAScript, вони однакові в браузері й у Node.js. <code>document</code>, <code>console</code>, <code>fetch</code> — це API середовища. У цій лекції ми працюємо з мовою, а з <code>console</code> — лише щоб бачити результати.</p>
+        <p>Підключають код зовнішнім файлом. Як ви вже знаєте з лекції 1, класичний <code>&lt;script&gt;</code> без атрибутів зупиняє розбір HTML, тому для сучасного коду є два варіанти. <code>defer</code> завантажує скрипт паралельно й виконує після побудови DOM. <code>type="module"</code> робить файл <strong>ES-модулем</strong>, і це варіант за замовчуванням у нашому курсі. Модуль теж відкладений, має власну область видимості замість глобальної, завжди працює в суворому режимі й уміє імпортувати інші модулі. Для модулів потрібен локальний сервер, а не <code>file://</code>.</p>
+        <pre class="code" data-lang="html"><code>&lt;script type="module" src="js/app.js"&gt;&lt;/script&gt;</code></pre>
+        <p><strong>Суворий режим</strong> (strict mode) — варіант мови, у якому частину тихих помилок перетворено на явні. Присвоєння неоголошеній змінній кидає помилку замість того, щоб мовчки створити глобальну змінну. Заборонено дублікати імен параметрів. <code>this</code> у звичайній функції не підміняється глобальним об'єктом. Модулі й класи завжди суворі, а у класичному скрипті режим вмикає рядок <code>"use strict";</code> на початку файлу.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> З першого рядка коду: підключайте скрипти як модулі, тримайте відкритою консоль DevTools і пам'ятайте, які речі належать мові, а які — браузеру. Це полегшить і читання документації, і перехід до TypeScript та Node.js.</p>
+        </div>
+      </article>
+
+      <!-- Variables -->
+      <article class="concept prose" id="variables">
+        <h3>Змінні: let, const і чому не var</h3>
+        <p>Програмі потрібно пам'ятати проміжні значення: введений пошуковий запит, поточну сторінку, знайдену книжку. <strong>Змінна</strong> — це ім'я, прив'язане до значення. Сучасний JavaScript має два способи її оголосити, і вибір між ними — не стиль, а повідомлення читачеві коду.</p>
+        <p><code>const</code> оголошує прив'язку, яку не можна перепризначити. <code>let</code> — прив'язку, значення якої зміниться (лічильник циклу, накопичувач). Обидва мають <strong>блокову область видимості</strong>: змінна існує лише всередині фігурних дужок, де її оголошено. Якщо оголосити <code>const</code> без значення або присвоїти їй нове значення, отримаєте помилку ще до виконання логіки.</p>
+        <p>Найпоширеніше непорозуміння: <code>const</code> забороняє <em>перепризначення змінної</em>, а не <em>зміну значення</em>. Якщо в <code>const</code> лежить об'єкт чи масив, сам об'єкт змінювати можна: додавати властивості, викликати <code>push</code>. Не можна лише змусити змінну вказувати на інший об'єкт.</p>
+        <pre class="code" data-lang="js"><code>const MAX_PAGE_SIZE = 50;     // a named constant instead of a "magic number"
+let currentPage = 1;          // will change
+currentPage += 1;             // OK
+
+const book = { title: "CSS in Depth", year: 2024 };
+book.year = 2025;             // OK: the object changes, the binding does not
+// book = {};                 // TypeError: Assignment to constant variable.</code></pre>
+        <p><code>var</code> — спосіб із перших версій мови, і має він три вади. Його область видимості — уся функція, а не блок, тож змінна «протікає» з циклу чи <code>if</code>. Оголошення піднімається на початок функції зі значенням <code>undefined</code>, тож звернення до змінної до її оголошення не дає помилки, а тихо повертає <code>undefined</code>. На верхньому рівні класичного скрипта <code>var</code> ще й створює властивість глобального об'єкта <code>window</code>, яку може перезаписати будь-який інший скрипт. У новому коді <code>var</code> не використовують, але ви зустрінете його в старих прикладах і бібліотеках.</p>
+        <p>Імена змінних пишуть у camelCase: <code>currentPage</code>, <code>filteredBooks</code>. Ім'я має казати, <em>що</em> в змінній, а не <em>якого вона типу</em>: <code>books</code>, а не <code>arr</code>. Булеві значення починають з <code>is</code>, <code>has</code>, <code>can</code>: <code>isInStock</code>, <code>hasDiscount</code>. Сталі на рівні модуля, як-от <code>MAX_PAGE_SIZE</code>, часто пишуть великими літерами.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У кожному рядку. Правило просте: пишіть <code>const</code>, а на <code>let</code> переходьте лише тоді, коли значення справді треба перепризначити. Тоді кожне <code>let</code> у коді сигналізує: «тут щось змінюється, будь уважним».</p>
+        </div>
+      </article>
+
+      <!-- Types -->
+      <article class="concept prose" id="types">
+        <h3>Типи даних і typeof</h3>
+        <p>JavaScript — мова з <strong>динамічною типізацією</strong>: тип має значення, а не змінна. Та сама змінна <code>let</code> може містити спершу число, а потім рядок. Це гнучко, але без розуміння типів не передбачити, що зробить <code>+</code> чи порівняння. Тому спершу — що за типи існують.</p>
+        <p>Є сім <strong>примітивних</strong> типів. <code>string</code> — текст у лапках чи зворотних апострофах. <code>number</code> — усі числа, і цілі, і дробові. <code>bigint</code> — цілі довільної величини з суфіксом <code>n</code>. <code>boolean</code> — <code>true</code> чи <code>false</code>. <code>undefined</code> — «значення не задано». <code>null</code> — «значення навмисно порожнє». <code>symbol</code> — унікальний ідентифікатор. Усе інше — <strong>об'єкти</strong>: звичайні об'єкти, масиви, функції, дати, <code>Map</code>, <code>Set</code>. Примітиви незмінні й порівнюються за значенням. Об'єкти зберігаються за <em>посиланням</em>: дві змінні можуть вказувати на той самий об'єкт, а два однакові на вигляд об'єкти не рівні між собою.</p>
+        <pre class="code" data-lang="js"><code>console.log(typeof "CSS");        // "string"
+console.log(typeof 42);           // "number"
+console.log(typeof 10n);          // "bigint"
+console.log(typeof undefined);    // "undefined"
+console.log(typeof null);         // "object" — a bug from 1995 kept for compatibility
+console.log(typeof [1, 2]);       // "object" — use Array.isArray to detect arrays
+console.log(typeof (() =&gt; {}));   // "function"
+
+console.log(Array.isArray([1, 2]));               // true
+console.log({ id: 1 } === { id: 1 });             // false: two different objects
+const sameBook = { id: 1 };
+const alias = sameBook;
+console.log(alias === sameBook);                  // true: one object, two names</code></pre>
+        <p><strong>Числа</strong> зберігаються у 64-бітному форматі з рухомою комою IEEE 754, як <code>double</code> у Java чи C. Звідси три наслідки. Дроби, що в двійковій системі нескінченні, округлюються, тому <code>0.1 + 0.2</code> дорівнює <code>0.30000000000000004</code>: гроші рахують у копійках цілими числами, а дробові результати порівнюють з допуском. Цілі числа точні лише до <code>Number.MAX_SAFE_INTEGER</code> (2⁵³ − 1), далі потрібен <code>bigint</code>. І є особливі значення: <code>Infinity</code> і <code>NaN</code> («не число», результат <code>"abc" * 2</code>). <code>NaN</code> не дорівнює навіть самому собі, тому перевіряють його через <code>Number.isNaN(value)</code>.</p>
+        <p><strong>Рядки</strong> незмінні: методи <code>trim</code>, <code>toUpperCase</code>, <code>slice</code>, <code>replaceAll</code> повертають новий рядок, а не змінюють старий. Шаблонні рядки у зворотних апострофах підставляють вирази через <code>${}</code> і можуть бути багаторядковими.</p>
+        <pre class="code" data-lang="js"><code>function formatPrice(priceInCents) {
+  return `${(priceInCents / 100).toFixed(2)} грн`;
+}
+
+const query = "  Eloquent JavaScript ";
+console.log(query.trim().toLowerCase());  // "eloquent javascript"
+console.log(formatPrice(129950));         // "1299.50 грн"
+console.log(Number.isNaN(Number("abc"))); // true</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щоразу, коли дані приходять ззовні — з поля форми чи з API. Значення поля введення завжди рядок, навіть якщо там «42». Розуміння типів — основа і для наступного розділу, і для TypeScript, який зробить типи явними.</p>
+        </div>
+      </article>
+      <!-- Coercion -->
+      <article class="concept prose" id="coercion">
+        <h3>Приведення типів: явне і неявне, == проти ===</h3>
+        <p>Користувач ввів у поле «Кількість» значення 3, код додає до нього 1 і отримує <code>"31"</code>. Причина в тому, що значення поля — рядок, а <code>+</code> з рядком означає склеювання. Коли операція отримує значення не того типу, JavaScript не кидає помилку, а <strong>неявно перетворює</strong> його за правилами специфікації. Правила детерміновані, і їх можна вивчити. Але надійніше перетворювати явно.</p>
+        <p><strong>Явне приведення</strong> робиться функціями <code>Number(value)</code>, <code>String(value)</code> і <code>Boolean(value)</code>. <code>Number("42")</code> дає 42, <code>Number("")</code> — 0, <code>Number("4 2")</code> — <code>NaN</code>. <code>parseInt("42px", 10)</code> читає цифри з початку рядка й зупиняється на першій нецифрі. До <strong>хибних</strong> (falsy) значень у логічному контексті належать рівно вісім: <code>false</code>, <code>0</code>, <code>-0</code>, <code>0n</code>, <code>""</code>, <code>null</code>, <code>undefined</code> і <code>NaN</code>. Усе інше істинне (truthy), включно з <code>"0"</code>, <code>"false"</code>, порожнім масивом <code>[]</code> і порожнім об'єктом <code>{}</code>.</p>
+        <p><strong>Неявне приведення</strong> найчастіше трапляється в трьох місцях. Оператор <code>+</code> спершу перетворює об'єкти на примітиви. Якщо хоч один з операндів рядок, він склеює рядки, інакше додає числа. Тому <code>"5" + 3</code> дає <code>"53"</code>, а <code>[] + []</code> — порожній рядок. Решта арифметичних операторів (<code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>) завжди перетворюють операнди на числа, тож <code>"5" - 3</code> дає 2. Оператори порівняння <code>&lt;</code> і <code>&gt;</code> порівнюють два рядки посимвольно (<code>"10" &lt; "9"</code> — <code>true</code>), а в інших випадках перетворюють на числа.</p>
+        <p><strong>Нестроге порівняння <code>==</code></strong> намагається привести операнди до спільного типу. <code>null</code> і <code>undefined</code> рівні лише одне одному. Число й рядок порівнюються як числа. Булеве значення спершу стає числом (<code>true</code> → 1). Об'єкт перетворюється на примітив. Тому <code>[] == false</code> дає <code>true</code>: <code>false</code> стає 0, <code>[]</code> — порожнім рядком, а той — нулем. <strong>Строге порівняння <code>===</code></strong> нічого не перетворює: різні типи означають «не рівні». Його й використовують завжди. Для двох рідкісних випадків є <code>Object.is</code>: він вважає <code>NaN</code> рівним <code>NaN</code> і розрізняє <code>0</code> та <code>-0</code>.</p>
+        <pre class="code" data-lang="js"><code>function parseQuantity(rawValue) {
+  const quantity = Number(rawValue.trim());
+  return Number.isInteger(quantity) &amp;&amp; quantity &gt; 0 ? quantity : null;
+}
+
+console.log("3" + 1);                // "31" — concatenation
+console.log(parseQuantity("3") + 1); // 4    — explicit conversion first
+console.log(parseQuantity("abc"));   // null
+console.log(0 == "");                // true  — both become 0
+console.log(0 === "");               // false — different types
+console.log(null == undefined);      // true
+console.log(null === undefined);     // false</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Під час роботи з будь-якими даними від користувача чи сервера. Перетворіть значення явно на вході, порівнюйте через <code>===</code>, і неявне приведення майже зникне з вашого коду. Побачити покроково, як працює кожен оператор, можна у <a href="#coercion-demo">візуалізаторі приведення</a>.</p>
+        </div>
+      </article>
+
+      <!-- Operators and conditions -->
+      <article class="concept prose" id="operators">
+        <h3>Оператори й умови</h3>
+        <p>Програма постійно обчислює й вирішує: яка ціна зі знижкою, чи є книжка в наявності, яку позначку показати. Для обчислень є оператори, для рішень — умовні конструкції.</p>
+        <p><strong>Арифметичні оператори</strong>: <code>+ - * /</code>, остача <code>%</code> (зручна для перевірки парності, <code>n % 2 === 0</code>) і степінь <code>**</code>. Скорочене присвоєння <code>+=</code>, <code>-=</code>, <code>*=</code> та інкремент <code>++</code> змінюють значення змінної. <strong>Порівняння</strong>: <code>===</code>, <code>!==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</p>
+        <p><strong>Логічні оператори</strong> <code>&amp;&amp;</code>, <code>||</code> і <code>!</code> в JavaScript особливі. <code>&amp;&amp;</code> і <code>||</code> повертають не <code>true</code> чи <code>false</code>, а <em>один з операндів</em>, і обчислюються за <strong>короткою схемою</strong>. <code>a &amp;&amp; b</code> повертає <code>a</code>, якщо воно хибне, інакше <code>b</code>. <code>a || b</code> повертає <code>a</code>, якщо воно істинне, інакше <code>b</code>. Правий операнд обчислюється лише тоді, коли потрібен. Звідси популярний запис значення за замовчуванням <code>pageSize || 20</code> і його пастка: 0 і порожній рядок теж хибні. Для «за замовчуванням» правильний оператор — <strong><code>??</code></strong> (nullish coalescing). Він підставляє праве значення лише для <code>null</code> та <code>undefined</code>, тож <code>0 ?? 20</code> дає 0. <strong><code>?.</code></strong> (optional chaining) звертається до властивості лише тоді, коли ліва частина не <code>null</code> чи <code>undefined</code>, інакше повертає <code>undefined</code> замість <code>TypeError</code>.</p>
+        <pre class="code" data-lang="js"><code>const settings = { pageSize: 0, theme: "" };
+console.log(settings.pageSize || 20); // 20 — 0 is falsy, the user's choice is lost
+console.log(settings.pageSize ?? 20); // 0  — only null/undefined are replaced
+
+const book = { title: "CSS in Depth", author: null };
+console.log(book.author?.name ?? "Unknown author"); // "Unknown author"</code></pre>
+        <p><strong>Умовні конструкції.</strong> <code>if</code> / <code>else if</code> / <code>else</code> виконує одну з гілок за умовою, яка перетворюється на boolean. Тернарний оператор <code>умова ? a : b</code> — вираз, а не інструкція: він повертає значення, тож годиться для вибору значення, а не для запуску дій. <code>switch</code> порівнює значення з кількома варіантами через <code>===</code>. Без <code>break</code> виконання «провалюється» в наступний <code>case</code>, і це часте джерело помилок. Якщо кожен <code>case</code> лише повертає значення, зручніше використати об'єкт-словник.</p>
+        <p>Глибока вкладеність <code>if</code> робить код нечитабельним. Прийом <strong>раннього повернення</strong> (guard clause) спершу відсікає некоректні випадки через <code>return</code>, і основна логіка йде без зайвих відступів.</p>
+        <pre class="code" data-lang="js"><code>const DISCOUNT_BY_LEVEL = { bronze: 0.05, silver: 0.1, gold: 0.15 };
+
+function getDiscountRate(level) {
+  return DISCOUNT_BY_LEVEL[level] ?? 0;
+}
+
+function getPriceWithDiscount(priceInCents, level) {
+  if (!Number.isInteger(priceInCents) || priceInCents &lt; 0) {
+    return null;                        // guard clause: reject bad input early
+  }
+  const rate = getDiscountRate(level);
+  return Math.round(priceInCents * (1 - rate));
+}
+
+function getStockLabel(count) {
+  return count &gt; 0 ? `В наявності: ${count}` : "Немає в наявності";
+}
+
+console.log(getPriceWithDiscount(50000, "silver")); // 45000
+console.log(getPriceWithDiscount(-1, "gold"));      // null
+console.log(getStockLabel(0));                      // "Немає в наявності"</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У кожній функції, що приймає рішення. <code>??</code> — для значень за замовчуванням, <code>?.</code> — для даних, де поле може бути відсутнім, ранній <code>return</code> — замість драбини вкладених <code>if</code>.</p>
+        </div>
+      </article>
+
+      <!-- Loops -->
+      <article class="concept prose" id="loops">
+        <h3>Цикли</h3>
+        <p>Порахувати книжки кожного жанру, знайти першу недоступну, повторювати спробу, доки не вийде, — усе це повторення дій. JavaScript має кілька видів циклів, і кожен підходить для свого.</p>
+        <p>Класичний <code>for (let i = 0; i &lt; n; i++)</code> дає повний контроль над лічильником: крок, напрямок, межу. <code>while</code> повторює, доки умова істинна, і годиться, коли кількість ітерацій наперед невідома. <code>do...while</code> перевіряє умову після першого виконання. <code>break</code> перериває цикл, <code>continue</code> переходить до наступної ітерації.</p>
+        <p><strong><code>for...of</code></strong> перебирає <em>значення</em> будь-якої ітерованої колекції: масиву, рядка, <code>Map</code>, <code>Set</code>. Це найчитабельніший цикл для колекцій. <strong><code>for...in</code></strong> перебирає <em>ключі</em> об'єкта, включно з успадкованими перелічуваними, тож для масивів він не годиться. Для об'єктів зручніше <code>for (const [key, value] of Object.entries(object))</code>.</p>
+        <pre class="code" data-lang="js"><code>const genres = ["css", "js", "css", "html", "js", "css"];
+
+function countByValue(values) {
+  const counts = {};
+  for (const value of values) {
+    counts[value] = (counts[value] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function findFirstIndexOver(numbers, limit) {
+  for (let i = 0; i &lt; numbers.length; i++) {
+    if (numbers[i] &gt; limit) return i;  // exit as soon as the answer is known
+  }
+  return -1;
+}
+
+const counts = countByValue(genres);
+console.log(counts);                                  // { css: 3, js: 2, html: 1 }
+for (const [genre, count] of Object.entries(counts)) {
+  console.log(`${genre}: ${count}`);
+}
+console.log(findFirstIndexOver([120, 340, 610, 280], 500)); // 2</code></pre>
+        <p>Для типових операцій над масивами — перетворити, відфільтрувати, знайти, порахувати — замість циклу зазвичай беруть <a href="#arrays">методи масивів</a>. Вони коротші й прямо називають намір. Цикл лишається, коли потрібен ранній вихід зі складною логікою, коли ітеруються не масиви або коли важлива продуктивність на великих даних.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У підрахунках і пошуку. За замовчуванням обирайте <code>for...of</code> для колекцій і методи масивів для перетворень, а <code>for...in</code> лишайте для рідкісних випадків з об'єктами.</p>
+        </div>
+      </article>
+
+      <!-- Functions -->
+      <article class="concept prose" id="functions">
+        <h3>Функції: оголошення, вирази, стрілкові</h3>
+        <p>Розрахунок ціни зі знижкою потрібен у картці, у кошику й у підсумку замовлення. Якщо скопіювати формулу тричі, виправляти помилку доведеться тричі. <strong>Функція</strong> дає іменований шматок логіки, який приймає вхідні дані (параметри) і повертає результат через <code>return</code>. Без <code>return</code> функція повертає <code>undefined</code>.</p>
+        <p>Є три форми запису. <strong>Оголошення функції</strong> <code>function name() {}</code> піднімається повністю, тож його можна викликати вище за текстом файлу. <strong>Функціональний вираз</strong> <code>const name = function () {}</code> — це значення, присвоєне змінній, і доступне воно лише після рядка присвоєння. <strong>Стрілкова функція</strong> <code>const name = (a, b) =&gt; a + b</code> має найкоротший запис. Якщо тіло — один вираз без фігурних дужок, його значення повертається автоматично. З фігурними дужками потрібен явний <code>return</code>, а об'єкт у короткій формі беруть у круглі дужки: <code>() =&gt; ({ id: 1 })</code>. Крім того, стрілкові функції не мають власних <code>this</code> і <code>arguments</code>, про що йтиметься в розділі про об'єкти.</p>
+        <p><strong>Параметри</strong> можуть мати значення за замовчуванням: <code>function paginate(items, page = 1, size = 10)</code>. Rest-параметр <code>...values</code> збирає довільну кількість аргументів у масив. <strong>Функції — це значення</strong>: їх можна зберігати в змінних, передавати як аргументи й повертати з інших функцій. Функцію, передану іншій функції, називають колбеком, і на цьому побудовані методи масивів.</p>
+        <pre class="code" data-lang="js"><code>function getAverage(...values) {           // declaration + rest parameter
+  if (values.length === 0) return 0;
+  const sum = values.reduce((total, value) =&gt; total + value, 0);
+  return sum / values.length;
+}
+
+const toUpperTitle = (title) =&gt; title.toUpperCase();   // arrow, implicit return
+const createBook = (title, year = 2026) =&gt; ({ title, year }); // object needs ( )
+
+function applyToAll(items, transform) {    // a function that takes a function
+  return items.map(transform);
+}
+
+console.log(getAverage(4.5, 4.8, 4.1));        // 4.466666666666667
+console.log(createBook("Learning Web Design")); // { title: "Learning Web Design", year: 2026 }
+console.log(applyToAll(["css", "js"], toUpperTitle)); // ["CSS", "JS"]</code></pre>
+        <p><strong>Чиста функція</strong> повертає результат, що залежить лише від її параметрів, і нічого не змінює поза собою: не пише в глобальні змінні, не змінює переданий масив, не виводить у консоль. Такі функції легко перевірити, використати повторно й тестувати. Решта коду — виведення, запис, зміна сторінки — називається <strong>побічними ефектами</strong>. Їх збирають в окремі, якомога тонші функції. Саме тому в прикладах цієї лекції логіка живе у функціях, що повертають значення, а <code>console.log</code> стоїть лише в кінці, де результат виводять.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Завжди. Функція має робити одну річ, мати ім'я-дієслово (<code>getAverage</code>, <code>formatPrice</code>, <code>isInStock</code>) і повертати результат, а не виводити його. На такий код легко накласти тести в кінці курсу.</p>
+        </div>
+      </article>
+
+      <!-- Scope -->
+      <article class="concept prose" id="scope">
+        <h3>Область видимості, підняття і тимчасова мертва зона</h3>
+        <p>Дві функції мають локальну змінну <code>total</code>. Чи заважають вони одна одній? Чи бачить вкладена функція змінні зовнішньої? Чому звернення до змінної «вище» за її оголошення інколи дає <code>undefined</code>, а інколи помилку? Відповіді дає правило області видимості.</p>
+        <p><strong>Область видимості</strong> (scope) — частина коду, де ім'я доступне. Є глобальна область, область модуля (кожен модуль має власну), область функції та <strong>блокова</strong> область всередині <code>{}</code> для <code>let</code> і <code>const</code>. Області вкладені, і JavaScript використовує <strong>лексичну</strong> видимість: функція бачить змінні областей, у яких вона <em>написана</em>, а не тих, звідки її викликали. Внутрішнє оголошення з тим самим ім'ям <em>затінює</em> зовнішнє.</p>
+        <p>Функція «пам'ятає» область, у якій її створено, навіть після того, як зовнішня функція завершилася. Таку комбінацію функції та її області називають <strong>замиканням</strong> (closure). Так зберігають приватний стан без глобальних змінних.</p>
+        <pre class="code" data-lang="js"><code>function createIdGenerator(prefix) {
+  let lastId = 0;                    // private state, invisible outside
+  return () =&gt; {
+    lastId += 1;
+    return `${prefix}-${lastId}`;
+  };
+}
+
+const nextBookId = createIdGenerator("book");
+console.log(nextBookId()); // "book-1"
+console.log(nextBookId()); // "book-2"
+// console.log(lastId);    // ReferenceError: lastId is not defined</code></pre>
+        <p><strong>Підняття</strong> (hoisting). Перед виконанням області рушій реєструє всі її оголошення, але по-різному. Оголошення функції піднімається повністю, разом із тілом. <code>var</code> піднімається зі значенням <code>undefined</code>. <code>let</code>, <code>const</code> і <code>class</code> теж реєструються, але до рядка оголошення перебувають у <strong>тимчасовій мертвій зоні</strong> (temporal dead zone, TDZ): будь-яке звернення кидає <code>ReferenceError</code>. Це не обмеження, а захист. Помилка видна одразу, а не перетворюється на тихе <code>undefined</code> десь далі в логіці.</p>
+        <pre class="code" data-lang="js"><code>console.log(describe("CSS")); // works: a function declaration is fully hoisted
+
+function describe(title) {
+  return `Book: ${title}`;
+}
+
+try {
+  console.log(pageSize);      // TDZ: the binding exists but is not initialized yet
+  const pageSize = 20;
+} catch (error) {
+  console.log(error.name);    // "ReferenceError"
+}</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Коли бачите <code>ReferenceError</code> чи <code>undefined</code> там, де не очікували, і щоразу, коли хочеться «зробити змінну глобальною, щоб усі бачили». Майже завжди замість цього потрібен параметр функції, повернене значення або модуль.</p>
+        </div>
+      </article>
+      <!-- Objects -->
+      <article class="concept prose" id="objects">
+        <h3>Об'єкти: властивості, методи, базове розуміння this</h3>
+        <p>Книжка — це не одне значення, а набір пов'язаних: назва, автор, рік, ціна. Тримати їх у п'яти окремих змінних незручно, і зв'язок між ними губиться. <strong>Об'єкт</strong> збирає пов'язані значення під іменами-ключами.</p>
+        <p>Об'єкт створюють літералом у фігурних дужках. До властивостей звертаються через крапку (<code>book.title</code>) або квадратні дужки (<code>book[key]</code>), коли ім'я властивості лежить у змінній чи містить символи, недопустимі в ідентифікаторі. Неіснуюча властивість дає <code>undefined</code>, а не помилку. Властивості можна додавати, змінювати й видаляти через <code>delete</code>. Перевірити наявність дозволяють оператор <code>in</code> і <code>Object.hasOwn(object, key)</code>. <code>Object.keys</code>, <code>Object.values</code> і <code>Object.entries</code> повертають масиви ключів, значень і пар. Скорочений запис <code>{ title, year }</code> бере значення зі змінних з такими самими іменами, а обчислюваний ключ <code>{ [key]: value }</code> — з виразу.</p>
+        <p>Функцію, що лежить у властивості, називають <strong>методом</strong>. Усередині методу ключове слово <code>this</code> вказує на об'єкт, «зліва від крапки» під час виклику: у <code>cart.getTotal()</code> це <code>cart</code>. <code>this</code> визначається тим, <em>як</em> функцію викликали, а не де її написали. Тому метод, переданий як колбек окремо від об'єкта, втрачає <code>this</code>. Стрілкові функції власного <code>this</code> не мають і беруть його з навколишньої області, тож методами об'єктів їх не роблять. Зате всередині методу стрілкові колбеки зручні саме тим, що «бачать» <code>this</code> методу.</p>
+        <pre class="code" data-lang="js"><code>const cart = {
+  items: [
+    { title: "CSS in Depth", priceInCents: 129900, quantity: 1 },
+    { title: "HTML and CSS", priceInCents: 89900, quantity: 2 },
+  ],
+  getTotal() {                                   // method shorthand
+    return this.items.reduce(
+      (sum, item) =&gt; sum + item.priceInCents * item.quantity, // arrow sees the method's this
+      0,
+    );
+  },
+};
+
+const field = "title";
+console.log(cart.items[0][field]);          // "CSS in Depth"
+console.log(cart.getTotal());               // 309700
+console.log(Object.keys(cart.items[1]));    // ["title", "priceInCents", "quantity"]
+console.log("discount" in cart);            // false
+
+const getTotal = cart.getTotal;
+// getTotal();  // TypeError: this is undefined in strict mode — the method lost its object</code></pre>
+        <p>Об'єкти, як і масиви, передаються <strong>за посиланням</strong>. Функція, що отримала об'єкт і змінила його властивість, змінила об'єкт і для всіх, хто на нього посилається. <code>Object.freeze(object)</code> забороняє зміни, але лише на першому рівні вкладеності. Здебільшого простіше домовитися не змінювати вхідні дані, а повертати нові об'єкти.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Кожна сутність каталогу — книжка, фільтр, налаштування, кошик — це об'єкт. Глибше <code>this</code> і класи розглядатимуться разом із TypeScript, а поки досить двох правил: методи пишіть скорочено, а стрілкові функції використовуйте як колбеки.</p>
+        </div>
+      </article>
+
+      <!-- Arrays -->
+      <article class="concept prose" id="arrays">
+        <h3>Масиви й методи перебору</h3>
+        <p>Каталог — це впорядкована колекція книжок, і з нею постійно щось роблять: показують лише CSS-книжки, сортують за роком, рахують середній рейтинг, шукають за id. Писати для кожної дії окремий цикл з тимчасовими змінними — довго, а наміру за кодом не видно. <strong>Масиви</strong> мають методи, назва кожного з яких і є намір.</p>
+        <p><strong>Основи.</strong> Індекси починаються з 0, <code>length</code> — кількість елементів, <code>at(-1)</code> — останній. <code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code> і <code>splice</code> <em>змінюють</em> масив на місці. <code>slice</code>, <code>concat</code> і spread створюють новий. <code>includes</code> перевіряє наявність значення, <code>indexOf</code> повертає його позицію.</p>
+        <p><strong>Методи перебору</strong> приймають колбек і викликають його для кожного елемента. <code>map</code> <em>перетворює</em> кожен елемент і повертає новий масив тієї самої довжини. <code>filter</code> <em>відбирає</em> елементи, для яких колбек повернув істинне значення. <code>find</code> і <code>findIndex</code> <em>шукають</em> перший відповідний елемент чи його індекс, <code>findLast</code> — останній. <code>some</code> і <code>every</code> <em>перевіряють</em>, чи підходить хоч один чи всі. <code>reduce</code> <em>згортає</em> масив в одне значення через накопичувач. Йому варто завжди давати початкове значення, бо на порожньому масиві без нього він кидає <code>TypeError</code>. <code>forEach</code> нічого не повертає й призначений лише для побічних ефектів.</p>
+        <p><strong>Сортування.</strong> <code>sort</code> змінює масив на місці, а без функції порівняння сортує <em>як рядки</em>: <code>[10, 9, 1, 100].sort()</code> дає <code>[1, 10, 100, 9]</code>. Функція порівняння повертає від'ємне число, якщо <code>a</code> має йти раніше, додатне — якщо пізніше, і нуль, якщо порядок не важливий. Для чисел це <code>(a, b) =&gt; a - b</code>, для рядків — <code>a.localeCompare(b, "uk")</code>, що правильно впорядковує літери «є», «і», «ї». З ES2023 є методи, що не змінюють оригінал: <code>toSorted</code>, <code>toReversed</code>, <code>toSpliced</code> і <code>with(index, value)</code>. Групувати можна через <code>Object.groupBy(items, callback)</code> з ES2024.</p>
+        <pre class="code" data-lang="js"><code>const books = [
+  { id: 1, title: "CSS in Depth", genre: "css", year: 2024, rating: 4.6, pages: 472 },
+  { id: 2, title: "Eloquent JavaScript", genre: "js", year: 2024, rating: 4.8, pages: 456 },
+  { id: 3, title: "HTML and CSS", genre: "html", year: 2011, rating: 4.4, pages: 512 },
+  { id: 4, title: "You Don't Know JS Yet", genre: "js", year: 2020, rating: 4.5, pages: 143 },
+];
+
+function getTitlesByGenre(items, genre) {
+  return items
+    .filter((book) =&gt; book.genre === genre)          // select
+    .toSorted((a, b) =&gt; b.year - a.year)             // order, without mutating
+    .map((book) =&gt; book.title);                      // transform
+}
+
+function getAverageRating(items) {
+  if (items.length === 0) return 0;
+  const sum = items.reduce((total, book) =&gt; total + book.rating, 0); // initial value!
+  return Math.round((sum / items.length) * 100) / 100;
+}
+
+console.log(getTitlesByGenre(books, "js"));       // ["Eloquent JavaScript", "You Don't Know JS Yet"]
+console.log(getAverageRating(books));             // 4.57 (4.575 is stored as 4.57499…)
+console.log(books.find((book) =&gt; book.id === 3)?.title); // "HTML and CSS"
+console.log(books.some((book) =&gt; book.pages &lt; 200));     // true
+console.log(books.every((book) =&gt; book.rating &gt;= 4.5));  // false
+console.log(Object.groupBy(books, (book) =&gt; book.genre).js.length); // 2</code></pre>
+        <p>Метод обирають за наміром. Потрібен масив того самого розміру — <code>map</code>. Менший масив — <code>filter</code>. Один елемент — <code>find</code>. Так чи ні — <code>some</code> або <code>every</code>. Одне число чи об'єкт — <code>reduce</code>. Ланцюжки читаються зверху вниз як опис кроків, а проміжні результати не потрібно зберігати у змінних. Кожен крок ланцюжка можна побачити окремо в <a href="#pipeline-demo">конвеєрі методів масиву</a>.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У лабораторних про обробку колекцій каталогу: пошук, фільтрація, сортування, статистика. Правило безпеки: метод, що змінює масив (<code>sort</code>, <code>reverse</code>, <code>splice</code>), не застосовують до вхідних даних функції. Беруть його аналог із <code>to</code>.</p>
+        </div>
+      </article>
+
+      <!-- Destructuring -->
+      <article class="concept prose" id="destructuring">
+        <h3>Деструктуризація, spread і rest</h3>
+        <p>Функція отримує книжку, а потрібні їй лише назва й рік. Запис <code>book.title</code> і <code>book.year</code> у кожному рядку робить код довгим і ховає, від яких полів функція насправді залежить. Інша типова задача — створити змінену копію об'єкта чи об'єднати два масиви, не чіпаючи оригіналів.</p>
+        <p><strong>Деструктуризація</strong> розбирає об'єкт або масив на змінні одним рядком. Для об'єктів працює за іменами: <code>const { title, year } = book</code>. Можна перейменувати змінну (<code>{ title: bookTitle }</code>), задати значення за замовчуванням (<code>{ rating = 0 }</code>) чи розібрати вкладений об'єкт. Для масивів деструктуризація працює за позицією: <code>const [first, second] = items</code>. Найкорисніше застосування — <strong>деструктуризація параметрів</strong>. Сигнатура функції прямо показує, які поля вона використовує, а виклик з об'єктом опцій не залежить від порядку аргументів.</p>
+        <p><strong>Spread</strong> <code>...</code> «розгортає» масив чи об'єкт: <code>[...a, ...b]</code> об'єднує масиви, <code>{ ...book, year: 2026 }</code> створює копію з одним зміненим полем. Пізніші властивості перезаписують раніші. <strong>Rest</strong> записується тими самими трьома крапками, але <em>збирає</em> решту: <code>const { id, ...data } = book</code> відокремлює <code>id</code> від інших полів. Різниця лише в позиції: справа від <code>=</code> чи в аргументах виклику — spread, зліва чи в параметрах — rest.</p>
+        <pre class="code" data-lang="js"><code>function formatBookLine({ title, year, author = "Unknown author" }) {
+  return `${title} (${year}) — ${author}`;
+}
+
+function withUpdatedYear(book, year) {
+  return { ...book, year };                 // a new object, the original is untouched
+}
+
+const book = { id: 7, title: "Learning Web Design", year: 2018 };
+const { id, ...bookData } = book;           // rest: everything except id
+const [first, ...others] = ["css", "js", "html"];
+
+console.log(formatBookLine(book));          // "Learning Web Design (2018) — Unknown author"
+console.log(withUpdatedYear(book, 2026).year, book.year); // 2026 2018
+console.log(id, bookData);                  // 7 { title: "Learning Web Design", year: 2018 }
+console.log(first, others);                 // "css" ["js", "html"]</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> У параметрах функцій, що приймають об'єкти даних, в оновленнях стану без мутацій і в роботі з відповідями API, де з великого об'єкта потрібні два поля.</p>
+        </div>
+      </article>
+
+      <!-- Copy and JSON -->
+      <article class="concept prose" id="copy-json">
+        <h3>Копіювання і JSON</h3>
+        <p>Ви «скопіювали» книжку, щоб відредагувати назву в чернетці, а змінилася й книжка в каталозі. Причина в тому, що присвоєння об'єкта копіює <em>посилання</em>, а не сам об'єкт. Навіть справжня копія буває двох видів.</p>
+        <p><strong>Поверхнева копія</strong> (<code>{ ...object }</code>, <code>[...array]</code>, <code>Array.from</code>, <code>slice</code>) створює новий об'єкт першого рівня. Вкладені об'єкти й масиви лишаються <em>спільними</em> з оригіналом, і зміна <code>copy.tags.push(...)</code> змінить <code>original.tags</code>. <strong>Глибоку копію</strong> робить вбудована функція <code>structuredClone(value)</code>. Вона рекурсивно копіює об'єкти, масиви, дати, <code>Map</code>, <code>Set</code> і навіть циклічні посилання, але не копіює функції та DOM-вузли (кидає помилку). Старий прийом <code>JSON.parse(JSON.stringify(value))</code> губить <code>undefined</code>, функції, <code>Map</code> і перетворює дати на рядки, тому для копіювання його не використовують.</p>
+        <pre class="code" data-lang="js"><code>const original = { title: "CSS in Depth", tags: ["layout"] };
+
+const shallow = { ...original };
+shallow.tags.push("grid");                     // the nested array is shared!
+console.log(original.tags);                    // ["layout", "grid"]
+
+const deep = structuredClone(original);
+deep.tags.push("flexbox");
+console.log(original.tags.length, deep.tags.length); // 2 3</code></pre>
+        <p><strong>JSON</strong> (JavaScript Object Notation) — текстовий формат обміну даними, що походить від синтаксису літералів JavaScript, але суворіший. Ключі й рядки беруться лише в подвійні лапки, коментарів і кінцевих ком немає, а значеннями можуть бути лише рядки, числа, <code>true</code>, <code>false</code>, <code>null</code>, масиви й об'єкти. <code>JSON.stringify(value, null, 2)</code> перетворює значення на рядок з відступами: функції й <code>undefined</code> пропускаються, дата стає рядком ISO. <code>JSON.parse(text)</code> відновлює дані, а на некоректному тексті кидає <code>SyntaxError</code>. Тому дані з ненадійних джерел розбирають у <code>try...catch</code>. Саме в JSON сервер віддаватиме каталог у лекціях про API.</p>
+        <pre class="code" data-lang="js"><code>function parseBooks(text) {
+  try {
+    const data = JSON.parse(text);
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];                                 // a broken file must not break the app
+  }
+}
+
+const json = JSON.stringify([{ id: 1, title: "CSS in Depth", published: new Date("2024-03-01") }]);
+console.log(json);                   // [{"id":1,"title":"CSS in Depth","published":"2024-03-01T00:00:00.000Z"}]
+console.log(parseBooks(json).length); // 1
+console.log(parseBooks("{oops"));     // []</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щоразу, коли дані треба змінити, не чіпаючи оригіналу, зберегти в <code>localStorage</code> або отримати з сервера. Запитайте себе, чи є в об'єкті вкладені структури. Якщо так, поверхневої копії замало.</p>
+        </div>
+      </article>
+
+      <!-- Modules -->
+      <article class="concept prose" id="modules">
+        <h3>Модулі ESM</h3>
+        <p>Коли весь код каталогу лежить в одному файлі на тисячу рядків, знайти потрібну функцію важко, а імена змінних різних частин конфліктують. Розбити код на кілька класичних скриптів — не вихід: усі вони ділять одну глобальну область, а порядок тегів <code>&lt;script&gt;</code> стає неявною залежністю, яку легко зламати.</p>
+        <p><strong>ES-модулі</strong> (ECMAScript modules, ESM) розв'язують обидві проблеми. Кожен файл-модуль має власну область видимості. Назовні він віддає лише те, що позначено <code>export</code>, а потрібне іншим модулям явно бере через <code>import</code>. Залежності видно в коді, і браузер сам завантажує їх у правильному порядку. Модуль виконується <strong>один раз</strong>, навіть якщо його імпортують з десяти місць. Модулі завжди в суворому режимі та відкладені, як <code>defer</code>, а на верхньому рівні дозволяють <code>await</code> (ES2022).</p>
+        <p><strong>Іменовані експорти</strong> (<code>export function formatPrice</code>) імпортують у фігурних дужках під тим самим ім'ям або з перейменуванням через <code>as</code>. <strong>Експорт за замовчуванням</strong> (<code>export default</code>) — один на модуль, і імпортують його під будь-яким іменем. Іменовані експорти зручніші: редактор підказує й перейменовує їх, а пошук за іменем знаходить усі використання. <code>import * as utils</code> збирає всі експорти в об'єкт. Динамічний <code>import("./module.js")</code> завантажує модуль на вимогу й повертає проміс.</p>
+        <pre class="code" data-lang="js"><code>// js/format.js
+export const CURRENCY = "грн";
+
+export function formatPrice(priceInCents) {
+  return `${(priceInCents / 100).toFixed(2)} ${CURRENCY}`;
+}
+
+// js/catalog.js
+export function getTitlesByGenre(books, genre) {
+  return books.filter((book) =&gt; book.genre === genre).map((book) =&gt; book.title);
+}
+
+// js/app.js — the entry point: &lt;script type="module" src="js/app.js"&gt;&lt;/script&gt;
+import { formatPrice } from "./format.js";
+import { getTitlesByGenre } from "./catalog.js";
+
+console.log(formatPrice(129900));                        // "1299.00 грн"
+console.log(getTitlesByGenre([{ title: "CSS in Depth", genre: "css" }], "css"));</code></pre>
+        <p>Дві практичні деталі. У браузері шлях імпорту має бути повним, з розширенням: <code>"./format.js"</code>, а не <code>"./format"</code>. Скорочення дозволяють лише збирачі на кшталт Vite, про які йтиметься в кінці курсу. І модулі завантажуються за правилами CORS, тож сторінку відкривають через локальний сервер, а не через <code>file://</code>.</p>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> З першої лабораторної на JavaScript: дані каталогу, функції обробки й виведення в окремих модулях. Ця сама структура без змін перейде в TypeScript і в проєкт на Vite.</p>
+        </div>
+      </article>
+
+      <!-- Debugging -->
+      <article class="concept prose" id="debugging">
+        <h3>Налагодження: повідомлення про помилки, console і DevTools</h3>
+        <p>Код рідко працює з першого разу, і це нормально. Важливо не гадати, а швидко знаходити причину. Найчастіше браузер уже назвав її в повідомленні про помилку, тож навичка читати ці повідомлення важить більше за будь-який інструмент.</p>
+        <p>Повідомлення в консолі має тип, текст і місце. <strong><code>SyntaxError</code></strong> означає, що код не вдалося навіть розібрати: пропущена дужка, кома, лапка. Модуль з такою помилкою не виконається взагалі. <strong><code>ReferenceError</code></strong> — звернення до імені, якого немає або яке ще в TDZ, найчастіше через описку. <strong><code>TypeError</code></strong> — операція над значенням не того типу, класика: <code>Cannot read properties of undefined (reading 'title')</code>. Отже, зліва від <code>.title</code> опинилося <code>undefined</code>, і питання в тому, звідки воно там. <strong><code>RangeError</code></strong> — значення поза допустимим діапазоном, наприклад нескінченна рекурсія. Посилання праворуч, як-от <code>catalog.js:14</code>, відкриває потрібний рядок.</p>
+        <p><code>console.log</code> показує значення, <code>console.table</code> — масив об'єктів таблицею, <code>console.error</code> і <code>console.warn</code> виділяють повідомлення, <code>console.group</code> групує пов'язаний вивід. Коли логів уже замало, ставлять <strong>точку зупинки</strong> в панелі Sources або пишуть інструкцію <code>debugger;</code>. Виконання зупиняється, і видно всі змінні в Scope, ланцюжок викликів у Call Stack, а кнопки Step over, Step into й Step out дають змогу виконувати код рядок за рядком. Вираз у Watch перераховується на кожному кроці.</p>
+        <pre class="code" data-lang="js"><code>function getAuthorName(book) {
+  return book.author.name;          // TypeError if author is missing
+}
+
+function getAuthorNameSafe(book) {
+  return book.author?.name ?? "Unknown author";
+}
+
+const books = [{ title: "CSS in Depth", author: { name: "Keith Grant" } }, { title: "Draft" }];
+console.table(books.map((book) =&gt; ({ title: book.title, author: getAuthorNameSafe(book) })));
+
+try {
+  books.map(getAuthorName);
+} catch (error) {
+  console.error(`${error.name}: ${error.message}`);
+}</code></pre>
+        <div class="callout">
+          <p><strong>Коли це знадобиться.</strong> Щодня. Прочитайте повідомлення повністю, клацніть по посиланню на рядок і запитайте себе, яке значення там насправді. Відповідь дасть <code>console.log</code> чи точка зупинки, а не переписування коду навмання.</p>
+        </div>
+      </article>
+
+      <!-- Mini task -->
+      <article class="concept prose" id="mini-task">
+        <h3>Розв'язана міні-задача: статистика каталогу</h3>
+        <p><strong>Умова.</strong> Є масив книжок каталогу з полями <code>title</code>, <code>genre</code>, <code>year</code>, <code>rating</code>, <code>priceInCents</code> та <code>inStock</code>. Потрібно сформувати звіт: скільки книжок кожного жанру; середній рейтинг книжок у наявності з округленням до двох знаків; найновіша книжка; загальна вартість книжок у наявності. Порожній каталог не має спричиняти помилок.</p>
+        <p><strong>Як думати.</strong> Звіт складається з чотирьох незалежних обчислень, тож кожне стає окремою чистою функцією з іменем-дієсловом, що приймає масив і повертає значення. Відбір книжок у наявності потрібен двом обчисленням, тому це теж окрема функція. Форматування звіту — ще одна функція, яка лише збирає готові значення в рядки. Нарешті, <code>main</code> викликає функції й виводить результат. Це єдине місце з побічним ефектом. Кожен крок обираємо за наміром: підрахунок за ключем — <code>reduce</code> у новий об'єкт, відбір — <code>filter</code>, середнє й сума — <code>reduce</code> з початковим значенням, «найбільше за полем» — <code>reduce</code>, що порівнює. Сортувати весь масив заради одного елемента не потрібно.</p>
+        <pre class="code" data-lang="js"><code>const BOOKS = [
+  { title: "CSS in Depth", genre: "css", year: 2024, rating: 4.6, priceInCents: 129900, inStock: true },
+  { title: "Eloquent JavaScript", genre: "js", year: 2024, rating: 4.8, priceInCents: 99900, inStock: false },
+  { title: "HTML and CSS", genre: "html", year: 2011, rating: 4.4, priceInCents: 89900, inStock: true },
+  { title: "You Don't Know JS Yet", genre: "js", year: 2020, rating: 4.5, priceInCents: 59900, inStock: true },
+  { title: "Semantic HTML in Practice", genre: "html", year: 2025, rating: 4.3, priceInCents: 149900, inStock: true },
+];
+
+function countByGenre(books) {
+  return books.reduce((counts, book) =&gt; ({ ...counts, [book.genre]: (counts[book.genre] ?? 0) + 1 }), {});
+}
+
+function getInStock(books) {
+  return books.filter((book) =&gt; book.inStock);
+}
+
+function getAverageRating(books) {
+  if (books.length === 0) return 0;
+  const sum = books.reduce((total, book) =&gt; total + book.rating, 0);
+  return Math.round((sum / books.length) * 100) / 100;
+}
+
+function findNewest(books) {
+  return books.reduce((newest, book) =&gt; (newest === null || book.year &gt; newest.year ? book : newest), null);
+}
+
+function getTotalPrice(books) {
+  return books.reduce((total, book) =&gt; total + book.priceInCents, 0);
+}
+
+function formatPrice(priceInCents) {
+  return `${(priceInCents / 100).toFixed(2)} грн`;
+}
+
+function buildReport(books) {
+  const inStock = getInStock(books);
+  const newest = findNewest(books);
+  return [
+    `За жанрами: ${JSON.stringify(countByGenre(books))}`,
+    `Середній рейтинг у наявності: ${getAverageRating(inStock)}`,
+    `Найновіша: ${newest ? `${newest.title} (${newest.year})` : "—"}`,
+    `Вартість у наявності: ${formatPrice(getTotalPrice(inStock))}`,
+  ];
+}
+
+function main() {
+  for (const line of buildReport(BOOKS)) console.log(line);
+  console.log(buildReport([]).join(" | "));   // the empty catalog does not break
+}
+
+main();</code></pre>
+        <p><strong>Результат.</strong> Для наведених даних звіт виглядає так: жанри <code>{"css":1,"js":2,"html":2}</code>, середній рейтинг у наявності 4.45, найновіша — Semantic HTML in Practice (2025), вартість у наявності 4296.00 грн. Для порожнього каталогу: <code>{}</code>, 0, «—» і 0.00 грн. Кожну функцію можна перевірити окремо: у <a href="#console-demo">JS-консолі</a> є цей код як готовий приклад. Спробуйте додати функцію «найдорожча книжка кожного жанру» в тому самому стилі.</p>
+        <div class="callout">
+          <p><strong>Чому саме так.</strong> Маленькі чисті функції можна тестувати поодинці, використовувати повторно (<code>getAverageRating</code> працює для будь-якої вибірки) й читати без коментарів. Порожній масив обробляє кожна функція окремо, тому звіт не падає. Перетворити цей код на рендер у DOM у наступній лекції означатиме замінити лише <code>main</code>.</p>
+        </div>
+      </article>
+    </section>
+    <!-- ================= DEMO ================= -->
+    <section id="demo" aria-labelledby="demo-title">
+      <h2 id="demo-title">Інтерактивне демо</h2>
+      <p class="section-lead">Консоль виконує ваш код просто на сторінці. Візуалізатор показує покроково, як JavaScript приводить типи. Конвеєр дає змогу зібрати ланцюжок методів масиву над даними каталогу й побачити результат після кожного кроку.</p>
+
+      <!-- Console -->
+      <div class="demo" id="console-demo">
+        <h3>JS-консоль</h3>
+        <p class="dim">Оберіть приклад або напишіть свій код і натисніть «Виконати» (або <kbd>Ctrl</kbd>+<kbd>Enter</kbd>). Вивід <code>console.log</code>, <code>console.table</code> і помилки з'являться нижче. <kbd>Tab</kbd> у редакторі вставляє відступ; щоб перейти до наступного елемента сторінки, натисніть <kbd>Esc</kbd>, а потім <kbd>Tab</kbd>. Код виконується в цій вкладці, тож нескінченний цикл її заблокує.</p>
+        <div class="presets" role="group" aria-label="Приклади коду" id="con-presets"></div>
+        <label class="sr-only" for="con-editor">Код JavaScript</label>
+        <textarea class="control code-editor" id="con-editor" spellcheck="false" autocomplete="off" autocapitalize="off" rows="14"></textarea>
+        <div class="controls" style="margin-top:0.6rem">
+          <button class="btn" type="button" id="con-run">Виконати</button>
+          <button class="btn btn-ghost" type="button" id="con-reset">Повернути приклад</button>
+          <button class="btn btn-ghost" type="button" id="con-clear">Очистити вивід</button>
+        </div>
+        <div class="console-out" id="con-output" role="log" aria-live="polite" aria-label="Вивід консолі"></div>
+        <p class="sizes" id="con-note"></p>
+      </div>
+
+      <!-- Coercion -->
+      <div class="demo" id="coercion-demo">
+        <h3>Візуалізатор приведення типів</h3>
+        <p class="dim">Оберіть два значення й оператор: візуалізатор покаже кроки перетворення за правилами специфікації та результат, який обчислив ваш браузер.</p>
+        <div class="coerce-row">
+          <div class="pg-field"><label for="co-left">Ліве значення</label><select class="control mono" id="co-left"></select></div>
+          <div class="pg-field"><label for="co-op">Оператор</label><select class="control mono" id="co-op"></select></div>
+          <div class="pg-field"><label for="co-right">Праве значення</label><select class="control mono" id="co-right"></select></div>
+        </div>
+        <div class="presets" role="group" aria-label="Відомі приклади" id="co-presets"></div>
+        <div id="co-output" aria-live="polite"></div>
+        <h4 style="margin-top:1.4rem">Як кожне з цих значень перетворюється</h4>
+        <div class="table-wrap">
+          <table class="net-table conv-table" id="co-table">
+            <caption class="sr-only">Результати Number, String і Boolean для значень</caption>
+            <thead><tr><th scope="col">Значення</th><th scope="col">typeof</th><th scope="col">Number(x)</th><th scope="col">String(x)</th><th scope="col">Boolean(x)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pipeline -->
+      <div class="demo" id="pipeline-demo">
+        <h3>Конвеєр методів масиву</h3>
+        <p class="dim">Дані — 24 книжки каталогу. Додавайте кроки: після кожного видно проміжний результат, а нижче — код усього ланцюжка. Кроки <code>reduce</code>, <code>find</code>, <code>some</code> та <code>every</code> повертають не масив, тож завершують ланцюжок.</p>
+        <div class="presets" role="group" aria-label="Готові ланцюжки" id="pl-presets"></div>
+        <div class="pl-builder">
+          <div class="pg-field"><label for="pl-step">Крок</label><select class="control mono" id="pl-step"></select></div>
+          <div class="pg-field" id="pl-param-wrap"><label for="pl-param">Параметр</label><select class="control mono" id="pl-param"></select></div>
+          <button class="btn" type="button" id="pl-add">Додати крок</button>
+          <button class="btn btn-ghost" type="button" id="pl-undo">Прибрати останній</button>
+          <button class="btn btn-ghost" type="button" id="pl-clear">Почати спочатку</button>
+        </div>
+        <ol class="pl-steps" id="pl-steps" aria-live="polite"></ol>
+        <div id="pl-code"></div>
+      </div>
+    </section>
+
+    <!-- ================= CHEATSHEET ================= -->
+    <section id="cheatsheet" aria-labelledby="cheat-title">
+      <div class="cheat-head">
+        <h2 id="cheat-title">Шпаргалка</h2>
+        <button class="btn" type="button" id="print-cheatsheet">Друкувати шпаргалку</button>
+      </div>
+      <div class="cheat-grid">
+        <article class="cheat-card">
+          <h3>Змінні й типи</h3>
+          <dl>
+            <dt>const / let</dt><dd>блокова область; const — без перепризначення</dd>
+            <dt>var</dt><dd>не використовувати: функційна область, підняття</dd>
+            <dt>string number bigint boolean undefined null symbol</dt><dd>сім примітивів</dd>
+            <dt>typeof null === "object"</dt><dd>історична помилка; масив — Array.isArray</dd>
+            <dt>0.1 + 0.2 !== 0.3</dt><dd>гроші — цілі копійки</dd>
+            <dt>Number.isNaN · Number.isInteger</dt><dd>перевірки чисел</dd>
+            <dt>`${a} і ${b}`</dt><dd>шаблонний рядок</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Приведення й порівняння</h3>
+          <dl>
+            <dt>Number(x) · String(x) · Boolean(x)</dt><dd>явне приведення</dd>
+            <dt>false 0 -0 0n "" null undefined NaN</dt><dd>усі falsy; "0", [], {} — truthy</dd>
+            <dt>"5" + 3 → "53" · "5" - 3 → 2</dt><dd>+ з рядком склеює, решта рахує</dd>
+            <dt>===  !==</dt><dd>завжди; без приведення</dd>
+            <dt>[] == false → true</dt><dd>чому == під забороною</dd>
+            <dt>Object.is(NaN, NaN)</dt><dd>true; розрізняє 0 і -0</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Оператори й умови</h3>
+          <dl>
+            <dt>a &amp;&amp; b · a || b</dt><dd>повертають операнд, коротка схема</dd>
+            <dt>value ?? fallback</dt><dd>заміна лише для null / undefined</dd>
+            <dt>obj?.prop?.name</dt><dd>undefined замість TypeError</dd>
+            <dt>cond ? a : b</dt><dd>вибір значення</dd>
+            <dt>switch + break</dt><dd>без break — провалювання</dd>
+            <dt>if (!valid) return …</dt><dd>ранній вихід</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Цикли й функції</h3>
+          <dl>
+            <dt>for…of</dt><dd>значення масиву, рядка, Map, Set</dd>
+            <dt>for…in</dt><dd>ключі об'єкта, не для масивів</dd>
+            <dt>Object.entries(obj)</dt><dd>пари для for…of</dd>
+            <dt>function f() {}</dt><dd>піднімається повністю</dd>
+            <dt>const f = (x) => x * 2</dt><dd>неявний return; без власного this</dd>
+            <dt>() => ({ id: 1 })</dt><dd>об'єкт — у дужках</dd>
+            <dt>(a, b = 1, ...rest)</dt><dd>за замовчуванням і rest</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Область видимості</h3>
+          <dl>
+            <dt>глобальна · модуль · функція · блок</dt><dd>лексична вкладеність</dd>
+            <dt>замикання</dt><dd>функція пам'ятає свою область</dd>
+            <dt>TDZ</dt><dd>let/const до оголошення → ReferenceError</dd>
+            <dt>"use strict" / модулі</dt><dd>суворий режим</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Об'єкти</h3>
+          <dl>
+            <dt>obj.key · obj[key]</dt><dd>доступ; немає — undefined</dd>
+            <dt>{ title, [key]: value }</dt><dd>скорочений і обчислюваний ключ</dd>
+            <dt>Object.keys / values / entries</dt><dd>масиви з об'єкта</dd>
+            <dt>"key" in obj · Object.hasOwn</dt><dd>перевірка наявності</dd>
+            <dt>method() { this… }</dt><dd>this — об'єкт зліва від крапки</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Масиви</h3>
+          <dl>
+            <dt>map · filter · find · some · every · reduce</dt><dd>перетворити, відібрати, знайти, перевірити, згорнути</dd>
+            <dt>reduce(fn, initial)</dt><dd>завжди з початковим значенням</dd>
+            <dt>sort / toSorted((a, b) => a - b)</dt><dd>без функції — як рядки</dd>
+            <dt>push pop shift unshift splice sort reverse</dt><dd>змінюють масив</dd>
+            <dt>toSorted toReversed toSpliced with slice</dt><dd>повертають новий</dd>
+            <dt>at(-1) · includes · Object.groupBy</dt><dd>останній, наявність, групування</dd>
+          </dl>
+        </article>
+        <article class="cheat-card">
+          <h3>Деструктуризація, копії, JSON, модулі</h3>
+          <dl>
+            <dt>const { a, b = 0, c: alias } = obj</dt><dd>за іменами</dd>
+            <dt>const [first, ...rest] = arr</dt><dd>за позицією</dd>
+            <dt>{ ...obj, year: 2026 }</dt><dd>поверхнева копія зі зміною</dd>
+            <dt>structuredClone(value)</dt><dd>глибока копія</dd>
+            <dt>JSON.stringify(v, null, 2) · JSON.parse</dt><dd>parse — у try…catch</dd>
+            <dt>export function f · import { f } from "./f.js"</dt><dd>іменовані, з розширенням</dd>
+          </dl>
+        </article>
+      </div>
+    </section>
+    <!-- ================= ANTIPATTERNS ================= -->
+    <section id="antipatterns" aria-labelledby="ap-title">
+      <h2 id="ap-title">Антипатерни</h2>
+      <p class="section-lead">Кожен із цих прийомів «працює» на тестових даних. Ламається він на реальних: із нулем, порожнім рядком, другим скриптом на сторінці або колегою, який через місяць змінює код.</p>
+
+      <article class="pattern">
+        <h3>Оголошувати змінні через var</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>function findBook(books, id) {
+  for (var i = 0; i &lt; books.length; i++) {
+    var found = books[i].id === id ? books[i] : found;
+  }
+  console.log(i);      // 4 — the counter leaked out of the loop
+  return found;
+}
+console.log(total);    // undefined instead of an error
+var total = 0;</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>var</code> видно в усій функції, а не лише в блоці, тож лічильники й тимчасові змінні «протікають» назовні. Підняття зі значенням <code>undefined</code> перетворює звернення до ще не оголошеної змінної на тиху помилку, яка проявиться далеко від причини. На верхньому рівні класичного скрипта <code>var</code> створює властивість <code>window</code>, яку може перезаписати інший скрипт.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>function findBook(books, id) {
+  return books.find((book) =&gt; book.id === id);
+}
+const total = 0;       // and any access before this line is a clear ReferenceError</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Нестроге порівняння ==</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>if (quantity == 0) showEmptyCart();   // true also for "", " ", [], false
+if (book.id == selectedId) highlight(book); // "7" == 7 hides a type bug</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>==</code> приводить типи за неочевидними правилами. Порожнє поле, рядок з пробілом і порожній масив дорівнюють нулю. Збіг <code>"7" == 7</code> маскує те, що id прийшов з форми рядком, і помилка вилізе в іншому місці, де порівняння вже строге. Щоб прочитати рядок з <code>==</code>, треба тримати в голові таблицю приведення.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>const quantity = Number(input.value);   // convert once, at the boundary
+if (quantity === 0) showEmptyCart();
+if (book.id === Number(selectedId)) highlight(book);</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Глобальні змінні та неоголошені імена</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>// classic script, no "use strict"
+filteredBooks = [];               // a typo or a missing const creates a global
+function applyFilter(genre) {
+  filteredBooks = books.filter((book) =&gt; book.genre === genre); // hidden dependency
+}</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Глобальну змінну може змінити будь-який код на сторінці, тож поведінка функції залежить від порядку викликів, а не від її параметрів. Перевірити таку функцію окремо неможливо. Без суворого режиму описка в імені тихо створює нову глобальну змінну замість помилки, і дані «губляться» в іншій змінній.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>// module (strict by default): the function gets data and returns data
+export function filterByGenre(books, genre) {
+  return books.filter((book) =&gt; book.genre === genre);
+}</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Одна велика функція, що і рахує, і виводить, з «магічними числами»</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>function report(books) {
+  let s = 0, n = 0;
+  for (let i = 0; i &lt; books.length; i++) {
+    if (books[i].stock &gt; 0 &amp;&amp; books[i].price &gt; 50000) {
+      s += books[i].price * 0.9;
+      n++;
+    }
+  }
+  console.log("Total: " + s / 100 + " (" + n + ")");
+}</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Результат не повертається, а лише друкується, тож використати його деінде, протестувати чи вивести на сторінку неможливо. Логіка відбору, знижки й форматування змішана в одному циклі. Числа <code>50000</code> і <code>0.9</code> нічого не пояснюють і повторюватимуться в інших місцях, а змінювати знижку доведеться пошуком по всьому коду.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>const PREMIUM_PRICE_IN_CENTS = 50000;
+const PREMIUM_DISCOUNT_RATE = 0.1;
+
+const getPremiumInStock = (books) =&gt;
+  books.filter((book) =&gt; book.stock &gt; 0 &amp;&amp; book.price &gt; PREMIUM_PRICE_IN_CENTS);
+const getDiscountedTotal = (books) =&gt;
+  books.reduce((sum, book) =&gt; sum + book.price * (1 - PREMIUM_DISCOUNT_RATE), 0);
+
+function main(books) {
+  const premium = getPremiumInStock(books);
+  console.log(`Total: ${getDiscountedTotal(premium) / 100} (${premium.length})`);
+}</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>map заради побічних ефектів</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>books.map((book) =&gt; console.log(book.title));        // the new array is thrown away
+books.map((book) =&gt; { book.price = book.price * 2; }); // mutates every book, returns [undefined, …]</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>map</code> обіцяє читачеві «тут створюється новий масив тієї самої довжини». Коли результат ігнорують, код бреше про свій намір, а рушій марно створює масив. Друга форма ще й мутує вхідні об'єкти й повертає масив <code>undefined</code>, бо тіло у фігурних дужках не має <code>return</code>.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>for (const book of books) console.log(book.title);   // side effects: a loop or forEach
+const doubled = books.map((book) =&gt; ({ ...book, price: book.price * 2 })); // new objects</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Мутація вхідного масиву</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>function getNewest(books) {
+  return books.sort((a, b) =&gt; b.year - a.year)[0];  // reorders the caller's catalog!
+}
+const newest = getNewest(catalog);
+// catalog is now sorted by year, and the page shows a different order</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>sort</code>, <code>reverse</code> і <code>splice</code> змінюють масив на місці, і зміна видна всім, хто тримає посилання на нього. Функція «лише знайти найновішу» непомітно змінює порядок каталогу на сторінці, і помилка проявляється в зовсім іншій частині програми.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>function getNewest(books) {
+  return books.toSorted((a, b) =&gt; b.year - a.year)[0];
+}
+// even better: one pass, no sorting at all
+const findNewest = (books) =&gt; books.reduce((top, book) =&gt; (!top || book.year &gt; top.year ? book : top), null);</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>|| замість ?? для значень за замовчуванням</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>const pageSize = settings.pageSize || 20;   // the user chose 0 → becomes 20
+const note = book.note || "No note";        // the user saved "" on purpose → replaced
+const discount = book.discount || 0.1;       // 0 (no discount) → 10% discount!</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> <code>||</code> замінює будь-яке хибне значення, а <code>0</code>, <code>""</code> і <code>false</code> — цілком легітимні дані. Найнебезпечніше це в грошах і налаштуваннях: «знижки немає» перетворюється на знижку за замовчуванням.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>const pageSize = settings.pageSize ?? 20;   // replaced only when null or undefined
+const discount = book.discount ?? 0.1;</code></pre>
+        </div>
+      </article>
+
+      <article class="pattern">
+        <h3>Поверхнева копія там, де потрібна глибока</h3>
+        <div class="bad-block">
+          <span class="verdict bad">✗ Погано</span>
+          <pre class="code" data-lang="js"><code>const draft = { ...book };            // copies only the first level
+draft.authors.push("New co-author");  // book.authors changed too
+draft.meta.updated = Date.now();      // and book.meta as well</code></pre>
+        </div>
+        <p class="why"><strong>Чому це погано.</strong> Spread копіює лише перший рівень, а вкладені масиви й об'єкти лишаються спільними. «Чернетка», яку збиралися скасувати, вже змінила оригінал, і кнопка «Скасувати» нічого не відновить.</p>
+        <div class="good-block">
+          <span class="verdict good">✓ Добре</span>
+          <pre class="code" data-lang="js"><code>const draft = structuredClone(book);  // deep copy
+// or update immutably at every level you change:
+const updated = { ...book, authors: [...book.authors, "New co-author"] };</code></pre>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================= BEST PRACTICES ================= -->
+    <section id="best-practices" aria-labelledby="bp-title">
+      <h2 id="bp-title">Бест практики</h2>
+      <p class="section-lead">Звички, завдяки яким код читається як опис наміру, а помилки з'являються одразу й у тому місці, де їх зроблено.</p>
+
+      <article class="pattern">
+        <h3>const за замовчуванням</h3>
+        <p class="why">Коли більшість змінних — <code>const</code>, кожне <code>let</code> стає сигналом «тут значення змінюється». Читач одразу бачить, за чим стежити, а випадкове перепризначення стає помилкою замість тихої зміни даних.</p>
+        <pre class="code" data-lang="js"><code>const books = await loadBooks();   // never reassigned
+let visibleCount = 0;              // the only value that changes
+for (const book of books) {
+  if (book.inStock) visibleCount += 1;
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Явне приведення на межі і строге порівняння</h3>
+        <p class="why">Дані з форми, URL чи сервера перетворюють у потрібний тип <em>один раз</em>, одразу після отримання. Далі код працює з правильними типами й порівнює через <code>===</code>, і таблиця неявного приведення просто не потрібна.</p>
+        <pre class="code" data-lang="js"><code>function readFilters(params) {
+  return {
+    genre: params.get("genre") ?? "all",
+    minYear: Number(params.get("minYear") ?? 0),
+    inStockOnly: params.get("inStock") === "1",
+  };
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Маленькі чисті функції, що повертають значення</h3>
+        <p class="why">Функція, яка залежить лише від параметрів і повертає результат, працює однаково всюди: у консолі, у тесті, у рендері сторінки. Виведення й інші побічні ефекти зосереджені в одному місці (<code>main</code>, обробник події), тож його легко замінити.</p>
+        <pre class="code" data-lang="js"><code>const isAffordable = (book, budget) =&gt; book.priceInCents &lt;= budget;
+const getAffordable = (books, budget) =&gt; books.filter((book) =&gt; isAffordable(book, budget));
+
+function main() {
+  console.table(getAffordable(BOOKS, 100000));
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Змістовні імена й іменовані сталі</h3>
+        <p class="why">Ім'я змінної каже, що в ній, ім'я функції — що вона робить. Число з бізнес-правила отримує ім'я, яке пояснює його зміст і живе в одному місці. Коментар «що робить код» стає непотрібним, лишаються коментарі «чому».</p>
+        <pre class="code" data-lang="js"><code>const FREE_SHIPPING_FROM_IN_CENTS = 100000;
+
+function hasFreeShipping(cartTotalInCents) {
+  return cartTotalInCents &gt;= FREE_SHIPPING_FROM_IN_CENTS;
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Ранній return замість вкладених умов</h3>
+        <p class="why">Спершу функція відсікає некоректні випадки й повертає результат, а основний сценарій іде без вкладення. Кожна умова читається окремо, і її не треба тримати в голові до кінця функції.</p>
+        <pre class="code" data-lang="js"><code>function getStockMessage(book) {
+  if (!book) return "Книжку не знайдено";
+  if (!book.inStock) return "Немає в наявності";
+  if (book.stock &lt; 3) return `Лишилося ${book.stock} шт.`;
+  return "В наявності";
+}</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Незмінність даних</h3>
+        <p class="why">Замість того щоб змінювати масив чи об'єкт, створюють новий з потрібними змінами. Тоді будь-яке значення можна безпечно передавати в інші функції, порівнювати «було — стало» й відкочувати. Цей принцип ляже в основу роботи зі станом у фронтенд-фреймворках.</p>
+        <pre class="code" data-lang="js"><code>const sorted = books.toSorted((a, b) =&gt; a.title.localeCompare(b.title, "uk"));
+const withNew = [...books, newBook];
+const updated = books.map((book) =&gt; (book.id === id ? { ...book, inStock: false } : book));
+const withoutOne = books.filter((book) =&gt; book.id !== id);</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Метод масиву за наміром</h3>
+        <p class="why">Назва методу — це документація. <code>filter</code> каже «відбираю», <code>find</code> — «шукаю один», <code>some</code> — «чи є хоч один». Правильний метод ще й ефективніший: <code>find</code> і <code>some</code> зупиняються на першому збігу, а <code>filter(...).length &gt; 0</code> проходить увесь масив.</p>
+        <pre class="code" data-lang="js"><code>const hasOutOfStock = books.some((book) =&gt; !book.inStock);   // not filter(...).length &gt; 0
+const selected = books.find((book) =&gt; book.id === selectedId); // not filter(...)[0]
+const titles = books.map((book) =&gt; book.title);               // not forEach + push</code></pre>
+      </article>
+
+      <article class="pattern">
+        <h3>Модулі з іменованими експортами й деструктуризація параметрів</h3>
+        <p class="why">Кожен модуль відповідає за одну частину програми, а його публічний інтерфейс видно з <code>export</code>. Іменовані експорти коректно перейменовуються й шукаються редактором. Деструктуризація в параметрах показує, які поля потрібні функції, і робить виклик незалежним від порядку аргументів.</p>
+        <pre class="code" data-lang="js"><code>// js/catalog.js
+export function paginate(items, { page = 1, pageSize = 12 } = {}) {
+  const start = (page - 1) * pageSize;
+  return items.slice(start, start + pageSize);
+}
+
+// js/app.js
+import { paginate } from "./catalog.js";
+const firstPage = paginate(books, { pageSize: 6 });</code></pre>
+      </article>
+    </section>
+
+    <!-- ================= QUIZ ================= -->
+    <section id="quiz" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">Квіз для самоперевірки</h2>
+      <p class="section-lead">Більшість запитань — «що виведе цей код». Спершу дайте відповідь подумки, а потім перевірте себе в JS-консолі вище. Прогрес зберігається в цьому браузері.</p>
+      <div class="quiz-top">
+        <label for="quiz-progress" id="quiz-progress-label">Відповіли: 0 з 12</label>
+        <progress id="quiz-progress" max="12" value="0"></progress>
+        <button class="btn btn-ghost" type="button" id="quiz-restart-top">Пройти ще раз</button>
+      </div>
+      <div id="quiz-list"></div>
+      <div class="quiz-summary" id="quiz-summary" aria-live="polite"></div>
+    </section>
+
+    <!-- ================= LINKS ================= -->
+    <section id="links" aria-labelledby="links-title">
+      <h2 id="links-title">Корисні посилання</h2>
+      <div class="links-group">
+        <h3>MDN: посібник з JavaScript</h3>
+        <ul>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types" target="_blank" rel="noopener">Grammar and types</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling" target="_blank" rel="noopener">Control flow and error handling</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Loops_and_iteration" target="_blank" rel="noopener">Loops and iteration</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions" target="_blank" rel="noopener">Functions</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures" target="_blank" rel="noopener">Closures</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects" target="_blank" rel="noopener">Working with objects</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Indexed_collections" target="_blank" rel="noopener">Indexed collections</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules" target="_blank" rel="noopener">JavaScript modules</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>MDN: довідник</h3>
+        <ul>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness" target="_blank" rel="noopener">Equality comparisons and sameness</a> і <a href="https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion" target="_blank" rel="noopener">Type coercion</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let" target="_blank" rel="noopener">let і тимчасова мертва зона</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof" target="_blank" rel="noopener">typeof</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="noopener">Array</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSorted" target="_blank" rel="noopener">toSorted</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring" target="_blank" rel="noopener">Destructuring</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax" target="_blank" rel="noopener">spread</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining" target="_blank" rel="noopener">optional chaining</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing" target="_blank" rel="noopener">nullish coalescing</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone" target="_blank" rel="noopener">structuredClone()</a> і <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON" target="_blank" rel="noopener">JSON</a></li>
+        </ul>
+      </div>
+      <div class="links-group">
+        <h3>Специфікація й інструменти</h3>
+        <ul>
+          <li><a href="https://tc39.es/ecma262/" target="_blank" rel="noopener">ECMA-262: специфікація ECMAScript</a></li>
+          <li><a href="https://developer.chrome.com/docs/devtools/javascript" target="_blank" rel="noopener">Chrome DevTools: Debug JavaScript</a> і <a href="https://developer.chrome.com/docs/devtools/console" target="_blank" rel="noopener">Console</a></li>
+          <li><a href="https://firefox-source-docs.mozilla.org/devtools-user/debugger/" target="_blank" rel="noopener">Firefox DevTools: Debugger</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <p>Клієнтські технології вебпрограмування. Лекція 7: синтаксис і базові конструкції JavaScript.</p>
+  <p><a href="../index.html">На головну</a></p>
+</footer>
+
+<script>
+"use strict";
+
+/* =========================================================
+   Syntax highlighting
+   ========================================================= */
+const HIGHLIGHT_RULES = {
+  js: [
+    ["comment", /\/\/[^\n]*|\/\*[\s\S]*?\*\//],
+    ["string", /"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`/],
+    ["keyword", /\b(?:const|let|var|function|return|if|else|for|of|in|while|new|await|async|import|export|from|default|class|throw|try|catch|typeof|true|false|null|undefined)\b/],
+    ["number", /\b\d+(?:\.\d+)?\b/],
+    ["fn", /\b[A-Za-z_$][\w$]*(?=\s*\()/],
+  ],
+  css: [
+    ["comment", /\/\*[\s\S]*?\*\//],
+    ["string", /"[^"\n]*"|'[^'\n]*'/],
+    ["at", /@[\w-]+/],
+    ["tag", /^[^\S\n]*[^\s{}@/][^{};\n]*(?=\{)/],
+    ["prop", /[\w-]+(?=\s*:(?!:))/],
+    ["number", /-?\b\d*\.?\d+(?:px|rem|em|fr|dvh|vh|vw|ch|deg|ms|s|%)?/],
+    ["keyword", /!important/],
+  ],
+  html: [
+    ["comment", /<!--[\s\S]*?-->/],
+    ["keyword", /<!doctype[^>]*>/i],
+    ["tag", /<\/?[a-zA-Z][\w-]*|\/?>/],
+    ["string", /"[^"\n]*"|'[^'\n]*'/],
+    ["attr", /\b[a-zA-Z][\w:-]*(?==)/],
+  ],
+  json: [
+    ["comment", /\/\/[^\n]*/],
+    ["prop", /"(?:\\.|[^"\\\n])*"(?=\s*:)/],
+    ["string", /"(?:\\.|[^"\\\n])*"/],
+    ["keyword", /\b(?:true|false|null)\b/],
+    ["number", /-?\b\d+(?:\.\d+)?\b/],
+  ],
+  bash: [
+    ["comment", /(?<=^|\s)#[^\n]*/],
+    ["string", /"[^"\n]*"|'[^'\n]*'/],
+    ["keyword", /\b(?:git|npm|npx|code|cd|mkdir)\b/],
+    ["flag", /(?<=\s)--?[a-zA-Z][\w-]*/],
+  ],
+  http: [
+    ["comment", /^#[^\n]*/],
+    ["keyword", /^(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\b|^HTTP\/[\d.]+/],
+    ["number", /(?<=^HTTP\/[\d.]+ )\d{3}/],
+    ["prop", /^[A-Za-z][\w-]*(?=:)/],
+  ],
+  gitignore: [
+    ["comment", /^#[^\n]*/],
+    ["keyword", /^![^\n]*/],
+  ],
+};
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function highlight(code, lang) {
+  const rules = HIGHLIGHT_RULES[lang];
+  if (!rules) return escapeHtml(code);
+  const pattern = new RegExp(rules.map(([, re]) => `(${re.source})`).join("|"), lang === "html" ? "gmi" : "gm");
+  let result = "";
+  let lastIndex = 0;
+  let match;
+  while ((match = pattern.exec(code)) !== null) {
+    if (match[0] === "") { pattern.lastIndex += 1; continue; }
+    const groupIndex = match.findIndex((group, index) => index > 0 && group !== undefined);
+    result += escapeHtml(code.slice(lastIndex, match.index));
+    result += `<span class="tok-${rules[groupIndex - 1][0]}">${escapeHtml(match[0])}</span>`;
+    lastIndex = pattern.lastIndex;
+  }
+  return result + escapeHtml(code.slice(lastIndex));
+}
+
+const LANG_LABELS = { css: "CSS", js: "JavaScript", html: "HTML", json: "JSON", bash: "Terminal", http: "HTTP", gitignore: ".gitignore", text: "Text" };
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return copyWithSelection(text);
+  }
+}
+
+function copyWithSelection(text) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.setAttribute("readonly", "");
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.append(area);
+  area.select();
+  let copied = false;
+  try { copied = document.execCommand("copy"); } catch { copied = false; }
+  area.remove();
+  return copied;
+}
+
+function createCodeBlock(code, lang) {
+  const wrap = document.createElement("div");
+  wrap.className = "code-wrap";
+  const bar = document.createElement("div");
+  bar.className = "code-bar";
+  const label = document.createElement("span");
+  label.textContent = LANG_LABELS[lang] || lang;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "copy-btn";
+  button.textContent = "Копіювати";
+  button.setAttribute("aria-label", `Копіювати код (${label.textContent})`);
+  button.addEventListener("click", async () => {
+    const ok = await copyText(code);
+    button.textContent = ok ? "Скопійовано" : "Не вдалося";
+    setTimeout(() => { button.textContent = "Копіювати"; }, 1600);
+  });
+  bar.append(label, button);
+  const pre = document.createElement("pre");
+  pre.className = "code";
+  pre.tabIndex = 0;
+  pre.innerHTML = `<code>${highlight(code, lang)}</code>`;
+  wrap.append(bar, pre);
+  return wrap;
+}
+
+function enhanceCodeBlocks(root) {
+  root.querySelectorAll("pre.code[data-lang]").forEach((pre) => {
+    const block = createCodeBlock(pre.textContent, pre.dataset.lang);
+    pre.replaceWith(block);
+  });
+}
+
+function setCodeBlock(container, code, lang) {
+  container.replaceChildren(createCodeBlock(code, lang));
+}
+
+/* =========================================================
+   Value formatting shared by the console and the visualizer
+   ========================================================= */
+const IDENTIFIER_RE = /^[A-Za-z_$][\w$]*$/;
+const MAX_ITEMS = 50;
+
+function formatPrimitive(value) {
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "bigint") return `${value}n`;
+  if (typeof value === "symbol") return value.toString();
+  if (Object.is(value, -0)) return "-0";
+  return String(value);
+}
+
+function formatValue(value, depth = 0, seen = new WeakSet()) {
+  if (value === null || (typeof value !== "object" && typeof value !== "function")) return formatPrimitive(value);
+  if (typeof value === "function") return `ƒ ${value.name || "anonymous"}()`;
+  if (seen.has(value)) return "[Circular]";
+  if (value instanceof Error) return `${value.name}: ${value.message}`;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? "Invalid Date" : value.toISOString();
+  if (value instanceof RegExp) return String(value);
+  if (depth > 3) return Array.isArray(value) ? "[…]" : "{…}";
+  seen.add(value);
+  let result;
+  if (Array.isArray(value)) {
+    const items = value.slice(0, MAX_ITEMS).map((item) => formatValue(item, depth + 1, seen));
+    if (value.length > MAX_ITEMS) items.push(`… ${value.length - MAX_ITEMS} more`);
+    result = `[${items.join(", ")}]`;
+  } else if (value instanceof Map) {
+    const items = [...value].slice(0, MAX_ITEMS).map(([key, item]) => `${formatValue(key, depth + 1, seen)} => ${formatValue(item, depth + 1, seen)}`);
+    result = `Map(${value.size}) {${items.length ? ` ${items.join(", ")} ` : ""}}`;
+  } else if (value instanceof Set) {
+    const items = [...value].slice(0, MAX_ITEMS).map((item) => formatValue(item, depth + 1, seen));
+    result = `Set(${value.size}) {${items.length ? ` ${items.join(", ")} ` : ""}}`;
+  } else {
+    const entries = Object.entries(value).map(([key, item]) => `${IDENTIFIER_RE.test(key) ? key : JSON.stringify(key)}: ${formatValue(item, depth + 1, seen)}`);
+    const prototype = Object.getPrototypeOf(value);
+    const prefix = prototype && prototype !== Object.prototype && prototype.constructor?.name ? `${prototype.constructor.name} ` : "";
+    result = `${prefix}{${entries.length ? ` ${entries.join(", ")} ` : ""}}`;
+  }
+  seen.delete(value);
+  return result;
+}
+
+function formatLogArgument(value) {
+  return typeof value === "string" ? value : formatValue(value);
+}
+
+const PRESET_OUTPUTS = {"types": [{"level": "log", "text": "string CSS"}, {"level": "log", "text": "number 42"}, {"level": "log", "text": "bigint 10n"}, {"level": "log", "text": "boolean true"}, {"level": "log", "text": "undefined undefined"}, {"level": "log", "text": "object null"}, {"level": "log", "text": "symbol Symbol(id)"}, {"level": "log", "text": "object { id: 1 }"}, {"level": "log", "text": "object [1, 2]"}, {"level": "log", "text": "function ƒ anonymous()"}, {"level": "log", "text": "true true"}, {"level": "log", "text": "0.30000000000000004 false"}, {"level": "log", "text": "false"}], "coercion": [{"level": "log", "text": "53 2 10"}, {"level": "log", "text": "0 42 NaN 42"}, {"level": "log", "text": "true true false false"}, {"level": "log", "text": "true false"}, {"level": "log", "text": "true false true"}, {"level": "log", "text": "true false"}], "logic": [{"level": "log", "text": "20 0"}, {"level": "log", "text": "light "}, {"level": "log", "text": "undefined"}, {"level": "log", "text": "Unknown author"}, {"level": "log", "text": "b  fallback"}], "loops": [{"level": "log", "text": "{ css: 3, js: 2, html: 1 }"}, {"level": "log", "text": "css: 3"}, {"level": "log", "text": "js: 2"}, {"level": "log", "text": "html: 1"}], "functions": [{"level": "log", "text": "4.466666666666667"}, {"level": "log", "text": "0"}, {"level": "log", "text": "{ title: \"Semantic HTML in Practice\", year: 2026 }"}, {"level": "log", "text": "[undefined, undefined, undefined]"}], "scope": [{"level": "log", "text": "book-1 book-2"}, {"level": "log", "text": "Book: CSS"}, {"level": "error", "text": "Uncaught ReferenceError: Cannot access 'pageSize' before initialization"}], "objects": [{"level": "log", "text": "309700"}, {"level": "log", "text": "[\"title\", \"priceInCents\", \"quantity\"] false"}, {"level": "error", "text": "Uncaught TypeError: Cannot read properties of undefined (reading 'items')"}], "arrays": [{"level": "log", "text": "[\"Eloquent JavaScript\", \"You Don't Know JS Yet\"]"}, {"level": "log", "text": "HTML and CSS"}, {"level": "log", "text": "true false"}, {"level": "log", "text": "[1, 10, 100, 9] [1, 9, 10, 100]"}, {"level": "table", "table": {"columns": ["(index)", "id", "title", "genre", "year", "rating"], "rows": [["0", "2", "\"Eloquent JavaScript\"", "\"js\"", "2024", "4.8"], ["1", "1", "\"CSS in Depth\"", "\"css\"", "2024", "4.6"], ["2", "4", "\"You Don't Know JS Yet\"", "\"js\"", "2020", "4.5"], ["3", "3", "\"HTML and CSS\"", "\"html\"", "2011", "4.4"]]}}], "copy": [{"level": "log", "text": "7 { title: \"CSS in Depth\", tags: [\"layout\"] }"}, {"level": "log", "text": "[\"layout\", \"grid\"]"}, {"level": "log", "text": "2 3"}, {"level": "log", "text": "{\"title\":\"CSS\",\"published\":\"2024-03-01T00:00:00.000Z\"}"}], "task": [{"level": "log", "text": "За жанрами: {\"css\":1,\"js\":2,\"html\":2}"}, {"level": "log", "text": "Середній рейтинг у наявності: 4.45"}, {"level": "log", "text": "Найновіша: Semantic HTML in Practice (2025)"}, {"level": "log", "text": "Вартість у наявності: 4296.00 грн"}, {"level": "log", "text": "За жанрами: {} | Середній рейтинг у наявності: 0 | Найновіша: — | Вартість у наявності: 0.00 грн"}]};
+
+/* =========================================================
+   JS console
+   ========================================================= */
+const CONSOLE_PRESETS = [
+  { id: "types", label: "Типи і typeof", code: `const values = ["CSS", 42, 10n, true, undefined, null, Symbol("id"), { id: 1 }, [1, 2], () => {}];
+
+for (const value of values) {
+  console.log(typeof value, value);
+}
+
+console.log(Array.isArray([1, 2]), Number.isNaN(Number("abc")));
+console.log(0.1 + 0.2, 0.1 + 0.2 === 0.3);
+console.log({ id: 1 } === { id: 1 });` },
+  { id: "coercion", label: "Приведення і ===", code: `console.log("5" + 3, "5" - 3, "5" * "2");
+console.log(Number(""), Number(" 42 "), Number("4 2"), parseInt("42px", 10));
+console.log(Boolean("0"), Boolean([]), Boolean(""), Boolean(NaN));
+console.log(0 == "", 0 === "");
+console.log([] == false, null == 0, null == undefined);
+console.log("10" < "9", 10 < 9);` },
+  { id: "logic", label: "&& || ?? ?.", code: `const settings = { pageSize: 0, theme: "" };
+console.log(settings.pageSize || 20, settings.pageSize ?? 20);
+console.log(settings.theme || "light", settings.theme ?? "light");
+
+const book = { title: "CSS in Depth", author: null };
+console.log(book.author?.name);
+console.log(book.author?.name ?? "Unknown author");
+
+console.log("a" && "b", "" && "b", null || "fallback");` },
+  { id: "loops", label: "Цикли", code: `function countByValue(values) {
+  const counts = {};
+  for (const value of values) {
+    counts[value] = (counts[value] ?? 0) + 1;
+  }
+  return counts;
+}
+
+const counts = countByValue(["css", "js", "css", "html", "js", "css"]);
+console.log(counts);
+for (const [genre, count] of Object.entries(counts)) {
+  console.log(\`\${genre}: \${count}\`);
+}` },
+  { id: "functions", label: "Функції", code: `function getAverage(...values) {
+  if (values.length === 0) return 0;
+  return values.reduce((total, value) => total + value, 0) / values.length;
+}
+
+const createBook = (title, year = 2026) => ({ title, year });
+const brokenDouble = (n) => { n * 2; };   // braces without return
+
+console.log(getAverage(4.5, 4.8, 4.1));
+console.log(getAverage());
+console.log(createBook("Semantic HTML in Practice"));
+console.log([1, 2, 3].map(brokenDouble));` },
+  { id: "scope", label: "Область видимості і TDZ", code: `function createIdGenerator(prefix) {
+  let lastId = 0;
+  return () => {
+    lastId += 1;
+    return \`\${prefix}-\${lastId}\`;
+  };
+}
+
+const nextId = createIdGenerator("book");
+console.log(nextId(), nextId());
+
+console.log(describe("CSS"));            // hoisted declaration
+function describe(title) {
+  return \`Book: \${title}\`;
+}
+
+console.log(pageSize);                  // TDZ
+const pageSize = 20;` },
+  { id: "objects", label: "Об'єкти і this", code: `const cart = {
+  items: [
+    { title: "CSS in Depth", priceInCents: 129900, quantity: 1 },
+    { title: "HTML and CSS", priceInCents: 89900, quantity: 2 },
+  ],
+  getTotal() {
+    return this.items.reduce((sum, item) => sum + item.priceInCents * item.quantity, 0);
+  },
+};
+
+console.log(cart.getTotal());
+console.log(Object.keys(cart.items[0]), "discount" in cart);
+
+const getTotal = cart.getTotal;
+console.log(getTotal());                 // this is lost` },
+  { id: "arrays", label: "Методи масивів", code: `const books = [
+  { id: 1, title: "CSS in Depth", genre: "css", year: 2024, rating: 4.6 },
+  { id: 2, title: "Eloquent JavaScript", genre: "js", year: 2024, rating: 4.8 },
+  { id: 3, title: "HTML and CSS", genre: "html", year: 2011, rating: 4.4 },
+  { id: 4, title: "You Don't Know JS Yet", genre: "js", year: 2020, rating: 4.5 },
+];
+
+console.log(books.filter((book) => book.genre === "js").map((book) => book.title));
+console.log(books.find((book) => book.id === 3)?.title);
+console.log(books.some((book) => book.rating > 4.7), books.every((book) => book.year > 2015));
+console.log([10, 9, 1, 100].sort(), [10, 9, 1, 100].toSorted((a, b) => a - b));
+console.table(books.toSorted((a, b) => b.rating - a.rating));` },
+  { id: "copy", label: "Деструктуризація і копії", code: `const book = { id: 7, title: "CSS in Depth", tags: ["layout"] };
+const { id, ...data } = book;
+console.log(id, data);
+
+const shallow = { ...book };
+shallow.tags.push("grid");
+console.log(book.tags);
+
+const deep = structuredClone(book);
+deep.tags.push("flexbox");
+console.log(book.tags.length, deep.tags.length);
+
+console.log(JSON.stringify({ title: "CSS", published: new Date("2024-03-01"), note: undefined }));` },
+  { id: "task", label: "Міні-задача", code: `const BOOKS = [
+  { title: "CSS in Depth", genre: "css", year: 2024, rating: 4.6, priceInCents: 129900, inStock: true },
+  { title: "Eloquent JavaScript", genre: "js", year: 2024, rating: 4.8, priceInCents: 99900, inStock: false },
+  { title: "HTML and CSS", genre: "html", year: 2011, rating: 4.4, priceInCents: 89900, inStock: true },
+  { title: "You Don't Know JS Yet", genre: "js", year: 2020, rating: 4.5, priceInCents: 59900, inStock: true },
+  { title: "Semantic HTML in Practice", genre: "html", year: 2025, rating: 4.3, priceInCents: 149900, inStock: true },
+];
+
+function countByGenre(books) {
+  return books.reduce((counts, book) => ({ ...counts, [book.genre]: (counts[book.genre] ?? 0) + 1 }), {});
+}
+function getInStock(books) {
+  return books.filter((book) => book.inStock);
+}
+function getAverageRating(books) {
+  if (books.length === 0) return 0;
+  const sum = books.reduce((total, book) => total + book.rating, 0);
+  return Math.round((sum / books.length) * 100) / 100;
+}
+function findNewest(books) {
+  return books.reduce((newest, book) => (newest === null || book.year > newest.year ? book : newest), null);
+}
+function getTotalPrice(books) {
+  return books.reduce((total, book) => total + book.priceInCents, 0);
+}
+function formatPrice(priceInCents) {
+  return \`\${(priceInCents / 100).toFixed(2)} грн\`;
+}
+function buildReport(books) {
+  const inStock = getInStock(books);
+  const newest = findNewest(books);
+  return [
+    \`За жанрами: \${JSON.stringify(countByGenre(books))}\`,
+    \`Середній рейтинг у наявності: \${getAverageRating(inStock)}\`,
+    \`Найновіша: \${newest ? \`\${newest.title} (\${newest.year})\` : "—"}\`,
+    \`Вартість у наявності: \${formatPrice(getTotalPrice(inStock))}\`,
+  ];
+}
+function main() {
+  for (const line of buildReport(BOOKS)) console.log(line);
+  console.log(buildReport([]).join(" | "));
+}
+
+main();` },
+];
+
+function buildTableData(data) {
+  const rows = Array.isArray(data) ? data.map((row, index) => [index, row]) : Object.entries(data ?? {});
+  const columns = [];
+  rows.forEach(([, row]) => {
+    if (row !== null && typeof row === "object") {
+      Object.keys(row).forEach((key) => { if (!columns.includes(key)) columns.push(key); });
+    }
+  });
+  const hasValueColumn = rows.some(([, row]) => row === null || typeof row !== "object");
+  return {
+    columns: ["(index)", ...columns, ...(hasValueColumn ? ["Value"] : [])],
+    rows: rows.map(([index, row]) => [
+      String(index),
+      ...columns.map((key) => (row !== null && typeof row === "object" && key in row ? formatValue(row[key], 1) : "")),
+      ...(hasValueColumn ? [row !== null && typeof row === "object" ? "" : formatValue(row)] : []),
+    ]),
+  };
+}
+
+function createCapturingConsole(entries) {
+  const write = (level) => (...args) => entries.push({ level, text: args.map(formatLogArgument).join(" ") });
+  let indent = 0;
+  const writeIndented = (level) => (...args) => entries.push({ level, text: `${"  ".repeat(indent)}${args.map(formatLogArgument).join(" ")}` });
+  return {
+    log: writeIndented("log"), info: writeIndented("log"), debug: writeIndented("log"), dir: write("log"),
+    warn: writeIndented("warn"), error: writeIndented("error"),
+    table: (data) => {
+      if (data === null || typeof data !== "object") entries.push({ level: "log", text: formatLogArgument(data) });
+      else entries.push({ level: "table", table: buildTableData(data) });
+    },
+    group: (...args) => { entries.push({ level: "group", text: `${"  ".repeat(indent)}▾ ${args.map(formatLogArgument).join(" ")}` }); indent += 1; },
+    groupEnd: () => { indent = Math.max(0, indent - 1); },
+    assert: (condition, ...args) => { if (!condition) entries.push({ level: "error", text: `Assertion failed: ${args.map(formatLogArgument).join(" ")}` }); },
+  };
+}
+
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+
+function compileUserCode(code) {
+  try {
+    return { runner: new AsyncFunction("console", `"use strict";\n${code}`) };
+  } catch (error) {
+    if (error instanceof SyntaxError) return { syntaxError: `Uncaught SyntaxError: ${error.message}` };
+    return { blocked: true };
+  }
+}
+
+async function runUserCode(code) {
+  const entries = [];
+  const compiled = compileUserCode(code);
+  if (compiled.blocked) return { blocked: true, entries };
+  if (compiled.syntaxError) return { entries: [{ level: "error", text: compiled.syntaxError }] };
+  try {
+    await compiled.runner(createCapturingConsole(entries));
+  } catch (error) {
+    const name = error?.name ?? "Error";
+    const message = error?.message ?? formatValue(error);
+    entries.push({ level: "error", text: `Uncaught ${name}: ${message}` });
+  }
+  return { entries };
+}
+
+function renderConsoleEntries(entries) {
+  if (!entries.length) return '<p class="console-empty">Код виконано, але нічого не виведено. Додайте console.log(…)</p>';
+  return entries.map((entry) => {
+    if (entry.level === "table") {
+      const head = entry.table.columns.map((column) => `<th scope="col">${escapeHtml(column)}</th>`).join("");
+      const body = entry.table.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+      return `<div class="console-line console-table"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+    const marker = entry.level === "error" ? "✗ " : entry.level === "warn" ? "⚠ " : "";
+    return `<div class="console-line level-${entry.level}">${marker}${escapeHtml(entry.text)}</div>`;
+  }).join("");
+}
+
+function initConsoleDemo() {
+  const el = (id) => document.getElementById(id);
+  const editor = el("con-editor");
+  let preset = CONSOLE_PRESETS[0];
+
+  el("con-presets").innerHTML = CONSOLE_PRESETS.map((item) => `<button class="chip" type="button" data-preset="${item.id}" aria-pressed="false">${escapeHtml(item.label)}</button>`).join("");
+
+  const run = async () => {
+    const output = el("con-output");
+    const result = await runUserCode(editor.value);
+    if (result.blocked) {
+      const saved = editor.value === preset.code ? PRESET_OUTPUTS[preset.id] : null;
+      output.innerHTML = saved ? renderConsoleEntries(saved) : "";
+      el("con-note").textContent = saved
+        ? "Політика безпеки цієї сторінки забороняє виконувати введений код, тому показано збережений вивід прикладу. Збережіть HTML-файл і відкрийте його локально, щоб запускати власний код."
+        : "Політика безпеки цієї сторінки забороняє виконувати введений код. Збережіть HTML-файл і відкрийте його локально: там консоль працюватиме повністю.";
+      return;
+    }
+    output.innerHTML = renderConsoleEntries(result.entries);
+    el("con-note").textContent = `Виконано: ${new Date().toLocaleTimeString("uk-UA")}. Записів у виводі: ${result.entries.length}.`;
+  };
+  const selectPreset = (id) => {
+    preset = CONSOLE_PRESETS.find((item) => item.id === id);
+    editor.value = preset.code;
+    el("con-presets").querySelectorAll("[data-preset]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.preset === id)));
+    run();
+  };
+
+  el("con-presets").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-preset]");
+    if (button) selectPreset(button.dataset.preset);
+  });
+  el("con-run").addEventListener("click", run);
+  el("con-reset").addEventListener("click", () => selectPreset(preset.id));
+  el("con-clear").addEventListener("click", () => { el("con-output").innerHTML = ""; el("con-note").textContent = ""; });
+  let tabLeavesEditor = false;
+  editor.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      tabLeavesEditor = true;
+      return;
+    }
+    if (event.key !== "Tab") tabLeavesEditor = false;
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+      event.preventDefault();
+      run();
+    }
+    if (event.key === "Tab" && !event.shiftKey && !event.altKey && !tabLeavesEditor) {
+      event.preventDefault();
+      const { selectionStart, selectionEnd, value } = editor;
+      editor.value = `${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`;
+      editor.selectionStart = editor.selectionEnd = selectionStart + 2;
+    }
+  });
+  selectPreset(CONSOLE_PRESETS[0].id);
+}
+
+/* =========================================================
+   Coercion visualizer: a step-by-step model of the spec rules
+   ========================================================= */
+const COERCION_VALUES = [
+  { id: "str5", label: '"5"', make: () => "5" },
+  { id: "num3", label: "3", make: () => 3 },
+  { id: "str10", label: '"10"', make: () => "10" },
+  { id: "str9", label: '"9"', make: () => "9" },
+  { id: "num9", label: "9", make: () => 9 },
+  { id: "empty", label: '""', make: () => "" },
+  { id: "space", label: '" "', make: () => " " },
+  { id: "str0", label: '"0"', make: () => "0" },
+  { id: "zero", label: "0", make: () => 0 },
+  { id: "abc", label: '"abc"', make: () => "abc" },
+  { id: "true", label: "true", make: () => true },
+  { id: "false", label: "false", make: () => false },
+  { id: "null", label: "null", make: () => null },
+  { id: "undefined", label: "undefined", make: () => undefined },
+  { id: "nan", label: "NaN", make: () => NaN },
+  { id: "emptyArray", label: "[]", make: () => [] },
+  { id: "array12", label: "[1, 2]", make: () => [1, 2] },
+  { id: "array5", label: "[5]", make: () => [5] },
+  { id: "object", label: "{}", make: () => ({}) },
+];
+const COERCION_OPERATORS = ["+", "-", "*", "==", "===", "<"];
+const COERCION_PRESETS = [
+  ["str5", "+", "num3"], ["str5", "-", "num3"], ["emptyArray", "==", "false"], ["null", "==", "zero"],
+  ["null", "==", "undefined"], ["str10", "<", "str9"], ["emptyArray", "+", "object"], ["space", "==", "zero"],
+  ["nan", "==", "nan"], ["array5", "*", "array5"],
+];
+
+function isObjectValue(value) {
+  return value !== null && (typeof value === "object" || typeof value === "function");
+}
+
+function typeLabel(value) {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "масив (object)";
+  return typeof value;
+}
+
+function toPrimitive(value, steps) {
+  if (!isObjectValue(value)) return value;
+  const primitive = Array.isArray(value) ? value.join(",") : String(value);
+  const via = Array.isArray(value) ? "toString() об'єднує елементи через кому" : "toString() звичайного об'єкта повертає \"[object Object]\"";
+  steps.push(`${formatValue(value)} — об'єкт, тож спершу ToPrimitive: valueOf() повертає сам об'єкт, тому викликається ${via} → ${formatPrimitive(primitive)}`);
+  return primitive;
+}
+
+function toNumber(value, steps) {
+  if (typeof value === "number") return value;
+  let result;
+  let reason;
+  if (value === undefined) { result = NaN; reason = "undefined стає NaN"; }
+  else if (value === null) { result = 0; reason = "null стає 0"; }
+  else if (typeof value === "boolean") { result = value ? 1 : 0; reason = `${value} стає ${value ? 1 : 0}`; }
+  else {
+    result = Number(value);
+    const trimmed = value.trim();
+    reason = trimmed === ""
+      ? `рядок ${formatPrimitive(value)} після обрізання пробілів порожній і стає 0`
+      : `рядок ${formatPrimitive(value)} розбирається як число → ${formatPrimitive(result)}`;
+  }
+  steps.push(`ToNumber: ${reason}`);
+  return result;
+}
+
+function toStringValue(value, steps) {
+  if (typeof value === "string") return value;
+  const result = String(value);
+  steps.push(`ToString: ${formatPrimitive(value)} стає рядком ${formatPrimitive(result)}`);
+  return result;
+}
+
+function strictEquals(left, right, steps) {
+  if (typeof left !== typeof right) {
+    steps.push(`Типи різні (${typeLabel(left)} і ${typeLabel(right)}), тож === одразу дає false без жодних перетворень`);
+    return false;
+  }
+  if (isObjectValue(left)) {
+    steps.push("Обидва операнди — об'єкти; === порівнює посилання, а це два різні об'єкти");
+    return false;
+  }
+  if (Number.isNaN(left) && Number.isNaN(right)) {
+    steps.push("NaN не дорівнює ніщому, навіть самому собі");
+    return false;
+  }
+  const result = left === right;
+  steps.push(`Тип однаковий (${typeLabel(left)}), порівнюються значення: ${formatPrimitive(left)} та ${formatPrimitive(right)}`);
+  return result;
+}
+
+function looseEquals(left, right, steps) {
+  if (typeof left === typeof right && (left === null) === (right === null)) {
+    steps.push("Типи однакові — == поводиться як ===");
+    return strictEquals(left, right, steps);
+  }
+  const isNullish = (value) => value === null || value === undefined;
+  if (isNullish(left) && isNullish(right)) {
+    steps.push("null і undefined за правилом == рівні лише одне одному");
+    return true;
+  }
+  if (isNullish(left) || isNullish(right)) {
+    steps.push("null чи undefined з будь-яким іншим значенням за == не рівні — без перетворення на число");
+    return false;
+  }
+  if (typeof left === "boolean") {
+    steps.push("Лівий операнд boolean — спершу він стає числом");
+    return looseEquals(toNumber(left, steps), right, steps);
+  }
+  if (typeof right === "boolean") {
+    steps.push("Правий операнд boolean — спершу він стає числом");
+    return looseEquals(left, toNumber(right, steps), steps);
+  }
+  if (typeof left === "number" && typeof right === "string") {
+    steps.push("Число і рядок: рядок перетворюється на число");
+    return looseEquals(left, toNumber(right, steps), steps);
+  }
+  if (typeof left === "string" && typeof right === "number") {
+    steps.push("Рядок і число: рядок перетворюється на число");
+    return looseEquals(toNumber(left, steps), right, steps);
+  }
+  if (isObjectValue(left) && !isObjectValue(right)) return looseEquals(toPrimitive(left, steps), right, steps);
+  if (!isObjectValue(left) && isObjectValue(right)) return looseEquals(left, toPrimitive(right, steps), steps);
+  steps.push("Жодне правило приведення не підходить — значення не рівні");
+  return false;
+}
+
+function simulateOperation(left, operator, right) {
+  const steps = [];
+  let result;
+  if (operator === "+") {
+    const leftPrimitive = toPrimitive(left, steps);
+    const rightPrimitive = toPrimitive(right, steps);
+    if (typeof leftPrimitive === "string" || typeof rightPrimitive === "string") {
+      steps.push("Хоча б один операнд — рядок, тож + склеює рядки");
+      result = toStringValue(leftPrimitive, steps) + toStringValue(rightPrimitive, steps);
+    } else {
+      steps.push("Рядків немає, тож + додає числа");
+      result = toNumber(leftPrimitive, steps) + toNumber(rightPrimitive, steps);
+    }
+  } else if (operator === "-" || operator === "*") {
+    steps.push(`Оператор ${operator} завжди працює з числами`);
+    const a = toNumber(toPrimitive(left, steps), steps);
+    const b = toNumber(toPrimitive(right, steps), steps);
+    result = operator === "-" ? a - b : a * b;
+    if (Number.isNaN(result)) steps.push("Хоча б один операнд став NaN, тож і результат NaN");
+  } else if (operator === "===") {
+    result = strictEquals(left, right, steps);
+  } else if (operator === "==") {
+    result = looseEquals(left, right, steps);
+  } else {
+    const a = toPrimitive(left, steps);
+    const b = toPrimitive(right, steps);
+    if (typeof a === "string" && typeof b === "string") {
+      steps.push(`Обидва операнди — рядки, тож < порівнює їх посимвольно за кодами: ${formatPrimitive(a)} і ${formatPrimitive(b)}`);
+      result = a < b;
+    } else {
+      const x = toNumber(a, steps);
+      const y = toNumber(b, steps);
+      result = Number.isNaN(x) || Number.isNaN(y) ? false : x < y;
+      steps.push(Number.isNaN(x) || Number.isNaN(y) ? "Порівняння з NaN завжди дає false" : `Порівнюються числа ${formatPrimitive(x)} < ${formatPrimitive(y)}`);
+    }
+  }
+  return { result, steps };
+}
+
+const REAL_OPERATIONS = {
+  "+": (a, b) => a + b, "-": (a, b) => a - b, "*": (a, b) => a * b,
+  "==": (a, b) => a == b, "===": (a, b) => a === b, "<": (a, b) => a < b,
+};
+
+function computeRealOperation(left, operator, right) {
+  return REAL_OPERATIONS[operator](left, right);
+}
+
+function initCoercionDemo() {
+  const el = (id) => document.getElementById(id);
+  const options = COERCION_VALUES.map((item) => `<option value="${item.id}">${escapeHtml(item.label)}</option>`).join("");
+  el("co-left").innerHTML = options;
+  el("co-right").innerHTML = options;
+  el("co-op").innerHTML = COERCION_OPERATORS.map((op) => `<option>${escapeHtml(op)}</option>`).join("");
+  el("co-presets").innerHTML = COERCION_PRESETS.map(([left, op, right]) => {
+    const label = `${COERCION_VALUES.find((item) => item.id === left).label} ${op} ${COERCION_VALUES.find((item) => item.id === right).label}`;
+    return `<button class="chip mono-chip" type="button" data-left="${left}" data-op="${escapeHtml(op)}" data-right="${right}">${escapeHtml(label)}</button>`;
+  }).join("");
+  el("co-table").querySelector("tbody").innerHTML = COERCION_VALUES.map((item) => {
+    const value = item.make();
+    return `<tr><td>${escapeHtml(item.label)}</td><td>${escapeHtml(typeof value)}</td><td>${escapeHtml(formatPrimitive(Number(value)))}</td><td>${escapeHtml(formatPrimitive(String(value)))}</td><td>${escapeHtml(String(Boolean(value)))}</td></tr>`;
+  }).join("");
+
+  const update = () => {
+    const leftItem = COERCION_VALUES.find((item) => item.id === el("co-left").value);
+    const rightItem = COERCION_VALUES.find((item) => item.id === el("co-right").value);
+    const operator = el("co-op").value;
+    const { result, steps } = simulateOperation(leftItem.make(), operator, rightItem.make());
+    const real = computeRealOperation(leftItem.make(), operator, rightItem.make());
+    const matches = Object.is(result, real);
+    el("co-output").innerHTML = `
+      <p class="coerce-expr"><code>${escapeHtml(`${leftItem.label} ${operator} ${rightItem.label}`)}</code> <span aria-hidden="true">→</span> <code class="coerce-result">${escapeHtml(formatValue(real))}</code></p>
+      <ol class="sim-steps">${steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}</ol>
+      <p class="sizes">Ваш браузер обчислив: ${escapeHtml(formatValue(real))}${matches ? " — збігається з покроковим розбором." : ` (покроковий розбір дав ${escapeHtml(formatValue(result))})`}</p>`;
+  };
+  ["co-left", "co-op", "co-right"].forEach((id) => el(id).addEventListener("change", update));
+  el("co-presets").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-left]");
+    if (!button) return;
+    el("co-left").value = button.dataset.left;
+    el("co-op").value = button.dataset.op;
+    el("co-right").value = button.dataset.right;
+    update();
+  });
+  el("co-left").value = "str5";
+  el("co-op").value = "+";
+  el("co-right").value = "num3";
+  update();
+}
+
+/* =========================================================
+   Array method pipeline
+   ========================================================= */
+const PIPELINE_BOOKS = [
+  { id: 1, title: "Semantic HTML Basics", genre: "html", year: 2019, pages: 240, rating: 4.3, priceInCents: 54900, inStock: true },
+  { id: 2, title: "Accessible Forms", genre: "html", year: 2023, pages: 180, rating: 4.6, priceInCents: 62900, inStock: true },
+  { id: 3, title: "HTML Email Craft", genre: "html", year: 2016, pages: 210, rating: 3.8, priceInCents: 39900, inStock: false },
+  { id: 4, title: "Flexbox in Practice", genre: "css", year: 2021, pages: 260, rating: 4.4, priceInCents: 71900, inStock: true },
+  { id: 5, title: "CSS Grid Layouts", genre: "css", year: 2024, pages: 320, rating: 4.7, priceInCents: 89900, inStock: true },
+  { id: 6, title: "Responsive Design Patterns", genre: "css", year: 2022, pages: 290, rating: 4.2, priceInCents: 76900, inStock: false },
+  { id: 7, title: "Animations with CSS", genre: "css", year: 2018, pages: 200, rating: 3.9, priceInCents: 45900, inStock: true },
+  { id: 8, title: "Modern CSS Architecture", genre: "css", year: 2025, pages: 350, rating: 4.8, priceInCents: 119900, inStock: true },
+  { id: 9, title: "JavaScript from Scratch", genre: "js", year: 2023, pages: 420, rating: 4.5, priceInCents: 99900, inStock: true },
+  { id: 10, title: "Clean Functions", genre: "js", year: 2020, pages: 230, rating: 4.1, priceInCents: 64900, inStock: false },
+  { id: 11, title: "Arrays and Objects Deep Dive", genre: "js", year: 2022, pages: 310, rating: 4.6, priceInCents: 84900, inStock: true },
+  { id: 12, title: "DOM Events Handbook", genre: "js", year: 2021, pages: 280, rating: 4.4, priceInCents: 74900, inStock: true },
+  { id: 13, title: "Async JavaScript", genre: "js", year: 2024, pages: 300, rating: 4.7, priceInCents: 104900, inStock: false },
+  { id: 14, title: "Regular Expressions", genre: "js", year: 2015, pages: 190, rating: 3.7, priceInCents: 42900, inStock: true },
+  { id: 15, title: "TypeScript Essentials", genre: "ts", year: 2024, pages: 380, rating: 4.8, priceInCents: 114900, inStock: true },
+  { id: 16, title: "Typed APIs", genre: "ts", year: 2025, pages: 260, rating: 4.5, priceInCents: 94900, inStock: true },
+  { id: 17, title: "Generics Explained", genre: "ts", year: 2023, pages: 220, rating: 4.0, priceInCents: 69900, inStock: false },
+  { id: 18, title: "Node Tooling", genre: "tools", year: 2022, pages: 240, rating: 4.1, priceInCents: 59900, inStock: true },
+  { id: 19, title: "Git for Teams", genre: "tools", year: 2019, pages: 270, rating: 4.3, priceInCents: 57900, inStock: true },
+  { id: 20, title: "Modules and Bundlers", genre: "tools", year: 2025, pages: 230, rating: 4.4, priceInCents: 79900, inStock: false },
+  { id: 21, title: "Testing Frontend", genre: "tools", year: 2024, pages: 330, rating: 4.6, priceInCents: 92900, inStock: true },
+  { id: 22, title: "Typography for the Web", genre: "ux", year: 2017, pages: 180, rating: 4.2, priceInCents: 49900, inStock: true },
+  { id: 23, title: "Color and Contrast", genre: "ux", year: 2021, pages: 160, rating: 4.0, priceInCents: 44900, inStock: false },
+  { id: 24, title: "Design Systems", genre: "ux", year: 2023, pages: 300, rating: 4.5, priceInCents: 89900, inStock: true },
+];
+const BOOK_FIELDS = ["id", "title", "genre", "year", "pages", "rating", "priceInCents", "inStock"];
+
+const PIPELINE_STEPS = [
+  { id: "filterGenre", label: "filter — жанр", params: ["html", "css", "js", "ts", "tools", "ux"], uses: ["genre"],
+    code: (p) => `.filter((book) => book.genre === "${p}")`, run: (items, p) => items.filter((book) => book.genre === p) },
+  { id: "filterYear", label: "filter — рік від", params: ["2018", "2020", "2023", "2025"], uses: ["year"],
+    code: (p) => `.filter((book) => book.year >= ${p})`, run: (items, p) => items.filter((book) => book.year >= Number(p)) },
+  { id: "filterRating", label: "filter — рейтинг від", params: ["4", "4.5"], uses: ["rating"],
+    code: (p) => `.filter((book) => book.rating >= ${p})`, run: (items, p) => items.filter((book) => book.rating >= Number(p)) },
+  { id: "filterStock", label: "filter — у наявності", params: null, uses: ["inStock"],
+    code: () => ".filter((book) => book.inStock)", run: (items) => items.filter((book) => book.inStock) },
+  { id: "sortYear", label: "toSorted — за роком", params: ["новіші спершу", "старіші спершу"], uses: ["year"],
+    code: (p) => (p === "новіші спершу" ? ".toSorted((a, b) => b.year - a.year)" : ".toSorted((a, b) => a.year - b.year)"),
+    run: (items, p) => items.toSorted((a, b) => (p === "новіші спершу" ? b.year - a.year : a.year - b.year)) },
+  { id: "sortRating", label: "toSorted — за рейтингом ↓", params: null, uses: ["rating"],
+    code: () => ".toSorted((a, b) => b.rating - a.rating)", run: (items) => items.toSorted((a, b) => b.rating - a.rating) },
+  { id: "sortTitle", label: "toSorted — за назвою", params: null, uses: ["title"],
+    code: () => '.toSorted((a, b) => a.title.localeCompare(b.title, "uk"))', run: (items) => items.toSorted((a, b) => a.title.localeCompare(b.title, "uk")) },
+  { id: "sortStrings", label: "toSorted — рядки", params: null, uses: [], strings: true, objects: false,
+    code: () => '.toSorted((a, b) => a.localeCompare(b, "uk"))', run: (items) => items.toSorted((a, b) => a.localeCompare(b, "uk")) },
+  { id: "slice", label: "slice — перші N", params: ["3", "5"], uses: [], strings: true,
+    code: (p) => `.slice(0, ${p})`, run: (items, p) => items.slice(0, Number(p)) },
+  { id: "mapSummary", label: "map — { title, year }", params: null, uses: ["title", "year"], fieldsAfter: ["title", "year"],
+    code: () => ".map(({ title, year }) => ({ title, year }))", run: (items) => items.map(({ title, year }) => ({ title, year })) },
+  { id: "mapTitle", label: "map — лише назва", params: null, uses: ["title"], fieldsAfter: "strings",
+    code: () => ".map((book) => book.title)", run: (items) => items.map((book) => book.title) },
+  { id: "reducePages", label: "reduce — сума сторінок", params: null, uses: ["pages"], terminal: true,
+    code: () => ".reduce((total, book) => total + book.pages, 0)", run: (items) => items.reduce((total, book) => total + book.pages, 0) },
+  { id: "reduceGenres", label: "reduce — кількість за жанрами", params: null, uses: ["genre"], terminal: true,
+    code: () => ".reduce((counts, book) => ({ ...counts, [book.genre]: (counts[book.genre] ?? 0) + 1 }), {})",
+    run: (items) => items.reduce((counts, book) => ({ ...counts, [book.genre]: (counts[book.genre] ?? 0) + 1 }), {}) },
+  { id: "findExpensive", label: "find — дорожча за 1000 грн", params: null, uses: ["priceInCents"], terminal: true,
+    code: () => ".find((book) => book.priceInCents > 100000)", run: (items) => items.find((book) => book.priceInCents > 100000) },
+  { id: "someOut", label: "some — є відсутні", params: null, uses: ["inStock"], terminal: true,
+    code: () => ".some((book) => !book.inStock)", run: (items) => items.some((book) => !book.inStock) },
+  { id: "everyRated", label: "every — рейтинг ≥ 4", params: null, uses: ["rating"], terminal: true,
+    code: () => ".every((book) => book.rating >= 4)", run: (items) => items.every((book) => book.rating >= 4) },
+  { id: "length", label: ".length — кількість", params: null, uses: [], strings: true, terminal: true,
+    code: () => ".length", run: (items) => items.length },
+];
+const PIPELINE_PRESETS = [
+  { label: "Нові CSS-книжки", steps: [["filterGenre", "css"], ["filterYear", "2020"], ["sortYear", "новіші спершу"], ["mapTitle", null]] },
+  { label: "Топ-3 у наявності", steps: [["filterStock", null], ["sortRating", null], ["slice", "3"], ["mapSummary", null]] },
+  { label: "Сторінок у JS-книжках", steps: [["filterGenre", "js"], ["reducePages", null]] },
+  { label: "Жанри книжок з рейтингом від 4.5", steps: [["filterRating", "4.5"], ["reduceGenres", null]] },
+  { label: "Чи всі TS-книжки ≥ 4", steps: [["filterGenre", "ts"], ["everyRated", null]] },
+];
+
+function findStep(id) {
+  return PIPELINE_STEPS.find((step) => step.id === id);
+}
+
+function createPipelineContext() {
+  return { kind: "objects", fields: [...BOOK_FIELDS], done: false };
+}
+
+function canApplyStep(step, context) {
+  if (context.done) return false;
+  if (context.kind === "strings") return Boolean(step.strings);
+  if (step.objects === false) return false;
+  return step.uses.every((field) => context.fields.includes(field));
+}
+
+function nextContext(step, context) {
+  if (step.terminal) return { ...context, done: true };
+  if (step.fieldsAfter === "strings") return { kind: "strings", fields: [], done: false };
+  if (Array.isArray(step.fieldsAfter)) return { kind: "objects", fields: [...step.fieldsAfter], done: false };
+  return context;
+}
+
+function runPipeline(chain) {
+  let value = PIPELINE_BOOKS;
+  let context = createPipelineContext();
+  const results = [];
+  for (const { id, param } of chain) {
+    const step = findStep(id);
+    value = step.run(value, param);
+    context = nextContext(step, context);
+    results.push({ step, param, value, context });
+  }
+  return { results, context, value };
+}
+
+function buildPipelineCode(chain) {
+  if (!chain.length) return "const result = books;\nconsole.log(result.length); // 24";
+  const lines = chain.map(({ id, param }) => `  ${findStep(id).code(param)}`);
+  return `const result = books\n${lines.join("\n")};\n\nconsole.log(result);\nconsole.log(books.length); // still 24: no step mutates the original`;
+}
+
+function renderPipelineValue(value) {
+  if (!Array.isArray(value)) {
+    return `<p class="pl-value"><code>${escapeHtml(formatValue(value))}</code></p>`;
+  }
+  if (value.length === 0) return '<p class="pl-value dim">Порожній масив []</p>';
+  if (typeof value[0] !== "object") {
+    const shown = value.slice(0, 8).map((item) => `<li><code>${escapeHtml(formatValue(item))}</code></li>`).join("");
+    return `<ul class="pl-list">${shown}${value.length > 8 ? `<li class="dim">… ще ${value.length - 8}</li>` : ""}</ul>`;
+  }
+  const columns = Object.keys(value[0]);
+  const rows = value.slice(0, 6).map((row) => `<tr>${columns.map((column) => `<td>${escapeHtml(formatValue(row[column]))}</td>`).join("")}</tr>`).join("");
+  return `<div class="table-wrap"><table class="net-table"><thead><tr>${columns.map((column) => `<th scope="col">${escapeHtml(column)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>${value.length > 6 ? `<p class="dim pl-more">… ще ${value.length - 6}</p>` : ""}`;
+}
+
+function describeCount(value) {
+  if (!Array.isArray(value)) return typeof value === "object" && value !== null ? "об'єкт" : `значення типу ${value === undefined ? "undefined" : typeof value}`;
+  return `масив, ${value.length} ${value.length % 10 === 1 && value.length % 100 !== 11 ? "елемент" : [2, 3, 4].includes(value.length % 10) && ![12, 13, 14].includes(value.length % 100) ? "елементи" : "елементів"}`;
+}
+
+function initPipelineDemo() {
+  const el = (id) => document.getElementById(id);
+  const chain = [];
+
+  el("pl-presets").innerHTML = PIPELINE_PRESETS.map((preset, index) => `<button class="chip" type="button" data-preset="${index}">${escapeHtml(preset.label)}</button>`).join("");
+
+  const refreshStepSelect = (context) => {
+    const select = el("pl-step");
+    const current = select.value;
+    select.innerHTML = PIPELINE_STEPS.map((step) => `<option value="${step.id}"${canApplyStep(step, context) ? "" : " disabled"}>${escapeHtml(step.label)}</option>`).join("");
+    const firstAvailable = PIPELINE_STEPS.find((step) => canApplyStep(step, context));
+    const kept = findStep(current);
+    select.value = kept && canApplyStep(kept, context) ? current : firstAvailable?.id ?? "";
+    refreshParamSelect();
+    el("pl-add").disabled = !firstAvailable;
+  };
+  const refreshParamSelect = () => {
+    const step = findStep(el("pl-step").value);
+    const wrap = el("pl-param-wrap");
+    if (!step || !step.params) {
+      wrap.hidden = true;
+      return;
+    }
+    wrap.hidden = false;
+    el("pl-param").innerHTML = step.params.map((param) => `<option>${escapeHtml(param)}</option>`).join("");
+  };
+  const render = () => {
+    const { results, context } = runPipeline(chain);
+    const start = `<li><p class="pl-head"><code>books</code> <span class="dim">— ${describeCount(PIPELINE_BOOKS)}</span></p>${renderPipelineValue(PIPELINE_BOOKS)}</li>`;
+    el("pl-steps").innerHTML = start + results.map(({ step, param, value }) => `<li><p class="pl-head"><code>${escapeHtml(step.code(param))}</code> <span class="dim">→ ${describeCount(value)}</span></p>${renderPipelineValue(value)}</li>`).join("");
+    setCodeBlock(el("pl-code"), buildPipelineCode(chain), "js");
+    refreshStepSelect(context);
+    el("pl-undo").disabled = chain.length === 0;
+  };
+
+  el("pl-step").addEventListener("change", refreshParamSelect);
+  el("pl-add").addEventListener("click", () => {
+    const step = findStep(el("pl-step").value);
+    if (!step) return;
+    chain.push({ id: step.id, param: step.params ? el("pl-param").value : null });
+    render();
+  });
+  el("pl-undo").addEventListener("click", () => { chain.pop(); render(); });
+  el("pl-clear").addEventListener("click", () => { chain.length = 0; render(); });
+  el("pl-presets").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-preset]");
+    if (!button) return;
+    chain.length = 0;
+    PIPELINE_PRESETS[Number(button.dataset.preset)].steps.forEach(([id, param]) => chain.push({ id, param }));
+    render();
+  });
+  render();
+}
+
+/* =========================================================
+   Cheatsheet printing
+   ========================================================= */
+function printCheatsheet() {
+  document.body.classList.add("print-cheatsheet");
+  window.print();
+}
+
+function initPrint() {
+  document.getElementById("print-cheatsheet").addEventListener("click", printCheatsheet);
+  window.addEventListener("afterprint", () => document.body.classList.remove("print-cheatsheet"));
+}
+
+/* =========================================================
+   Quiz
+   ========================================================= */
+const QUIZ_TOPICS = {
+  types: { title: "Типи даних і typeof", anchor: "#types" },
+  coercion: { title: "Приведення типів, == і ===", anchor: "#coercion" },
+  variables: { title: "Змінні: let і const", anchor: "#variables" },
+  scope: { title: "Область видимості й TDZ", anchor: "#scope" },
+  operators: { title: "Оператори й умови", anchor: "#operators" },
+  functions: { title: "Функції", anchor: "#functions" },
+  objects: { title: "Об'єкти", anchor: "#objects" },
+  arrays: { title: "Масиви й методи перебору", anchor: "#arrays" },
+  "copy-json": { title: "Копіювання і JSON", anchor: "#copy-json" },
+  modules: { title: "Модулі ESM", anchor: "#modules" },
+};
+
+const QUIZ_QUESTIONS = [
+  {
+    id: "q-typeof-null", topic: "types",
+    text: "Що виведе цей код?",
+    code: "console.log(typeof null, typeof [], typeof (() => {}));", lang: "js",
+    options: ['"object" "object" "function"', '"null" "array" "function"', '"object" "array" "object"', '"null" "object" "function"'],
+    correct: 0,
+    explanation: "typeof null дає \"object\" через помилку першої реалізації 1995 року, яку зберегли заради сумісності. Масив — це об'єкт, тож typeof не відрізнить його від звичайного об'єкта: для цього є Array.isArray. Функції — єдиний вид об'єктів, для якого typeof повертає окреме значення \"function\".",
+  },
+  {
+    id: "q-plus-minus", topic: "coercion",
+    text: "Що виведе цей код?",
+    code: 'console.log("5" + 3, "5" - 3);', lang: "js",
+    options: ['"53" 2', "8 2", '"53" "2"', "8 \"5-3\""],
+    correct: 0,
+    explanation: "Якщо хоч один операнд + — рядок, + склеює рядки, тож виходить \"53\". Оператор - завжди працює з числами: \"5\" стає 5, і результат — число 2. Тому дані з полів форми перетворюють на числа явно, ще до обчислень.",
+  },
+  {
+    id: "q-array-false", topic: "coercion",
+    text: "Чому [] == false дає true?",
+    options: ["false стає 0, [] — порожнім рядком, а той — нулем, тож порівнюються 0 і 0", "Порожній масив хибний (falsy), а false теж хибне", "== порівнює довжини: у [] довжина 0, а false — це 0", "Це помилка рушія, і в суворому режимі результат буде false"],
+    correct: 0,
+    explanation: "Алгоритм == спершу перетворює boolean на число (false → 0), потім об'єкт на примітив ([] → \"\"), потім рядок на число (\"\" → 0). Пастка в тому, що порожній масив насправді істинний: Boolean([]) дає true, тож пояснення через falsy хибне. Суворий режим на == не впливає. Висновок: використовуйте ===.",
+  },
+  {
+    id: "q-tdz", topic: "scope",
+    text: "Що станеться під час виконання?",
+    code: "console.log(total);\nconst total = 10;", lang: "js",
+    options: ["ReferenceError: змінна в тимчасовій мертвій зоні", "Виведеться undefined", "Виведеться 10", "SyntaxError ще до виконання"],
+    correct: 0,
+    explanation: "const і let реєструються на початку області, але до рядка оголошення перебувають у TDZ, і звернення кидає ReferenceError. undefined вивело б оголошення через var, яке піднімається зі значенням undefined. Синтаксично код коректний, тож SyntaxError немає.",
+  },
+  {
+    id: "q-const-object", topic: "variables",
+    text: "Що виведе цей код?",
+    code: 'const book = { title: "CSS" };\nbook.title = "HTML";\nconsole.log(book.title);', lang: "js",
+    options: ['"HTML"', '"CSS"', "TypeError: Assignment to constant variable", "undefined"],
+    correct: 0,
+    explanation: "const забороняє перепризначати змінну, тобто змусити book вказувати на інший об'єкт. Сам об'єкт лишається змінним, тож зміна властивості дозволена. TypeError був би на рядку book = { … }.",
+  },
+  {
+    id: "q-sort-default", topic: "arrays",
+    text: "Що виведе цей код?",
+    code: "console.log([10, 9, 1, 100].sort());", lang: "js",
+    options: ["[1, 10, 100, 9]", "[1, 9, 10, 100]", "[100, 10, 9, 1]", "[10, 9, 1, 100]"],
+    correct: 0,
+    explanation: "Без функції порівняння sort перетворює елементи на рядки й порівнює їх посимвольно: \"1\" < \"10\" < \"100\" < \"9\". Для чисел потрібна функція (a, b) => a - b. І пам'ятайте, що sort змінює сам масив, на відміну від toSorted.",
+  },
+  {
+    id: "q-nullish", topic: "operators",
+    text: "Що виведе цей код?",
+    code: "const settings = { pageSize: 0 };\nconsole.log(settings.pageSize || 20, settings.pageSize ?? 20);", lang: "js",
+    options: ["20 0", "0 0", "20 20", "0 20"],
+    correct: 0,
+    explanation: "|| замінює будь-яке хибне значення, а 0 хибне, тож вибір користувача губиться і виходить 20. ?? замінює лише null та undefined, тож 0 лишається. Для значень за замовчуванням правильний оператор — ??.",
+  },
+  {
+    id: "q-reduce-empty", topic: "arrays",
+    text: "Що станеться під час виконання?",
+    code: "const total = [].reduce((sum, price) => sum + price);\nconsole.log(total);", lang: "js",
+    options: ["TypeError: Reduce of empty array with no initial value", "Виведеться 0", "Виведеться undefined", "Виведеться NaN"],
+    correct: 0,
+    explanation: "Без початкового значення reduce бере за накопичувач перший елемент, а в порожньому масиві його немає, тож кидає TypeError. З початковим значенням (… , 0) результат був би 0. Тому reduce завжди викликають з другим аргументом.",
+  },
+  {
+    id: "q-shallow-copy", topic: "copy-json",
+    text: "Що виведе цей код?",
+    code: 'const original = { title: "CSS", tags: ["layout"] };\nconst copy = { ...original };\ncopy.title = "Grid";\ncopy.tags.push("grid");\nconsole.log(original.title, original.tags.length);', lang: "js",
+    options: ['"CSS" 2', '"Grid" 2', '"CSS" 1', '"Grid" 1'],
+    correct: 0,
+    explanation: "Spread створює поверхневу копію: title скопійовано як примітив, тож оригінал його не бачить. Масив tags спільний для обох об'єктів, і push змінив і оригінал. Для незалежної копії вкладених даних потрібен structuredClone.",
+  },
+  {
+    id: "q-arrow-braces", topic: "functions",
+    text: "Що виведе цей код?",
+    code: "const doubled = [1, 2, 3].map((n) => { n * 2; });\nconsole.log(doubled);", lang: "js",
+    options: ["[undefined, undefined, undefined]", "[2, 4, 6]", "[1, 2, 3]", "SyntaxError"],
+    correct: 0,
+    explanation: "З фігурними дужками тіло стрілкової функції — це блок інструкцій, і без return функція повертає undefined. Неявне повернення працює лише в короткій формі без дужок: (n) => n * 2. Синтаксично код коректний.",
+  },
+  {
+    id: "q-arrow-this", topic: "objects",
+    text: "Чому стрілкова функція у властивості об'єкта не бачить його полів через this?",
+    code: 'const catalog = {\n  name: "Books",\n  describe: () => `Catalog: ${this?.name}`,\n};', lang: "js",
+    options: ["Стрілкова функція не має власного this і бере його з навколишньої області, а не з об'єкта", "this у стрілкових функціях завжди дорівнює null", "Шаблонні рядки не підтримують this", "Об'єкт ще не створено на момент оголошення методу, тож властивості недоступні"],
+    correct: 0,
+    explanation: "this стрілкової функції лексичний: він той самий, що в області, де функцію написано. У модулі це undefined, а не catalog. Методи пишуть у скороченій формі describe() { … }, і тоді this — це об'єкт зліва від крапки під час виклику.",
+  },
+  {
+    id: "q-module-extension", topic: "modules",
+    text: "Модуль js/app.js містить рядок import { formatPrice } from \"./format\"; і в браузері не завантажується, а в Network видно 404. Чому?",
+    options: ["Браузер не додає розширення: шлях має бути \"./format.js\"", "Іменовані експорти не можна імпортувати у фігурних дужках", "Модулі не можуть імпортувати інші модулі без збирача", "formatPrice треба експортувати через export default"],
+    correct: 0,
+    explanation: "Браузер сприймає специфікатор як URL і запитує саме /js/format, без розширення, звідки й 404. Скорочення без розширення дозволяють збирачі на кшталт Vite. Іменований імпорт у фігурних дужках коректний, а модулі імпортують одне одного в браузері без жодного збирача.",
+  },
+];
+
+const QUIZ_STORAGE_KEY = "cwt-lecture-07-quiz-v1";
+
+function shuffle(items) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function createQuizState(questions) {
+  return {
+    order: shuffle(questions.map((question) => question.id)),
+    optionOrder: Object.fromEntries(questions.map((question) => [question.id, shuffle(question.options.map((_, index) => index))])),
+    answers: {},
+  };
+}
+
+function isValidQuizState(state, questions) {
+  if (!state || !Array.isArray(state.order) || typeof state.answers !== "object" || !state.optionOrder) return false;
+  const ids = questions.map((question) => question.id);
+  return state.order.length === ids.length && ids.every((id) => state.order.includes(id) && Array.isArray(state.optionOrder[id]));
+}
+
+function loadQuizState(questions) {
+  try {
+    const raw = localStorage.getItem(QUIZ_STORAGE_KEY);
+    if (!raw) return null;
+    const state = JSON.parse(raw);
+    return isValidQuizState(state, questions) ? state : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveQuizState(state) {
+  try {
+    localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    /* Storage is unavailable: the quiz keeps working in memory. */
+  }
+}
+
+function findQuestion(id) {
+  return QUIZ_QUESTIONS.find((question) => question.id === id);
+}
+
+function isAnswerCorrect(question, optionIndex) {
+  return question.correct === optionIndex;
+}
+
+function getQuizSummary(state) {
+  const answeredIds = Object.keys(state.answers);
+  const wrong = answeredIds.map(findQuestion).filter((question) => question && !isAnswerCorrect(question, state.answers[question.id]));
+  const topicsToReview = [...new Set(wrong.map((question) => question.topic))].map((topic) => QUIZ_TOPICS[topic]);
+  return {
+    total: QUIZ_QUESTIONS.length,
+    answered: answeredIds.length,
+    correct: answeredIds.length - wrong.length,
+    topicsToReview,
+  };
+}
+
+const OPTION_LETTERS = ["А", "Б", "В", "Г"];
+
+function renderQuestionFeedback(feedback, question, chosen) {
+  const ok = isAnswerCorrect(question, chosen);
+  const topic = QUIZ_TOPICS[question.topic];
+  feedback.className = `q-feedback ${ok ? "ok" : "fail"}`;
+  feedback.innerHTML = `
+    <p class="verdict-line">${ok ? "✓ Правильно." : `✗ Неправильно. Правильна відповідь: ${escapeHtml(question.options[question.correct])}`}</p>
+    <p>${escapeHtml(question.explanation)}</p>
+    <p><a href="${topic.anchor}">Повторити розділ «${escapeHtml(topic.title)}»</a></p>`;
+}
+
+function applyAnsweredState(card, question, chosen) {
+  card.querySelectorAll(".q-option").forEach((button) => {
+    const index = Number(button.dataset.option);
+    button.disabled = true;
+    button.classList.toggle("is-correct", index === question.correct);
+    button.classList.toggle("is-wrong", index === chosen && index !== question.correct);
+    button.classList.toggle("is-dim", index !== chosen && index !== question.correct);
+    if (index === chosen) button.setAttribute("aria-pressed", "true");
+  });
+  renderQuestionFeedback(card.querySelector(".q-feedback"), question, chosen);
+}
+
+function createQuestionCard(question, number, state, onAnswer) {
+  const card = document.createElement("fieldset");
+  card.className = "q-card";
+  card.id = question.id;
+  const legend = document.createElement("legend");
+  legend.innerHTML = `<span class="q-num">Запитання ${number} з ${QUIZ_QUESTIONS.length}</span>${escapeHtml(question.text)}`;
+  card.append(legend);
+  if (question.code) card.append(createCodeBlock(question.code, question.lang));
+  if (question.code2) card.append(createCodeBlock(question.code2, question.lang2));
+  const options = document.createElement("div");
+  options.className = "q-options";
+  state.optionOrder[question.id].forEach((optionIndex, position) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "q-option";
+    button.dataset.option = String(optionIndex);
+    button.setAttribute("aria-pressed", "false");
+    button.innerHTML = `<span class="mark" aria-hidden="true">${OPTION_LETTERS[position]}</span><span>${escapeHtml(question.options[optionIndex])}</span>`;
+    button.addEventListener("click", () => onAnswer(question, optionIndex, card));
+    options.append(button);
+  });
+  const feedback = document.createElement("div");
+  feedback.className = "q-feedback";
+  feedback.setAttribute("aria-live", "polite");
+  card.append(options, feedback);
+  if (question.id in state.answers) applyAnsweredState(card, question, state.answers[question.id]);
+  return card;
+}
+
+function renderQuizProgress(summary) {
+  document.getElementById("quiz-progress").value = summary.answered;
+  document.getElementById("quiz-progress-label").textContent = `Відповіли: ${summary.answered} з ${summary.total}`;
+}
+
+function renderQuizSummary(container, summary, onRestart) {
+  if (summary.answered < summary.total) {
+    container.innerHTML = `<p style="margin:0">Дайте відповідь на всі запитання, щоб побачити результат. Залишилося: ${summary.total - summary.answered}.</p>`;
+    return;
+  }
+  const review = summary.topicsToReview.length
+    ? `<p>Варто повторити:</p><ul>${summary.topicsToReview.map((topic) => `<li><a href="${topic.anchor}">${escapeHtml(topic.title)}</a></li>`).join("")}</ul>`
+    : "<p>Усі відповіді правильні — матеріал лекції засвоєно.</p>";
+  container.innerHTML = `
+    <h3>Результат</h3>
+    <p class="score">${summary.correct} з ${summary.total}</p>
+    ${review}
+    <button class="btn" type="button" id="quiz-restart-bottom">Пройти ще раз</button>`;
+  container.querySelector("#quiz-restart-bottom").addEventListener("click", onRestart);
+}
+
+function initQuiz() {
+  const list = document.getElementById("quiz-list");
+  const summaryBox = document.getElementById("quiz-summary");
+  let state = loadQuizState(QUIZ_QUESTIONS) || createQuizState(QUIZ_QUESTIONS);
+
+  const refreshSummary = () => {
+    const summary = getQuizSummary(state);
+    renderQuizProgress(summary);
+    renderQuizSummary(summaryBox, summary, restart);
+  };
+
+  const handleAnswer = (question, optionIndex, card) => {
+    if (question.id in state.answers) return;
+    state.answers[question.id] = optionIndex;
+    saveQuizState(state);
+    applyAnsweredState(card, question, optionIndex);
+    refreshSummary();
+  };
+
+  const render = () => {
+    list.replaceChildren(...state.order.map((id, index) => createQuestionCard(findQuestion(id), index + 1, state, handleAnswer)));
+    refreshSummary();
+  };
+
+  function restart() {
+    state = createQuizState(QUIZ_QUESTIONS);
+    saveQuizState(state);
+    render();
+    document.getElementById("quiz").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    const firstOption = list.querySelector(".q-option");
+    if (firstOption) firstOption.focus({ preventScroll: true });
+  }
+
+  document.getElementById("quiz-restart-top").addEventListener("click", restart);
+  saveQuizState(state);
+  render();
+}
+
+/* =========================================================
+   Init
+   ========================================================= */
+enhanceCodeBlocks(document);
+initConsoleDemo();
+initCoercionDemo();
+initPipelineDemo();
+initPrint();
+initQuiz();
+</script>
+<script src="../styles/course-theme.js"></script>
+</body>
+</html>

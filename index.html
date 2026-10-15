@@ -491,7 +491,7 @@
           <ol class="arc" aria-label="Дуга курсу">
             <li><a href="topic-01/lecture-01-how-web-works.html" data-open="lecture-1"><span>01–04</span><strong>Веб і HTML</strong></a></li>
             <li><a href="topic-05/lecture-04-css-basics.html" data-open="lecture-5"><span>05–06</span><strong>CSS і верстка</strong></a></li>
-            <li><a href="#lecture-7"><span>07–12</span><strong>JavaScript у браузері</strong></a></li>
+            <li><a href="topic-07/lecture-07-javascript-basics.html" data-open="lecture-7"><span>07–12</span><strong>JavaScript у браузері</strong></a></li>
             <li><a href="#lecture-13"><span>13–16</span><strong>Типи, інструменти, якість</strong></a></li>
           </ol>
         </div>
@@ -540,7 +540,7 @@
         <div data-group="js" class="group">
           <h3>JavaScript у браузері</h3>
           <ol class="syllabus" start="7">
-            <li data-lecture="7"><a href="#lecture-7"><span class="num">07</span><span><strong>Основи мови</strong><small>Типи, ===, область видимості</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
+            <li data-lecture="7"><a href="topic-07/lecture-07-javascript-basics.html" data-open="lecture-7"><span class="num">07</span><span><strong>Синтаксис і базові конструкції JavaScript</strong><small>Типи, ===, функції, колекції, модулі</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
             <li data-lecture="8"><a href="#lecture-8"><span class="num">08</span><span><strong>Об’єкти, масиви, модулі</strong><small>Колекції, копії, import/export</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
             <li data-lecture="9"><a href="#lecture-9"><span class="num">09</span><span><strong>DOM і події</strong><small>Пошук вузлів, делегування, XSS</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
             <li data-lecture="10"><a href="#lecture-10"><span class="num">10</span><span><strong>Асинхронний JavaScript</strong><small>Цикл подій, проміси, async/await</small><span class="visited-flag" hidden>Переглянуто</span></span></a></li>
@@ -679,16 +679,17 @@ h1 { font-size: clamp(2rem, 1.15rem + 2.6vw, 3.5rem); }
 }</code></pre></div>
         <nav class="pager" aria-label="Сусідні лекції">
           <a href="topic-06/Лекція%206.%20Компонування%20макета_%20Flexbox%20і%20Grid.html" data-open="lecture-6"><span>Назад</span><strong>Flexbox і Grid</strong></a>
-          <a href="#lecture-7"><span>Далі</span><strong>JavaScript: основи мови</strong></a>
+          <a href="topic-07/lecture-07-javascript-basics.html" data-open="lecture-7"><span>Далі</span><strong>Синтаксис JavaScript</strong></a>
         </nav>
       </div>
     </section>
 
-    <section class="view lecture" id="lecture-7" aria-labelledby="l7-title">
+    <section class="view lecture" id="lecture-js-lab" aria-labelledby="l7-title">
       <div class="wrap">
         <p class="crumb"><a href="#overview">На головну</a></p>
-        <p class="eyebrow">Лекція 7 з 16</p>
+        <p class="eyebrow">Демо на цій сторінці</p>
         <h1 id="l7-title">JavaScript: основи мови</h1>
+        <p class="hint">Повна лекція: <a href="topic-07/lecture-07-javascript-basics.html" data-open="lecture-7">Синтаксис і базові конструкції JavaScript</a>.</p>
         <p class="lead">Скрипт підключається усвідомлено, змінні мають межі видимості, а порівняння не покладається на приховане приведення типів.</p>
         <div class="split">
           <div>
@@ -780,7 +781,7 @@ if (count === 1) {
         <div class="codeblock"><div class="codeblock__bar"><span class="codeblock__lang">JavaScript</span><button type="button" class="codeblock__copy" data-copy>Копіювати</button></div><pre><code data-lang="js">const copy = structuredClone(student);
 const city = student.address?.city ?? "невідомо";</code></pre></div>
         <nav class="pager" aria-label="Сусідні лекції">
-          <a href="#lecture-7"><span>Назад</span><strong>Основи мови</strong></a>
+          <a href="topic-07/lecture-07-javascript-basics.html" data-open="lecture-7"><span>Назад</span><strong>Синтаксис JavaScript</strong></a>
           <a href="#lecture-9"><span>Далі</span><strong>DOM і події</strong></a>
         </nav>
       </div>
@@ -1278,7 +1279,8 @@ function area(shape: Shape): number {
       "lecture-3": "topic-03/lecture-02-html5-structure-semantics.html",
       "lecture-4": "topic-04/lecture-03-html-forms-accessibility.html",
       "lecture-5": "topic-05/lecture-04-css-basics.html",
-      "lecture-6": "topic-06/Лекція 6. Компонування макета_ Flexbox і Grid.html"
+      "lecture-6": "topic-06/Лекція 6. Компонування макета_ Flexbox і Grid.html",
+      "lecture-7": "topic-07/lecture-07-javascript-basics.html"
     };
     const STORAGE_KEY = "ctw-course-progress-v1";
     const NOTE_KEY = "ctw-course-note-v1";
